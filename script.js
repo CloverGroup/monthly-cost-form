@@ -1,4 +1,3 @@
-// DOM読み込み完了時の初期化
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Initializing form...');
     
@@ -21,7 +20,6 @@ document.addEventListener('DOMContentLoaded', function() {
     validateForm();
 });
 
-// フォームクリア機能
 function clearForm() {
     if (confirm('入力内容をクリアしてよろしいですか？')) {
         document.getElementById('officeName').value = '';
@@ -56,7 +54,6 @@ function clearForm() {
     }
 }
 
-// 前月をデフォルト値として設定
 function setDefaultMonth() {
     const today = new Date();
     const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1);
@@ -65,7 +62,6 @@ function setDefaultMonth() {
     document.getElementById('reportMonth').value = `${year}-${month}`;
 }
 
-// セクションのトグル制御
 function setupToggle(radioName, detailId, addInitialEntry) {
     const radios = document.getElementsByName(radioName);
     const detail = document.getElementById(detailId);
@@ -96,7 +92,6 @@ function setupToggle(radioName, detailId, addInitialEntry) {
     });
 }
 
-// エントリー作成関数群
 function createNewEmployeeEntry() {
     const div = document.createElement('div');
     div.className = 'entry-row';
@@ -237,7 +232,6 @@ function createLeaveEntry() {
     return div;
 }
 
-// エントリー追加の共通関数
 function addEntry(containerId, createFn) {
     const container = document.getElementById(containerId);
     const entry = createFn();
@@ -246,7 +240,6 @@ function addEntry(containerId, createFn) {
     validateForm();
 }
 
-// 各セクションのエントリー追加関数
 function addNewEmployee() {
     addEntry('newEmployeeContainer', createNewEmployeeEntry);
 }
@@ -275,12 +268,10 @@ function addLeave() {
     addEntry('leaveContainer', createLeaveEntry);
 }
 
-// バリデーション関数
 function validateEntry(entryRow) {
     if (!entryRow) return false;
     let isValid = true;
     
-    // 必須フィールドのバリデーション
     const requiredFields = entryRow.querySelectorAll('.required');
     requiredFields.forEach(field => {
         if (!field.value.trim()) {
@@ -291,7 +282,6 @@ function validateEntry(entryRow) {
         }
     });
 
-    // ラジオボタンのバリデーション
     const radioGroups = entryRow.querySelectorAll('.radio-group');
     radioGroups.forEach(group => {
         const radios = group.querySelectorAll('input[type="radio"]');
@@ -304,7 +294,6 @@ function validateEntry(entryRow) {
         }
     });
 
-    // 追加ボタンの表示/非表示
     const container = entryRow.closest('[id$="Container"]');
     if (container) {
         const addButton = container.nextElementSibling;
@@ -326,15 +315,23 @@ function validateEntryAndForm(entryRow) {
 function validateForm() {
     let isValid = true;
 
-    // 基本情報のバリデーション
     const officeName = document.getElementById('officeName');
     const reportMonth = document.getElementById('reportMonth');
     
-    if (!officeName.value.trim() || !reportMonth.value) {
+    if (!officeName.value.trim()) {
+        officeName.classList.add('invalid');
         isValid = false;
+    } else {
+        officeName.classList.remove('invalid');
     }
 
-    // 各セクションのバリデーション
+    if (!reportMonth.value) {
+        reportMonth.classList.add('invalid');
+        isValid = false;
+    } else {
+        reportMonth.classList.remove('invalid');
+    }
+
     const sections = [
         {name: 'hasNewEmployee', container: 'newEmployeeContainer'},
         {name: 'hasRetirement', container: 'retirementContainer'},
@@ -349,16 +346,95 @@ function validateForm() {
         const radio = document.querySelector(`input[name="${section.name}"]:checked`);
         if (radio && radio.value === 'yes') {
             const container = document.getElementById(section.container);
-            const entries = container.querySelectorAll('.entry-row');
-            entries.forEach(entry => {
-                if (!validateEntry(entry)) isValid = false;
-            });
+            if (container) {
+                const entries = container.querySelectorAll('.entry-row');
+                if (entries.length === 0) isValid = false;
+                entries.forEach(entry => {
+                    if (!validateEntry(entry)) isValid = false;
+                });
+            }
         }
     });
 
-    // 送信ボタンの制御
     document.getElementById('submitButton').disabled = !isValid;
     return isValid;
 }
 
-// エ
+function removeEntry(button) {
+    const entryRow = button.closest('.entry-row');
+    const container = entryRow.closest('[id$="Container"]');
+    entryRow.remove();
+    
+    if (container.lastElementChild) {
+        validateEntry(container.lastElementChild);
+    }
+    validateForm();
+}
+
+async function handleSubmit(event) {
+    event.preventDefault();
+    const submitButton = document.getElementById('submitButton');
+
+    // 送信中は二重送信を防止
+    if (submitButton.disabled) return false;
+
+    // 最終バリデーション
+    if (!validateForm()) {
+        alert('必須項目を入力してください');
+        return false;
+    }
+
+    try {
+        submitButton.disabled = true;
+        submitButton.textContent = '送信中...';
+
+        // Google Apps Scriptへの送信処理
+        const formData = collectFormData();
+        const response = await fetch('YOUR_GOOGLE_APPS_SCRIPT_URL', {
+            method: 'POST',
+            mode: 'no-cors',
+            body: JSON.stringify(formData)
+        });
+
+        alert('送信が完了しました');
+        clearForm();
+    } catch (error) {
+        console.error('送信エラー:', error);
+        alert('送信に失敗しました。もう一度お試しください。');
+    } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = 'メール送信';
+        validateForm(); // 状態を更新
+    }
+
+    return false;
+}
+
+// フォームデータ収集関数
+function collectFormData() {
+    const data = {
+        officeName: document.getElementById('officeName').value,
+        reportMonth: document.getElementById('reportMonth').value,
+        otherComments: document.getElementById('otherComments').value
+    };
+
+    // 各セクションのデータを収集
+    const sections = [
+        {name: 'hasNewEmployee', key: 'newEmployee'},
+        {name: 'hasRetirement', key: 'retirement'},
+        {name: 'hasNoWork', key: 'noWork'},
+        {name: 'hasSalaryChange', key: 'salaryChange'},
+        {name: 'hasAddressChange', key: 'addressChange'},
+        {name: 'hasLateEarly', key: 'lateEarly'},
+        {name: 'hasLeave', key: 'leave'}
+    ];
+
+    sections.forEach(section => {
+        const radio = document.querySelector(`input[name="${section.name}"]:checked`);
+        if (radio && radio.value === 'yes') {
+            data[section.key] = collectSectionData(section.key);
+        }
+    });
+
+    return data;
+}
