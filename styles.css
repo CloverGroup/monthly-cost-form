@@ -1,21 +1,24 @@
-body {
-    margin: 20px;
-    font-family: "Hiragino Sans", "メイリオ", sans-serif;
+body { 
+    margin: 20px; 
+    font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "メイリオ", sans-serif;
     background-color: #f5f5f5;
 }
 .form-container {
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
     background-color: white;
-    padding: 20px;
+    padding: 30px;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 .header-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+}
+.header-container h2 {
+    margin: 0;
 }
 .clear-button {
     background-color: #ff4444;
@@ -25,35 +28,145 @@ body {
     border-radius: 4px;
     cursor: pointer;
 }
-.form-group {
-    margin-bottom: 20px;
+.clear-button:hover {
+    background-color: #ff6666;
+}
+.form-group { 
+    margin-bottom: 20px; 
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+}
+.header-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
 }
 .header-row label {
+    min-width: 100px;
     font-weight: bold;
-    margin-right: 10px;
 }
-.detail-section {
-    display: none;
-    margin-left: 20px;
-    padding: 10px;
-    border-left: 3px solid #4CAF50;
-}
-.radio-group input {
-    margin-right: 5px;
-}
-textarea, input[type="text"], input[type="month"] {
-    width: 100%;
+#officeName {
+    width: 300px;
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
-    margin-bottom: 10px;
 }
-button {
+#reportMonth {
+    width: 150px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+.detail-section { 
+    margin-left: 20px; 
+    display: none;
     padding: 10px;
+    border-left: 3px solid #4CAF50;
+}
+.entry-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+    margin: 10px 0;
+}
+.name-field {
+    width: 150px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+.date-field {
+    width: 140px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+.reason-field {
+    flex: 1;
+    min-width: 200px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: vertical;
+}
+.name-field.invalid,
+.date-field.invalid,
+.reason-field.invalid {
+    background-color: #ffebee;
+    border-color: #ffcdd2;
+}
+.radio-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+.radio-group.invalid {
+    background-color: #ffebee;
+}
+.checkbox-group {
+    white-space: nowrap;
+}
+.add-button {
+    display: none;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 16px;
     border-radius: 4px;
     cursor: pointer;
+    margin-top: 10px;
+}
+.remove-button {
+    background-color: #ff4444;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+.required::after {
+    content: "*";
+    color: #ff0000;
+    margin-left: 4px;
+}
+.note {
+    font-size: 0.9em;
+    color: #666;
+    margin-top: 5px;
+    font-style: italic;
+}
+#submitButton {
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 16px;
+    margin-top: 20px;
 }
 #submitButton:disabled {
-    background-color: #ccc;
+    background-color: #cccccc;
     cursor: not-allowed;
+}
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+textarea {
+    width: 100%;
+    min-height: 60px;
+    resize: vertical;
 }
