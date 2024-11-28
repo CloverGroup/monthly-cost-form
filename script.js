@@ -1,3 +1,4 @@
+// DOM読み込み完了時の初期化
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Initializing form...');
     
@@ -371,73 +372,4 @@ function removeEntry(button) {
     validateForm();
 }
 
-async function handleSubmit(event) {
-    event.preventDefault();
-    const submitButton = document.getElementById('submitButton');
-
-    // 送信中は二重送信を防止
-    if (submitButton.disabled) return false;
-
-    // 最終バリデーション
-    if (!validateForm()) {
-        alert('必須項目を入力してください');
-        return false;
-    }
-
-    try {
-        submitButton.disabled = true;
-        submitButton.textContent = '送信中...';
-
-        // Google Apps Scriptへの送信処理
-        const formData = collectFormData();
-const response = await fetch('https://script.google.com/macros/s/AKfycbwq6oqs5bURqANKljGW7IgG7ZqPb8do6pIHkri2nUgNbHuygW90fIN142g3savrh72V/exec', {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: {
-        'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(formData)
-});
-
-        alert('送信が完了しました');
-        clearForm();
-    } catch (error) {
-        console.error('送信エラー:', error);
-        alert('送信に失敗しました。もう一度お試しください。');
-    } finally {
-        submitButton.disabled = false;
-        submitButton.textContent = 'メール送信';
-        validateForm(); // 状態を更新
-    }
-
-    return false;
-}
-
-// フォームデータ収集関数
-function collectFormData() {
-    const data = {
-        officeName: document.getElementById('officeName').value,
-        reportMonth: document.getElementById('reportMonth').value,
-        otherComments: document.getElementById('otherComments').value
-    };
-
-    // 各セクションのデータを収集
-    const sections = [
-        {name: 'hasNewEmployee', key: 'newEmployee'},
-        {name: 'hasRetirement', key: 'retirement'},
-        {name: 'hasNoWork', key: 'noWork'},
-        {name: 'hasSalaryChange', key: 'salaryChange'},
-        {name: 'hasAddressChange', key: 'addressChange'},
-        {name: 'hasLateEarly', key: 'lateEarly'},
-        {name: 'hasLeave', key: 'leave'}
-    ];
-
-    sections.forEach(section => {
-        const radio = document.querySelector(`input[name="${section.name}"]:checked`);
-        if (radio && radio.value === 'yes') {
-            data[section.key] = collectSectionData(section.key);
-        }
-    });
-
-    return data;
-}
+async function handleSubmit
