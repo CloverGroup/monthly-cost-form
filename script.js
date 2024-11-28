@@ -1,6 +1,6 @@
 // DOM読み込み完了時の初期化
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Initializing form...');
+    console.log('==== Form Initialization Started ====');
     
     const sections = [
         {radioName: 'hasNewEmployee', detailId: 'newEmployeeDetail', addFn: addNewEmployee},
@@ -13,15 +13,19 @@ document.addEventListener('DOMContentLoaded', function() {
     ];
 
     sections.forEach(section => {
-        console.log(`Setting up section: ${section.radioName}`);
+        console.log(`Initializing section: ${section.radioName}`);
         setupToggle(section.radioName, section.detailId, section.addFn);
     });
 
+    console.log('Setting default month');
     setDefaultMonth();
+    console.log('Running initial form validation');
     validateForm();
+    console.log('==== Form Initialization Completed ====');
 });
 
 function clearForm() {
+    console.log('Clearing form...');
     if (confirm('入力内容をクリアしてよろしいですか？')) {
         document.getElementById('officeName').value = '';
         setDefaultMonth();
@@ -37,6 +41,7 @@ function clearForm() {
         ];
 
         sections.forEach(section => {
+            console.log(`Clearing section: ${section}`);
             document.querySelector(`input[name="${section}"][value="no"]`).checked = true;
             const detailId = section.replace('has', '') + 'Detail';
             const detail = document.getElementById(detailId);
@@ -52,6 +57,7 @@ function clearForm() {
         document.getElementById('otherComments').value = '';
         document.getElementById('csvFile').value = '';
         validateForm();
+        console.log('Form cleared successfully');
     }
 }
 
@@ -61,11 +67,18 @@ function setDefaultMonth() {
     const year = lastMonth.getFullYear();
     const month = String(lastMonth.getMonth() + 1).padStart(2, '0');
     document.getElementById('reportMonth').value = `${year}-${month}`;
+    console.log(`Default month set to: ${year}-${month}`);
 }
 
 function setupToggle(radioName, detailId, addInitialEntry) {
+    console.log(`Setting up toggle for: ${radioName}, detail: ${detailId}`);
     const radios = document.getElementsByName(radioName);
     const detail = document.getElementById(detailId);
+    
+    console.log('Found elements:', {
+        radios: radios.length,
+        detail: detail ? 'yes' : 'no'
+    });
     
     if (!radios || !detail) {
         console.error(`Setup failed for ${radioName}`);
@@ -73,16 +86,21 @@ function setupToggle(radioName, detailId, addInitialEntry) {
     }
 
     radios.forEach(radio => {
+        console.log(`Adding listener to ${radio.value} radio`);
         radio.addEventListener('change', function() {
             console.log(`Radio changed: ${radioName} - ${this.value}`);
             const container = detail.querySelector('[id$="Container"]');
+            console.log('Container found:', container ? 'yes' : 'no');
             
             if (this.value === 'yes') {
+                console.log('Showing detail section');
                 detail.style.display = 'block';
                 if (container && container.children.length === 0) {
+                    console.log('Adding initial entry');
                     addInitialEntry();
                 }
             } else {
+                console.log('Hiding detail section');
                 detail.style.display = 'none';
                 if (container) {
                     container.innerHTML = '';
@@ -94,6 +112,7 @@ function setupToggle(radioName, detailId, addInitialEntry) {
 }
 
 function createNewEmployeeEntry() {
+    console.log('Creating new employee entry');
     const div = document.createElement('div');
     div.className = 'entry-row';
     const uniqueId = Date.now();
@@ -118,6 +137,7 @@ function createNewEmployeeEntry() {
 }
 
 function createRetirementEntry() {
+    console.log('Creating retirement entry');
     const div = document.createElement('div');
     div.className = 'entry-row';
     div.innerHTML = `
@@ -134,6 +154,7 @@ function createRetirementEntry() {
 }
 
 function createNoWorkEntry() {
+    console.log('Creating no-work entry');
     const div = document.createElement('div');
     div.className = 'entry-row';
     div.innerHTML = `
@@ -150,6 +171,7 @@ function createNoWorkEntry() {
 }
 
 function createSalaryChangeEntry() {
+    console.log('Creating salary change entry');
     const div = document.createElement('div');
     div.className = 'entry-row';
     div.innerHTML = `
@@ -166,6 +188,7 @@ function createSalaryChangeEntry() {
 }
 
 function createAddressChangeEntry() {
+    console.log('Creating address change entry');
     const div = document.createElement('div');
     div.className = 'entry-row';
     div.innerHTML = `
@@ -182,6 +205,7 @@ function createAddressChangeEntry() {
 }
 
 function createLateEarlyEntry() {
+    console.log('Creating late/early entry');
     const div = document.createElement('div');
     div.className = 'entry-row';
     const uniqueId = Date.now();
@@ -209,6 +233,7 @@ function createLateEarlyEntry() {
 }
 
 function createLeaveEntry() {
+    console.log('Creating leave entry');
     const div = document.createElement('div');
     div.className = 'entry-row';
     const uniqueId = Date.now();
@@ -234,6 +259,7 @@ function createLeaveEntry() {
 }
 
 function addEntry(containerId, createFn) {
+    console.log(`Adding entry to container: ${containerId}`);
     const container = document.getElementById(containerId);
     const entry = createFn();
     container.appendChild(entry);
@@ -272,6 +298,7 @@ function addLeave() {
 function validateEntry(entryRow) {
     if (!entryRow) return false;
     let isValid = true;
+    console.log('Validating entry row');
     
     const requiredFields = entryRow.querySelectorAll('.required');
     requiredFields.forEach(field => {
@@ -305,6 +332,7 @@ function validateEntry(entryRow) {
         }
     }
 
+    console.log(`Entry validation result: ${isValid}`);
     return isValid;
 }
 
@@ -314,6 +342,7 @@ function validateEntryAndForm(entryRow) {
 }
 
 function validateForm() {
+    console.log('Validating entire form');
     let isValid = true;
 
     const officeName = document.getElementById('officeName');
@@ -330,46 +359,103 @@ function validateForm() {
         reportMonth.classList.add('invalid');
         isValid = false;
     } else {
-        reportMonth.classList.remove('invalid');
+        reportMonth.classList.remove
+        それらの関数は入っていませんでした。validateFormの後に続けて以下の3つの関数を追加する必要があります：
+
+```javascript
+async function handleSubmit(event) {
+    event.preventDefault();
+    const submitButton = document.getElementById('submitButton');
+
+    if (submitButton.disabled) return false;
+
+    if (!validateForm()) {
+        alert('必須項目を入力してください');
+        return false;
     }
 
+    try {
+        submitButton.disabled = true;
+        submitButton.textContent = '送信中...';
+
+        const formData = collectFormData();
+        const response = await fetch('https://script.google.com/macros/s/AKfycbwq6oqs5bURqANKljGW7IgG7ZqPb8do6pIHkri2nUgNbHuygW90fIN142g3savrh72V/exec', {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+
+        alert('送信が完了しました');
+        clearForm();
+    } catch (error) {
+        console.error('送信エラー:', error);
+        alert('送信に失敗しました。もう一度お試しください。');
+    } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = 'メール送信';
+        validateForm();
+    }
+
+    return false;
+}
+
+function collectFormData() {
+    const data = {
+        officeName: document.getElementById('officeName').value,
+        reportMonth: document.getElementById('reportMonth').value,
+        otherComments: document.getElementById('otherComments').value
+    };
+
     const sections = [
-        {name: 'hasNewEmployee', container: 'newEmployeeContainer'},
-        {name: 'hasRetirement', container: 'retirementContainer'},
-        {name: 'hasNoWork', container: 'noWorkContainer'},
-        {name: 'hasSalaryChange', container: 'salaryChangeContainer'},
-        {name: 'hasAddressChange', container: 'addressChangeContainer'},
-        {name: 'hasLateEarly', container: 'lateEarlyContainer'},
-        {name: 'hasLeave', container: 'leaveContainer'}
+        {name: 'hasNewEmployee', key: 'newEmployee'},
+        {name: 'hasRetirement', key: 'retirement'},
+        {name: 'hasNoWork', key: 'noWork'},
+        {name: 'hasSalaryChange', key: 'salaryChange'},
+        {name: 'hasAddressChange', key: 'addressChange'},
+        {name: 'hasLateEarly', key: 'lateEarly'},
+        {name: 'hasLeave', key: 'leave'}
     ];
 
     sections.forEach(section => {
         const radio = document.querySelector(`input[name="${section.name}"]:checked`);
         if (radio && radio.value === 'yes') {
-            const container = document.getElementById(section.container);
-            if (container) {
-                const entries = container.querySelectorAll('.entry-row');
-                if (entries.length === 0) isValid = false;
-                entries.forEach(entry => {
-                    if (!validateEntry(entry)) isValid = false;
-                });
-            }
+            data[section.key] = collectSectionData(section.key);
         }
     });
 
-    document.getElementById('submitButton').disabled = !isValid;
-    return isValid;
+    return data;
 }
 
-function removeEntry(button) {
-    const entryRow = button.closest('.entry-row');
-    const container = entryRow.closest('[id$="Container"]');
-    entryRow.remove();
-    
-    if (container.lastElementChild) {
-        validateEntry(container.lastElementChild);
-    }
-    validateForm();
-}
+function collectSectionData(sectionKey) {
+    const container = document.getElementById(`${sectionKey}Container`);
+    return Array.from(container.querySelectorAll('.entry-row')).map(row => {
+        const data = {
+            name: row.querySelector('.name-field').value
+        };
 
-async function handleSubmit
+        const radio = row.querySelector('input[type="radio"]:checked');
+        if (radio) {
+            data.type = radio.value;
+        }
+
+        const date = row.querySelector('.date-field');
+        if (date) {
+            data.date = date.value;
+        }
+
+        const reason = row.querySelector('.reason-field');
+        if (reason) {
+            data.reason = reason.value;
+        }
+
+        const docs = row.querySelector('input[type="checkbox"]');
+        if (docs) {
+            data.docs = docs.checked;
+        }
+
+        return data;
+    });
+}
