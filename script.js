@@ -390,8 +390,8 @@ async function handleSubmit(event) {
 
         // Google Apps Scriptへの送信処理
         const formData = collectFormData();
-       const response = await fetch('https://script.google.com/macros/s/AKfycbw3GkOFZmyOWTUiv1zzzLKwhT3_PgGYyOVh0Fw0nhKjmCTo0YsX0Cpb2ncERmfGy-U/exec', {
-            method: 'POST',
+       const response = await fetch('', {
+            method: 'POST',https://script.google.com/macros/s/AKfycbwq6oqs5bURqANKljGW7IgG7ZqPb8do6pIHkri2nUgNbHuygW90fIN142g3savrh72V/exec
             mode: 'no-cors',
             body: JSON.stringify(formData)
         });
