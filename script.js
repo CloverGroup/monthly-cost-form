@@ -360,9 +360,8 @@ function validateForm() {
         isValid = false;
     } else {
         reportMonth.classList.remove
-        それらの関数は入っていませんでした。validateFormの後に続けて以下の3つの関数を追加する必要があります：
 
-```javascript
+
 async function handleSubmit(event) {
     event.preventDefault();
     const submitButton = document.getElementById('submitButton');
