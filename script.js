@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('==== Form Initialization Completed ====');
 });
 
+// フォームクリア機能
 function clearForm() {
     console.log('Clearing form...');
     if (confirm('入力内容をクリアしてよろしいですか？')) {
@@ -61,6 +62,7 @@ function clearForm() {
     }
 }
 
+// 前月をデフォルト値として設定
 function setDefaultMonth() {
     const today = new Date();
     const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1);
@@ -70,6 +72,7 @@ function setDefaultMonth() {
     console.log(`Default month set to: ${year}-${month}`);
 }
 
+// セクションのトグル制御
 function setupToggle(radioName, detailId, addInitialEntry) {
     console.log(`Setting up toggle for: ${radioName}, detail: ${detailId}`);
     const radios = document.getElementsByName(radioName);
@@ -111,6 +114,7 @@ function setupToggle(radioName, detailId, addInitialEntry) {
     });
 }
 
+// エントリー作成関数群
 function createNewEmployeeEntry() {
     console.log('Creating new employee entry');
     const div = document.createElement('div');
@@ -258,6 +262,7 @@ function createLeaveEntry() {
     return div;
 }
 
+// エントリー追加の共通関数
 function addEntry(containerId, createFn) {
     console.log(`Adding entry to container: ${containerId}`);
     const container = document.getElementById(containerId);
@@ -267,6 +272,7 @@ function addEntry(containerId, createFn) {
     validateForm();
 }
 
+// 各セクションのエントリー追加関数
 function addNewEmployee() {
     addEntry('newEmployeeContainer', createNewEmployeeEntry);
 }
@@ -295,6 +301,7 @@ function addLeave() {
     addEntry('leaveContainer', createLeaveEntry);
 }
 
+// バリデーション関数
 function validateEntry(entryRow) {
     if (!entryRow) return false;
     let isValid = true;
@@ -352,108 +359,4 @@ function validateForm() {
         officeName.classList.add('invalid');
         isValid = false;
     } else {
-        officeName.classList.remove('invalid');
-    }
-
-    if (!reportMonth.value) {
-        reportMonth.classList.add('invalid');
-        isValid = false;
-    } else {
-        reportMonth.classList.remove
-
-      async function handleSubmit(event) {
-    event.preventDefault();
-    const submitButton = document.getElementById('submitButton');
-
-    if (submitButton.disabled) return false;
-
-    if (!validateForm()) {
-        alert('必須項目を入力してください');
-        return false;
-    }
-
-    try {
-        submitButton.disabled = true;
-        submitButton.textContent = '送信中...';
-
-        const formData = collectFormData();
-        const response = await fetch('https://script.google.com/macros/s/AKfycbzXd99vpht-E5ibgc0ptYaUOeTG9fzJT2tXeUlpsFAajkAHhEHKCeCz-9SqrMNvNx4/exec', {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
-        });
-
-        alert('送信が完了しました');
-        clearForm();
-    } catch (error) {
-        console.error('送信エラー:', error);
-        alert('送信に失敗しました。もう一度お試しください。');
-    } finally {
-        submitButton.disabled = false;
-        submitButton.textContent = 'メール送信';
-        validateForm();
-    }
-
-    return false;
-}
-
-function collectFormData() {
-    const data = {
-        officeName: document.getElementById('officeName').value,
-        reportMonth: document.getElementById('reportMonth').value,
-        otherComments: document.getElementById('otherComments').value
-    };
-
-    const sections = [
-        {name: 'hasNewEmployee', key: 'newEmployee'},
-        {name: 'hasRetirement', key: 'retirement'},
-        {name: 'hasNoWork', key: 'noWork'},
-        {name: 'hasSalaryChange', key: 'salaryChange'},
-        {name: 'hasAddressChange', key: 'addressChange'},
-        {name: 'hasLateEarly', key: 'lateEarly'},
-        {name: 'hasLeave', key: 'leave'}
-    ];
-
-    sections.forEach(section => {
-        const radio = document.querySelector(`input[name="${section.name}"]:checked`);
-        if (radio && radio.value === 'yes') {
-            data[section.key] = collectSectionData(section.key);
-        }
-    });
-
-    return data;
-}
-
-function collectSectionData(sectionKey) {
-    const container = document.getElementById(`${sectionKey}Container`);
-    return Array.from(container.querySelectorAll('.entry-row')).map(row => {
-        const data = {
-            name: row.querySelector('.name-field').value
-        };
-
-        const radio = row.querySelector('input[type="radio"]:checked');
-        if (radio) {
-            data.type = radio.value;
-        }
-
-        const date = row.querySelector('.date-field');
-        if (date) {
-            data.date = date.value;
-        }
-
-        const reason = row.querySelector('.reason-field');
-        if (reason) {
-            data.reason = reason.value;
-        }
-
-        const docs = row.querySelector('input[type="checkbox"]');
-        if (docs) {
-            data.docs = docs.checked;
-        }
-
-        return data;
-    });
-}
+        officeName.classList.remove('invali
