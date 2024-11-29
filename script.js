@@ -1,100 +1,56 @@
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Initializing form...');
-    
-    const sections = [
-        {radioName: 'hasNewEmployee', detailId: 'newEmployeeDetail', addFn: addNewEmployee},
-        {radioName: 'hasRetirement', detailId: 'retirementDetail', addFn: addRetirement},
-        {radioName: 'hasNoWork', detailId: 'noWorkDetail', addFn: addNoWork},
-        {radioName: 'hasSalaryChange', detailId: 'salaryChangeDetail', addFn: addSalaryChange},
-        {radioName: 'hasAddressChange', detailId: 'addressChangeDetail', addFn: addAddressChange},
-        {radioName: 'hasLateEarly', detailId: 'lateEarlyDetail', addFn: addLateEarly},
-        {radioName: 'hasLeave', detailId: 'leaveDetail', addFn: addLeave}
-    ];
-
-    sections.forEach(section => {
-        console.log(`Setting up section: ${section.radioName}`);
-        setupToggle(section.radioName, section.detailId, section.addFn);
-    });
-
+    // 初期設定
     setDefaultMonth();
+    setupAllSections();
     validateForm();
 });
 
-function clearForm() {
-    if (confirm('入力内容をクリアしてよろしいですか？')) {
-        document.getElementById('officeName').value = '';
-        document.getElementById('otherComments').value = '';
-        document.getElementById('csvFile').value = '';
-
-        const sections = [
-            'newEmployee',
-            'retirement',
-            'noWork',
-            'salaryChange',
-            'addressChange',
-            'lateEarly',
-            'leave'
-        ];
-
-        sections.forEach(section => {
-            // 詳細セクションを非表示にする
-            const detailSection = document.getElementById(`${section}Detail`);
-            if (detailSection) {
-                detailSection.style.display = 'none';
-            }
-
-            // コンテナの中身をクリア
-            const container = document.getElementById(`${section}Container`);
-            if (container) {
-                container.innerHTML = '';
-            }
-
-            // ラジオボタンを「なし」に設定
-            const radioNo = document.querySelector(`input[name="has${section}"][value="no"]`);
-            if (radioNo) {
-                radioNo.checked = true;
-            }
-        });
-
-        setDefaultMonth();
-        validateForm();
-    }
-}
-
+// 年月の初期設定
 function setDefaultMonth() {
     const today = new Date();
-    const lastMonth = today.getMonth() === 0 
-        ? new Date(today.getFullYear() - 1, 11) 
-        : new Date(today.getFullYear(), today.getMonth() - 1);
+    let year = today.getFullYear();
+    let month = today.getMonth(); // 0-11
     
-    const year = lastMonth.getFullYear();
-    const month = String(lastMonth.getMonth() + 1).padStart(2, '0');
-    document.getElementById('reportMonth').value = `${year}-${month}`;
+    if (month === 0) {
+        year = year - 1;
+        month = 12;
+    }
+    
+    document.getElementById('reportMonth').value = `${year}-${month.toString().padStart(2, '0')}`;
 }
 
-function setupToggle(radioName, detailId, addInitialEntry) {
-    const radios = document.getElementsByName(radioName);
-    const detail = document.getElementById(detailId);
+// 全セクションの設定
+function setupAllSections() {
+    const sections = [
+        {name: 'hasNewEmployee', containerId: 'newEmployeeContainer', detailId: 'newEmployeeDetail'},
+        {name: 'hasRetirement', containerId: 'retirementContainer', detailId: 'retirementDetail'},
+        {name: 'hasNoWork', containerId: 'noWorkContainer', detailId: 'noWorkDetail'},
+        {name: 'hasSalaryChange', containerId: 'salaryChangeContainer', detailId: 'salaryChangeDetail'},
+        {name: 'hasAddressChange', containerId: 'addressChangeContainer', detailId: 'addressChangeDetail'},
+        {name: 'hasLateEarly', containerId: 'lateEarlyContainer', detailId: 'lateEarlyDetail'},
+        {name: 'hasLeave', containerId: 'leaveContainer', detailId: 'leaveDetail'}
+    ];
+
+    sections.forEach(section => {
+        setupRadioToggle(section.name, section.detailId);
+    });
+}
+
+// ラジオボタンの切り替え制御
+function setupRadioToggle(name, detailId) {
+    const radios = document.querySelectorAll(`input[name="${name}"]`);
+    const detailSection = document.getElementById(detailId);
     
-    if (!radios || !detail) {
-        console.error(`Setup failed for ${radioName}`);
-        return;
-    }
+    if (!radios || !detailSection) return;
 
     radios.forEach(radio => {
         radio.addEventListener('change', function() {
-            console.log(`Radio changed: ${radioName} - ${this.value}`);
-            const container = detail.querySelector('[id$="Container"]');
-            
+            detailSection.style.display = this.value === 'yes' ? 'block' : 'none';
             if (this.value === 'yes') {
-                detail.style.display = 'block';
+                const containerId = detailId.replace('Detail', 'Container');
+                const container = document.getElementById(containerId);
                 if (container && container.children.length === 0) {
-                    addInitialEntry();
-                }
-            } else {
-                detail.style.display = 'none';
-                if (container) {
-                    container.innerHTML = '';
+                    addFirstEntry(containerId);
                 }
             }
             validateForm();
@@ -102,189 +58,94 @@ function setupToggle(radioName, detailId, addInitialEntry) {
     });
 }
 
-function createNewEmployeeEntry() {
-    const div = document.createElement('div');
-    div.className = 'entry-row';
-    const uniqueId = Date.now();
-    div.innerHTML = `
-        <input type="text" placeholder="氏名" class="name-field required" 
-               maxlength="15"
-               onchange="validateEntryAndForm(this.closest('.entry-row'))"
-               onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
-        <div class="radio-group">
-            <input type="radio" name="empType_${uniqueId}" value="社員" required
-                   onchange="validateEntryAndForm(this.closest('.entry-row'))"> 社員
-            <input type="radio" name="empType_${uniqueId}" value="PA"
-                   onchange="validateEntryAndForm(this.closest('.entry-row'))"> PA
-        </div>
-        <div class="checkbox-group">
-            <input type="checkbox" id="docs_${uniqueId}">
-            <label for="docs_${uniqueId}">雇用書類提出済み</label>
-        </div>
-        <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
-    `;
-    return div;
+// 最初のエントリー追加
+function addFirstEntry(containerId) {
+    switch(containerId) {
+        case 'newEmployeeContainer':
+            addNewEmployee();
+            break;
+        case 'retirementContainer':
+            addRetirement();
+            break;
+        case 'noWorkContainer':
+            addNoWork();
+            break;
+        case 'salaryChangeContainer':
+            addSalaryChange();
+            break;
+        case 'addressChangeContainer':
+            addAddressChange();
+            break;
+        case 'lateEarlyContainer':
+            addLateEarly();
+            break;
+        case 'leaveContainer':
+            addLeave();
+            break;
+    }
 }
 
-function createRetirementEntry() {
-    const div = document.createElement('div');
-    div.className = 'entry-row';
-    div.innerHTML = `
-        <input type="text" placeholder="氏名" class="name-field required"
-               maxlength="15"
-               onchange="validateEntryAndForm(this.closest('.entry-row'))"
-               onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
-        <textarea placeholder="有休消化等コメント" class="reason-field required"
-                onchange="validateEntryAndForm(this.closest('.entry-row'))"
-                onkeyup="validateEntryAndForm(this.closest('.entry-row'))"></textarea>
-        <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
-    `;
-    return div;
-}
+// フォームクリア
+function clearForm() {
+    if (!confirm('入力内容をクリアしてよろしいですか？')) return;
 
-function createNoWorkEntry() {
-    const div = document.createElement('div');
-    div.className = 'entry-row';
-    div.innerHTML = `
-        <input type="text" placeholder="氏名" class="name-field required"
-               maxlength="15"
-               onchange="validateEntryAndForm(this.closest('.entry-row'))"
-               onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
-        <textarea placeholder="コメント" class="reason-field required"
-                onchange="validateEntryAndForm(this.closest('.entry-row'))"
-                onkeyup="validateEntryAndForm(this.closest('.entry-row'))"></textarea>
-        <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
-    `;
-    return div;
-}
+    // 基本フィールドのクリア
+    document.getElementById('officeName').value = '';
+    document.getElementById('otherComments').value = '';
+    document.getElementById('csvFile').value = '';
 
-function createSalaryChangeEntry() {
-    const div = document.createElement('div');
-    div.className = 'entry-row';
-    div.innerHTML = `
-        <input type="text" placeholder="氏名" class="name-field required"
-               maxlength="15"
-               onchange="validateEntryAndForm(this.closest('.entry-row'))"
-               onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
-        <textarea placeholder="変更内容" class="reason-field required"
-                onchange="validateEntryAndForm(this.closest('.entry-row'))"
-                onkeyup="validateEntryAndForm(this.closest('.entry-row'))"></textarea>
-        <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
-    `;
-    return div;
-}
+    // 各セクションのクリア
+    const sections = [
+        'newEmployee',
+        'retirement',
+        'noWork',
+        'salaryChange',
+        'addressChange',
+        'lateEarly',
+        'leave'
+    ];
 
-function createAddressChangeEntry() {
-    const div = document.createElement('div');
-    div.className = 'entry-row';
-    div.innerHTML = `
-        <input type="text" placeholder="氏名" class="name-field required"
-               maxlength="15"
-               onchange="validateEntryAndForm(this.closest('.entry-row'))"
-               onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
-        <textarea placeholder="変更内容" class="reason-field required"
-                onchange="validateEntryAndForm(this.closest('.entry-row'))"
-                onkeyup="validateEntryAndForm(this.closest('.entry-row'))"></textarea>
-        <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
-    `;
-    return div;
-}
+    sections.forEach(section => {
+        // ラジオボタンを「なし」に設定
+        const radioNo = document.querySelector(`input[name="has${section}"][value="no"]`);
+        if (radioNo) {
+            radioNo.checked = true;
+            // 詳細セクションを非表示に
+            const detailSection = document.getElementById(`${section}Detail`);
+            if (detailSection) {
+                detailSection.style.display = 'none';
+            }
+            // コンテナの中身をクリア
+            const container = document.getElementById(`${section}Container`);
+            if (container) {
+                container.innerHTML = '';
+            }
+        }
+    });
 
-function createLateEarlyEntry() {
-    const div = document.createElement('div');
-    div.className = 'entry-row';
-    const uniqueId = Date.now();
-    div.innerHTML = `
-        <input type="text" placeholder="氏名" class="name-field required"
-               maxlength="15"
-               onchange="validateEntryAndForm(this.closest('.entry-row'))"
-               onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
-        <input type="date" class="date-field required"
-               onchange="validateEntryAndForm(this.closest('.entry-row'))">
-        <div class="radio-group">
-            <input type="radio" name="lateType_${uniqueId}" value="遅刻" required
-                   onchange="validateEntryAndForm(this.closest('.entry-row'))"> 遅刻
-            <input type="radio" name="lateType_${uniqueId}" value="早退"
-                   onchange="validateEntryAndForm(this.closest('.entry-row'))"> 早退
-            <input type="radio" name="lateType_${uniqueId}" value="残業"
-                   onchange="validateEntryAndForm(this.closest('.entry-row'))"> 残業
-        </div>
-        <textarea placeholder="理由" class="reason-field required"
-                onchange="validateEntryAndForm(this.closest('.entry-row'))"
-                onkeyup="validateEntryAndForm(this.closest('.entry-row'))"></textarea>
-        <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
-    `;
-    return div;
-}
-
-function createLeaveEntry() {
-    const div = document.createElement('div');
-    div.className = 'entry-row';
-    const uniqueId = Date.now();
-    div.innerHTML = `
-        <input type="text" placeholder="氏名" class="name-field required"
-               maxlength="15"
-               onchange="validateEntryAndForm(this.closest('.entry-row'))"
-               onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
-        <input type="date" class="date-field required"
-               onchange="validateEntryAndForm(this.closest('.entry-row'))">
-        <div class="radio-group">
-            <input type="radio" name="leaveType_${uniqueId}" value="有給" required
-                   onchange="validateEntryAndForm(this.closest('.entry-row'))"> 有給
-            <input type="radio" name="leaveType_${uniqueId}" value="欠勤"
-                   onchange="validateEntryAndForm(this.closest('.entry-row'))"> 欠勤
-        </div>
-        <textarea placeholder="理由" class="reason-field required"
-                onchange="validateEntryAndForm(this.closest('.entry-row'))"
-                onkeyup="validateEntryAndForm(this.closest('.entry-row'))"></textarea>
-        <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
-    `;
-    return div;
-}
-
-function addEntry(containerId, createFn) {
-    const container = document.getElementById(containerId);
-    const entry = createFn();
-    container.appendChild(entry);
-    validateEntry(entry);
+    // 年月を再設定
+    setDefaultMonth();
+    
     validateForm();
 }
 
-function addNewEmployee() {
-    addEntry('newEmployeeContainer', createNewEmployeeEntry);
-}
-
-function addRetirement() {
-    addEntry('retirementContainer', createRetirementEntry);
-}
-
-function addNoWork() {
-    addEntry('noWorkContainer', createNoWorkEntry);
-}
-
-function addSalaryChange() {
-    addEntry('salaryChangeContainer', createSalaryChangeEntry);
-}
-
-function addAddressChange() {
-    addEntry('addressChangeContainer', createAddressChangeEntry);
-}
-
-function addLateEarly() {
-    addEntry('lateEarlyContainer', createLateEarlyEntry);
-}
-
-function addLeave() {
-    addEntry('leaveContainer', createLeaveEntry);
-}
-
-function validateEntry(entryRow) {
-    if (!entryRow) return false;
+// フォームの検証（基本部分のみ）
+function validateForm() {
     let isValid = true;
+    const requiredFields = ['officeName', 'reportMonth', 'csvFile'];
     
-    const requiredFields = entryRow.querySelectorAll('.required');
-    requiredFields.forEach(field => {
-        if (!field.value.trim()) {
+    requiredFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (!field) return;
+        
+        let fieldValid = true;
+        if (fieldId === 'csvFile') {
+            fieldValid = field.files.length > 0;
+        } else {
+            fieldValid = field.value.trim() !== '';
+        }
+        
+        if (!fieldValid) {
             field.classList.add('invalid');
             isValid = false;
         } else {
@@ -292,75 +153,6 @@ function validateEntry(entryRow) {
         }
     });
 
-    const radioGroups = entryRow.querySelectorAll('.radio-group');
-    radioGroups.forEach(group => {
-        const radios = group.querySelectorAll('input[type="radio"]');
-        const radioChecked = Array.from(radios).some(radio => radio.checked);
-        if (radios.length > 0 && !radioChecked) {
-            group.classList.add('invalid');
-            isValid = false;
-        } else {
-            group.classList.remove('invalid');
-        }
-    });
-
-    const container = entryRow.closest('[id$="Container"]');
-    if (container) {
-        const addButton = container.parentElement.querySelector('.add-button');
-        if (addButton) {
-            addButton.style.display = isValid ? 'block' : 'none';
-        }
-    }
-
+    document.getElementById('submitButton').disabled = !isValid;
     return isValid;
 }
-
-function validateEntryAndForm(entryRow) {
-    validateEntry(entryRow);
-    validateForm();
-}
-
-function validateForm() {
-    let isValid = true;
-
-    const officeName = document.getElementById('officeName');
-    const reportMonth = document.getElementById('reportMonth');
-    const csvFile = document.getElementById('csvFile');
-    
-    if (!officeName.value.trim()) {
-        officeName.classList.add('invalid');
-        isValid = false;
-    } else {
-        officeName.classList.remove('invalid');
-    }
-
-    if (!reportMonth.value) {
-        reportMonth.classList.add('invalid');
-        isValid = false;
-    } else {
-        reportMonth.classList.remove('invalid');
-    }
-
-    if (!csvFile.files.length) {
-        csvFile.classList.add('invalid');
-        isValid = false;
-    } else {
-        csvFile.classList.remove('invalid');
-    }
-
-    const sections = [
-        {name: 'hasNewEmployee', container: 'newEmployeeContainer'},
-        {name: 'hasRetirement', container: 'retirementContainer'},
-        {name: 'hasNoWork', container: 'noWorkContainer'},
-        {name: 'hasSalaryChange', container: 'salaryChangeContainer'},
-        {name: 'hasAddressChange', container: 'addressChangeContainer'},
-        {name: 'hasLateEarly', container: 'lateEarlyContainer'},
-        {name: 'hasLeave', container: 'leaveContainer'}
-    ];
-
-    sections.forEach(section => {
-        const radio = document.querySelector(`input[name="${section.name}"]:checked`);
-        if (radio && radio.value === 'yes') {
-            const container = document.getElementById(section.container);
-            if (container) {
-                const entries = container.querySelectorAll('.entry-row');
