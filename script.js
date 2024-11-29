@@ -23,32 +23,33 @@ document.addEventListener('DOMContentLoaded', function() {
 function clearForm() {
     if (confirm('入力内容をクリアしてよろしいですか？')) {
         document.getElementById('officeName').value = '';
-        document.getElementById('otherComments').value = '';
-        document.getElementById('csvFile').value = '';
+        setDefaultMonth();
 
         const sections = [
-            'newEmployee',
-            'retirement',
-            'noWork',
-            'salaryChange',
-            'addressChange',
-            'lateEarly',
-            'leave'
+            'hasNewEmployee',
+            'hasRetirement',
+            'hasNoWork',
+            'hasSalaryChange',
+            'hasAddressChange',
+            'hasLateEarly',
+            'hasLeave'
         ];
 
         sections.forEach(section => {
-            const radioNo = document.querySelector(`input[name="has${section}"][value="no"]`);
-            if (radioNo) {
-                radioNo.checked = true;
-                radioNo.dispatchEvent(new Event('change'));
-            }
-            const container = document.getElementById(`${section}Container`);
-            if (container) {
-                container.innerHTML = '';
+            document.querySelector(`input[name="${section}"][value="no"]`).checked = true;
+            const detailId = section.replace('has', '') + 'Detail';
+            const detail = document.getElementById(detailId);
+            if (detail) {
+                detail.style.display = 'none';
+                const container = detail.querySelector('[id$="Container"]');
+                if (container) {
+                    container.innerHTML = '';
+                }
             }
         });
 
-        setDefaultMonth();
+        document.getElementById('otherComments').value = '';
+        document.getElementById('csvFile').value = '';
         validateForm();
     }
 }
@@ -295,12 +296,11 @@ function validateEntry(entryRow) {
 
     const container = entryRow.closest('[id$="Container"]');
     if (container) {
-        const addButton = container.parentElement.querySelector('.add-button');
-        if (addButton) {
-            const allEntriesValid = Array.from(container.children).every(entry => 
-                validateEntry(entry)
-            );
-            addButton.style.display = allEntriesValid ? 'block' : 'none';
+        const addButton = container.nextElementSibling;
+        if (addButton && addButton.classList.contains('add-button')) {
+            if (entryRow === container.lastElementChild) {
+                addButton.style.display = isValid ? 'block' : 'none';
+            }
         }
     }
 
@@ -317,7 +317,6 @@ function validateForm() {
 
     const officeName = document.getElementById('officeName');
     const reportMonth = document.getElementById('reportMonth');
-    const csvFile = document.getElementById('csvFile');
     
     if (!officeName.value.trim()) {
         officeName.classList.add('invalid');
@@ -331,13 +330,6 @@ function validateForm() {
         isValid = false;
     } else {
         reportMonth.classList.remove('invalid');
-    }
-
-    if (!csvFile.files.length) {
-        csvFile.classList.add('invalid');
-        isValid = false;
-    } else {
-        csvFile.classList.remove('invalid');
     }
 
     const sections = [
@@ -374,4 +366,75 @@ function removeEntry(button) {
     entryRow.remove();
     
     if (container.lastElementChild) {
-        validate
+        validateEntry(container.lastElementChild);
+    }
+    validateForm();
+}
+
+async function handleSubmit(event) {
+    event.preventDefault();
+    const submitButton = document.getElementById('submitButton');
+
+    // 送信中は二重送信を防止
+    if (submitButton.disabled) return false;
+
+    // 最終バリデーション
+    if (!validateForm()) {
+        alert('必須項目を入力してください');
+        return false;
+    }
+
+    try {
+        submitButton.disabled = true;
+        submitButton.textContent = '送信中...';
+
+        // Google Apps Scriptへの送信処理
+        const formData = collectFormData();
+        const response = await fetch('https://script.google.com/macros/s/AKfycbw3GkOFZmyOWTUiv1zzzLKwhT3_PgGYyOVh0Fw0nhKjmCTo0YsX0Cpb2ncERmfGy-U/execL', {
+            method: 'POST',
+            mode: 'no-cors',
+            body: JSON.stringify(formData)
+        });
+
+        alert('送信が完了しました');
+        clearForm();
+    } catch (error) {
+        console.error('送信エラー:', error);
+        alert('送信に失敗しました。もう一度お試しください。');
+    } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = 'メール送信';
+        validateForm(); // 状態を更新
+    }
+
+    return false;
+}
+
+// フォームデータ収集関数
+function collectFormData() {
+    const data = {
+        officeName: document.getElementById('officeName').value,
+        reportMonth: document.getElementById('reportMonth').value,
+        otherComments: document.getElementById('otherComments').value
+    };
+
+    // 各セクションのデータを収集
+    const sections = [
+        {name: 'hasNewEmployee', key: 'newEmployee'},
+        {name: 'hasRetirement', key: 'retirement'},
+        {name: 'hasNoWork', key: 'noWork'},
+        {name: 'hasSalaryChange', key: 'salaryChange'},
+        {name: 'hasAddressChange', key: 'addressChange'},
+        {name: 'hasLateEarly', key: 'lateEarly'},
+        {name: 'hasLeave', key: 'leave'}
+    ];
+
+    sections.forEach(section => {
+        const radio = document.querySelector(`input[name="${section.name}"]:checked`);
+        if (radio && radio.value === 'yes') {
+            data[section.key] = collectSectionData(section.key);
+        }
+    });
+
+    return data;
+}
