@@ -22,13 +22,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function clearForm() {
     if (confirm('入力内容をクリアしてよろしいですか？')) {
-        // 基本フィールドのクリア
         document.getElementById('officeName').value = '';
         document.getElementById('otherComments').value = '';
         document.getElementById('csvFile').value = '';
-        
-        // 月のリセット（先月の設定）
-        setDefaultMonth();
 
         const sections = [
             'newEmployee',
@@ -60,23 +56,20 @@ function clearForm() {
             }
         });
 
+        setDefaultMonth();
         validateForm();
     }
 }
 
 function setDefaultMonth() {
     const today = new Date();
-    let year = today.getFullYear();
-    let month = today.getMonth(); // 0-11
-
-    // 1月の場合は前年の12月にする
-    if (month === 0) {
-        year = year - 1;
-        month = 12;
-    }
-
-    const formattedMonth = String(month).padStart(2, '0');
-    document.getElementById('reportMonth').value = `${year}-${formattedMonth}`;
+    const lastMonth = today.getMonth() === 0 
+        ? new Date(today.getFullYear() - 1, 11) 
+        : new Date(today.getFullYear(), today.getMonth() - 1);
+    
+    const year = lastMonth.getFullYear();
+    const month = String(lastMonth.getMonth() + 1).padStart(2, '0');
+    document.getElementById('reportMonth').value = `${year}-${month}`;
 }
 
 function setupToggle(radioName, detailId, addInitialEntry) {
@@ -315,10 +308,7 @@ function validateEntry(entryRow) {
     if (container) {
         const addButton = container.parentElement.querySelector('.add-button');
         if (addButton) {
-            const allEntriesValid = Array.from(container.children).every(entry => 
-                validateEntry(entry)
-            );
-            addButton.style.display = allEntriesValid ? 'block' : 'none';
+            addButton.style.display = isValid ? 'block' : 'none';
         }
     }
 
@@ -374,22 +364,3 @@ function validateForm() {
             const container = document.getElementById(section.container);
             if (container) {
                 const entries = container.querySelectorAll('.entry-row');
-                if (entries.length === 0) isValid = false;
-                entries.forEach(entry => {
-                    if (!validateEntry(entry)) isValid = false;
-                });
-            }
-        }
-    });
-
-    document.getElementById('submitButton').disabled = !isValid;
-    return isValid;
-}
-
-function removeEntry(button) {
-    const entryRow = button.closest('.entry-row');
-    const container = entryRow.closest('[id$="Container"]');
-    entryRow.remove();
-    
-    if (container.lastElementChild) {
-        validate
