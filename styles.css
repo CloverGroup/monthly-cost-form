@@ -3,6 +3,7 @@ body {
     font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "メイリオ", sans-serif;
     background-color: #f5f5f5;
 }
+
 .form-container {
     max-width: 900px;
     margin: 0 auto;
@@ -11,15 +12,18 @@ body {
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
+
 .header-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
 }
+
 .header-container h2 {
     margin: 0;
 }
+
 .clear-button {
     background-color: #ff4444;
     color: white;
@@ -29,43 +33,51 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
 }
+
 .clear-button:hover {
     background-color: #ff6666;
 }
+
 .form-group { 
     margin-bottom: 20px; 
     padding: 15px;
     border: 1px solid #eee;
     border-radius: 4px;
 }
+
 .header-row {
     display: flex;
     align-items: center;
     gap: 15px;
     margin-bottom: 15px;
 }
+
 .header-row label {
     min-width: 100px;
     font-weight: bold;
 }
+
 #officeName {
     width: 300px;
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
 }
+
 #reportMonth {
     width: 150px;
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
 }
+
 .detail-section { 
     margin-left: 20px; 
     display: none;
     padding: 10px;
     border-left: 3px solid #4CAF50;
 }
+
 .entry-row {
     display: flex;
     align-items: center;
@@ -75,18 +87,21 @@ body {
     border-radius: 4px;
     margin: 10px 0;
 }
+
 .name-field {
     width: 150px;
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
 }
+
 .date-field {
     width: 140px;
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
 }
+
 .reason-field {
     flex: 1;
     min-width: 200px;
@@ -95,14 +110,15 @@ body {
     border-radius: 4px;
     resize: vertical;
 }
+
 .name-field.invalid,
 .date-field.invalid,
 .reason-field.invalid,
-#officeName.invalid,
-#reportMonth.invalid {
+#csvFile.invalid {
     background-color: #ffebee;
     border-color: #ffcdd2;
 }
+
 .radio-group {
     display: inline-flex;
     align-items: center;
@@ -111,13 +127,17 @@ body {
     border-radius: 4px;
     white-space: nowrap;
 }
+
 .radio-group.invalid {
     background-color: #ffebee;
 }
+
 .checkbox-group {
     white-space: nowrap;
 }
+
 .add-button {
+    display: none;
     background-color: #4CAF50;
     color: white;
     border: none;
@@ -127,9 +147,11 @@ body {
     margin-top: 10px;
     transition: all 0.3s ease;
 }
+
 .add-button:hover {
     background-color: #45a049;
 }
+
 .remove-button {
     background-color: #ff4444;
     color: white;
@@ -139,20 +161,24 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
 }
+
 .remove-button:hover {
     background-color: #ff6666;
 }
+
 .required::after {
     content: "*";
     color: #ff0000;
     margin-left: 4px;
 }
+
 .note {
     font-size: 0.9em;
     color: #666;
     margin-top: 5px;
     font-style: italic;
 }
+
 #submitButton {
     background-color: #4CAF50;
     color: white;
@@ -165,14 +191,17 @@ body {
     margin-top: 20px;
     transition: all 0.3s ease;
 }
+
 #submitButton:disabled {
     background-color: #cccccc;
     cursor: not-allowed;
     opacity: 0.7;
 }
+
 #submitButton:not(:disabled):hover {
     background-color: #45a049;
 }
+
 .section-title {
     display: flex;
     align-items: center;
@@ -180,8 +209,17 @@ body {
     margin-bottom: 10px;
     font-weight: bold;
 }
+
 textarea {
     width: 100%;
     min-height: 60px;
     resize: vertical;
+}
+
+#csvFile {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-top: 5px;
 }
