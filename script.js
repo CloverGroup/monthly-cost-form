@@ -1,62 +1,183 @@
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Initializing form...');
-    
-    const sections = [
-        {radioName: 'hasNewEmployee', detailId: 'newEmployeeDetail', addFn: addNewEmployee},
-        {radioName: 'hasRetirement', detailId: 'retirementDetail', addFn: addRetirement},
-        {radioName: 'hasNoWork', detailId: 'noWorkDetail', addFn: addNoWork},
-        {radioName: 'hasSalaryChange', detailId: 'salaryChangeDetail', addFn: addSalaryChange},
-        {radioName: 'hasAddressChange', detailId: 'addressChangeDetail', addFn: addAddressChange},
-        {radioName: 'hasLateEarly', detailId: 'lateEarlyDetail', addFn: addLateEarly},
-        {radioName: 'hasLeave', detailId: 'leaveDetail', addFn: addLeave}
-    ];
-
-    sections.forEach(section => {
-        console.log(`Setting up section: ${section.radioName}`);
-        setupToggle(section.radioName, section.detailId, section.addFn);
-    });
-
-    // CSVファイル変更時のバリデーション追加
-    document.getElementById('csvFile').addEventListener('change', validateForm);
-
-    setDefaultMonth();
-    validateForm();
-});
-
-function clearForm() {
-    if (confirm('入力内容をクリアしてよろしいですか？')) {
-        document.getElementById('officeName').value = '';
-        document.getElementById('csvFile').value = '';
-        setDefaultMonth();
-
-        const sections = [
-            'hasNewEmployee',
-            'hasRetirement',
-            'hasNoWork',
-            'hasSalaryChange',
-            'hasAddressChange',
-            'hasLateEarly',
-            'hasLeave'
-        ];
-
-        sections.forEach(section => {
-            document.querySelector(`input[name="${section}"][value="no"]`).checked = true;
-            const detailId = section.replace('has', '') + 'Detail';
-            const detail = document.getElementById(detailId);
-            if (detail) {
-                detail.style.display = 'none';
-                const container = detail.querySelector('[id$="Container"]');
-                if (container) {
-                    container.innerHTML = '';
-                }
-            }
-        });
-
-        document.getElementById('otherComments').value = '';
-        validateForm();
-    }
+// エントリー作成の基本関数
+function createNewEmployeeEntry() {
+    const div = document.createElement('div');
+    div.className = 'entry-row';
+    const uniqueId = Date.now();
+    div.innerHTML = `
+        <input type="text" placeholder="氏名" class="name-field required" 
+               maxlength="15"
+               onchange="validateEntryAndForm(this.closest('.entry-row'))"
+               onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
+        <div class="radio-group">
+            <input type="radio" name="empType_${uniqueId}" value="社員" required
+                   onchange="validateEntryAndForm(this.closest('.entry-row'))"> 社員
+            <input type="radio" name="empType_${uniqueId}" value="PA"
+                   onchange="validateEntryAndForm(this.closest('.entry-row'))"> PA
+        </div>
+        <div class="checkbox-group">
+            <input type="checkbox" id="docs_${uniqueId}">
+            <label for="docs_${uniqueId}">雇用書類提出済み</label>
+        </div>
+        <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
+    `;
+    return div;
 }
 
+function createRetirementEntry() {
+    const div = document.createElement('div');
+    div.className = 'entry-row';
+    div.innerHTML = `
+        <input type="text" placeholder="氏名" class="name-field required"
+               maxlength="15"
+               onchange="validateEntryAndForm(this.closest('.entry-row'))"
+               onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
+        <textarea placeholder="有休消化等コメント" class="reason-field required"
+                  onchange="validateEntryAndForm(this.closest('.entry-row'))"
+                  onkeyup="validateEntryAndForm(this.closest('.entry-row'))"></textarea>
+        <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
+    `;
+    return div;
+}
+
+function createNoWorkEntry() {
+    const div = document.createElement('div');
+    div.className = 'entry-row';
+    div.innerHTML = `
+        <input type="text" placeholder="氏名" class="name-field required"
+               maxlength="15"
+               onchange="validateEntryAndForm(this.closest('.entry-row'))"
+               onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
+        <textarea placeholder="コメント" class="reason-field required"
+                  onchange="validateEntryAndForm(this.closest('.entry-row'))"
+                  onkeyup="validateEntryAndForm(this.closest('.entry-row'))"></textarea>
+        <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
+    `;
+    return div;
+}
+
+function createSalaryChangeEntry() {
+    const div = document.createElement('div');
+    div.className = 'entry-row';
+    div.innerHTML = `
+        <input type="text" placeholder="氏名" class="name-field required"
+               maxlength="15"
+               onchange="validateEntryAndForm(this.closest('.entry-row'))"
+               onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
+        <textarea placeholder="変更内容" class="reason-field required"
+                  onchange="validateEntryAndForm(this.closest('.entry-row'))"
+                  onkeyup="validateEntryAndForm(this.closest('.entry-row'))"></textarea>
+        <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
+    `;
+    return div;
+}
+
+function createAddressChangeEntry() {
+    const div = document.createElement('div');
+    div.className = 'entry-row';
+    div.innerHTML = `
+        <input type="text" placeholder="氏名" class="name-field required"
+               maxlength="15"
+               onchange="validateEntryAndForm(this.closest('.entry-row'))"
+               onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
+        <textarea placeholder="変更内容" class="reason-field required"
+                  onchange="validateEntryAndForm(this.closest('.entry-row'))"
+                  onkeyup="validateEntryAndForm(this.closest('.entry-row'))"></textarea>
+        <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
+    `;
+    return div;
+}
+
+function createLateEarlyEntry() {
+    const div = document.createElement('div');
+    div.className = 'entry-row';
+    const uniqueId = Date.now();
+    div.innerHTML = `
+        <input type="text" placeholder="氏名" class="name-field required"
+               maxlength="15"
+               onchange="validateEntryAndForm(this.closest('.entry-row'))"
+               onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
+        <input type="date" class="date-field required"
+               onchange="validateEntryAndForm(this.closest('.entry-row'))">
+        <div class="radio-group">
+            <input type="radio" name="lateType_${uniqueId}" value="遅刻" required
+                   onchange="validateEntryAndForm(this.closest('.entry-row'))"> 遅刻
+            <input type="radio" name="lateType_${uniqueId}" value="早退"
+                   onchange="validateEntryAndForm(this.closest('.entry-row'))"> 早退
+            <input type="radio" name="lateType_${uniqueId}" value="残業"
+                   onchange="validateEntryAndForm(this.closest('.entry-row'))"> 残業
+        </div>
+        <textarea placeholder="理由" class="reason-field required"
+                  onchange="validateEntryAndForm(this.closest('.entry-row'))"
+                  onkeyup="validateEntryAndForm(this.closest('.entry-row'))"></textarea>
+        <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
+    `;
+    return div;
+}
+
+function createLeaveEntry() {
+    const div = document.createElement('div');
+    div.className = 'entry-row';
+    const uniqueId = Date.now();
+    div.innerHTML = `
+        <input type="text" placeholder="氏名" class="name-field required"
+               maxlength="15"
+               onchange="validateEntryAndForm(this.closest('.entry-row'))"
+               onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
+        <input type="date" class="date-field required"
+               onchange="validateEntryAndForm(this.closest('.entry-row'))">
+        <div class="radio-group">
+            <input type="radio" name="leaveType_${uniqueId}" value="有給" required
+                   onchange="validateEntryAndForm(this.closest('.entry-row'))"> 有給
+            <input type="radio" name="leaveType_${uniqueId}" value="欠勤"
+                   onchange="validateEntryAndForm(this.closest('.entry-row'))"> 欠勤
+        </div>
+        <textarea placeholder="理由" class="reason-field required"
+                  onchange="validateEntryAndForm(this.closest('.entry-row'))"
+                  onkeyup="validateEntryAndForm(this.closest('.entry-row'))"></textarea>
+        <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
+    `;
+    return div;
+}
+
+// エントリー追加の基本関数
+function addEntry(containerId, createFn) {
+    const container = document.getElementById(containerId);
+    const entry = createFn();
+    container.appendChild(entry);
+    validateEntry(entry);
+    validateForm();
+}
+
+// 各セクションのエントリー追加関数
+function addNewEmployee() {
+    addEntry('newEmployeeContainer', createNewEmployeeEntry);
+}
+
+function addRetirement() {
+    addEntry('retirementContainer', createRetirementEntry);
+}
+
+function addNoWork() {
+    addEntry('noWorkContainer', createNoWorkEntry);
+}
+
+function addSalaryChange() {
+    addEntry('salaryChangeContainer', createSalaryChangeEntry);
+}
+
+function addAddressChange() {
+    addEntry('addressChangeContainer', createAddressChangeEntry);
+}
+
+function addLateEarly() {
+    addEntry('lateEarlyContainer', createLateEarlyEntry);
+}
+
+function addLeave() {
+    addEntry('leaveContainer', createLeaveEntry);
+}
+
+// ユーティリティ関数
 function setDefaultMonth() {
     const today = new Date();
     const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1);
@@ -95,8 +216,7 @@ function setupToggle(radioName, detailId, addInitialEntry) {
     });
 }
 
-// ... [他のcreate*Entry関数とadd*関数は変更なし] ...
-
+// バリデーション関数
 function validateEntry(entryRow) {
     if (!entryRow) return false;
     let isValid = true;
@@ -123,6 +243,14 @@ function validateEntry(entryRow) {
         }
     });
 
+    const container = entryRow.closest('[id$="Container"]');
+    if (container) {
+        const addButton = container.nextElementSibling;
+        if (addButton && addButton.classList.contains('add-button')) {
+            addButton.style.display = isValid ? 'block' : 'none';
+        }
+    }
+
     return isValid;
 }
 
@@ -138,7 +266,6 @@ function validateForm() {
     const reportMonth = document.getElementById('reportMonth');
     const csvFile = document.getElementById('csvFile');
     
-    // 必須項目のチェック
     if (!officeName.value.trim()) {
         officeName.classList.add('invalid');
         isValid = false;
@@ -153,7 +280,6 @@ function validateForm() {
         reportMonth.classList.remove('invalid');
     }
 
-    // CSVファイルの必須チェック - より厳密なチェックに修正
     if (!csvFile || !csvFile.files || csvFile.files.length === 0) {
         csvFile.classList.add('invalid');
         isValid = false;
@@ -185,7 +311,6 @@ function validateForm() {
         }
     });
 
-    // 送信ボタンの制御
     const submitButton = document.getElementById('submitButton');
     if (submitButton) {
         submitButton.disabled = !isValid;
@@ -206,55 +331,41 @@ function removeEntry(button) {
     validateForm();
 }
 
-async function handleSubmit(event) {
-    event.preventDefault();
-    const submitButton = document.getElementById('submitButton');
-    const csvFile = document.getElementById('csvFile');
+function clearForm() {
+    if (confirm('入力内容をクリアしてよろしいですか？')) {
+        document.getElementById('officeName').value = '';
+        document.getElementById('csvFile').value = '';
+        setDefaultMonth();
 
-    // 送信中は二重送信を防止
-    if (submitButton.disabled) return false;
+        const sections = [
+            'hasNewEmployee',
+            'hasRetirement',
+            'hasNoWork',
+            'hasSalaryChange',
+            'hasAddressChange',
+            'hasLateEarly',
+            'hasLeave'
+        ];
 
-    // CSVファイルの存在を確認
-    if (!csvFile || !csvFile.files || csvFile.files.length === 0) {
-        alert('CSVファイルを添付してください');
-        return false;
-    }
-
-    // 最終バリデーション
-    if (!validateForm()) {
-        alert('必須項目を入力してください');
-        return false;
-    }
-
-    try {
-        submitButton.disabled = true;
-        submitButton.textContent = '送信中...';
-
-        // フォームデータの収集
-        const formData = collectFormData();
-        
-        // Google Apps Scriptへの送信
-        const response = await fetch('https://script.google.com/macros/s/AKfycbzXd99vpht-E5ibgc0ptYaUOeTG9fzJT2tXeUlpsFAajkAHhEHKCeCz-9SqrMNvNx4/exec', {
-            method: 'POST',
-            mode: 'no-cors',
-            body: JSON.stringify(formData)
+        sections.forEach(section => {
+            document.querySelector(`input[name="${section}"][value="no"]`).checked = true;
+            const detailId = section.replace('has', '') + 'Detail';
+            const detail = document.getElementById(detailId);
+            if (detail) {
+                detail.style.display = 'none';
+                const container = detail.querySelector('[id$="Container"]');
+                if (container) {
+                    container.innerHTML = '';
+                }
+            }
         });
 
-        alert('送信が完了しました');
-        clearForm();
-    } catch (error) {
-        console.error('送信エラー:', error);
-        alert('送信に失敗しました。もう一度お試しください。');
-    } finally {
-        submitButton.disabled = false;
-        submitButton.textContent = 'メール送信';
+        document.getElementById('otherComments').value = '';
         validateForm();
     }
-
-    return false;
 }
 
-// フォームデータ収集関数
+// データ収集関数
 function collectFormData() {
     const data = {
         officeName: document.getElementById('officeName').value,
@@ -312,4 +423,79 @@ function collectSectionData(containerId, type) {
                 };
         }
     });
+}
+
+// DOMContentLoaded イベントリスナー
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Initializing form...');
+    
+    const sections = [
+        {radioName: 'hasNewEmployee', detailId: 'newEmployeeDetail', addFn: addNewEmployee},
+        {radioName: 'hasRetirement', detailId: 'retirementDetail', addFn: addRetirement},
+        {radioName: 'hasNoWork', detailId: 'noWorkDetail', addFn: addNoWork},
+        {radioName: 'hasSalaryChange', detailId: 'salaryChangeDetail', addFn: addSalaryChange},
+        {radioName: 'hasAddressChange', detailId: 'addressChangeDetail', addFn: addAddressChange},
+        {radioName: 'hasLateEarly', detailId: 'lateEarlyDetail', addFn: addLateEarly},
+        {radioName: 'hasLeave', detailId: 'leaveDetail', addFn: addLeave}
+    ];
+
+    sections.forEach(section => {
+        console.log(`Setting up section: ${section.radioName}`);
+        setupToggle(section.radioName, section.detailId, section.addFn);
+    });
+
+    // CSVファイル変更時のバリデーション
+    document.getElementById('csvFile').addEventListener('change', validateForm);
+
+    setDefaultMonth();
+    validateForm();
+});
+
+// フォーム送信処理
+async function handleSubmit(event) {
+    event.preventDefault();
+    const submitButton = document.getElementById('submitButton');
+    const csvFile = document.getElementById('csvFile');
+
+    // 送信中は二重送信を防止
+    if (submitButton.disabled) return false;
+
+    // CSVファイルの存在を確認
+    if (!csvFile || !csvFile.files || csvFile.files.length === 0) {
+        alert('CSVファイルを添付してください');
+        return false;
+    }
+
+    // 最終バリデーション
+    if (!validateForm()) {
+        alert('必須項目を入力してください');
+        return false;
+    }
+
+    try {
+        submitButton.disabled = true;
+        submitButton.textContent = '送信中...';
+
+        // フォームデータの収集
+        const formData = collectFormData();
+        
+        // Google Apps Scriptへの送信
+        const response = await fetch('https://script.google.com/macros/s/AKfycbzXd99vpht-E5ibgc0ptYaUOeTG9fzJT2tXeUlpsFAajkAHhEHKCeCz-9SqrMNvNx4/exec', {
+            method: 'POST',
+            mode: 'no-cors',
+            body: JSON.stringify(formData)
+        });
+
+        alert('送信が完了しました');
+        clearForm();
+    } catch (error) {
+        console.error('送信エラー:', error);
+        alert('送信に失敗しました。もう一度お試しください。');
+    } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = 'メール送信';
+        validateForm();
+    }
+
+    return false;
 }
