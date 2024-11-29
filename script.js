@@ -377,7 +377,7 @@ function validateForm() {
         submitButton.textContent = '送信中...';
 
         const formData = collectFormData();
-        const response = await fetch('https://script.google.com/macros/s/AKfycbwq6oqs5bURqANKljGW7IgG7ZqPb8do6pIHkri2nUgNbHuygW90fIN142g3savrh72V/exec', {
+        const response = await fetch('https://script.google.com/macros/s/AKfycbzXd99vpht-E5ibgc0ptYaUOeTG9fzJT2tXeUlpsFAajkAHhEHKCeCz-9SqrMNvNx4/exec', {
             method: 'POST',
             mode: 'no-cors',
             headers: {
