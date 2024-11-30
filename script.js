@@ -180,6 +180,26 @@ function createSalaryChangeEntry() {
         <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
     `;
     return div;
+}function createSalaryChangeEntry() {
+    const div = document.createElement('div');
+    div.className = 'entry-row';
+    const uniqueId = Date.now();
+    div.innerHTML = `
+        <input type="text" placeholder="氏名" class="name-field required"
+               maxlength="15"
+               onchange="validateEntryAndForm(this.closest('.entry-row'))"
+               onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
+        <div class="checkbox-group">
+            <input type="checkbox" id="submitted_${uniqueId}" 
+                   onchange="handleSubmissionStatusChange(this, 'salary')">
+            <label for="submitted_${uniqueId}">雇用契約書を提出済み</label>
+        </div>
+        <textarea placeholder="変更内容" class="reason-field required"
+                onchange="validateEntryAndForm(this.closest('.entry-row'))"
+                onkeyup="validateEntryAndForm(this.closest('.entry-row'))"></textarea>
+        <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
+    `;
+    return div;
 }
 
 function createAddressChangeEntry() {
