@@ -1,495 +1,246 @@
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Initializing form...');
-    
-    const sections = [
-        {radioName: 'hasNewEmployee', detailId: 'newEmployeeDetail', addFn: addNewEmployee},
-        {radioName: 'hasRetirement', detailId: 'retirementDetail', addFn: addRetirement},
-        {radioName: 'hasNoWork', detailId: 'noWorkDetail', addFn: addNoWork},
-        {radioName: 'hasSalaryChange', detailId: 'salaryChangeDetail', addFn: addSalaryChange},
-        {radioName: 'hasAddressChange', detailId: 'addressChangeDetail', addFn: addAddressChange},
-        {radioName: 'hasLateEarly', detailId: 'lateEarlyDetail', addFn: addLateEarly},
-        {radioName: 'hasLeave', detailId: 'leaveDetail', addFn: addLeave}
-    ];
-
-    sections.forEach(section => {
-        console.log(`Setting up section: ${section.radioName}`);
-        setupToggle(section.radioName, section.detailId, section.addFn);
-    });
-
-    // CSVファイル変更時のバリデーション追加
-    document.getElementById('csvFile').addEventListener('change', validateForm);
-
-    setDefaultMonth();
-    validateForm();
-});
-
-function clearForm() {
-    if (confirm('入力内容をクリアしてよろしいですか？')) {
-        document.getElementById('officeName').value = '';
-        document.getElementById('csvFile').value = '';
-        setDefaultMonth();
-
-        const sections = [
-            'hasNewEmployee',
-            'hasRetirement',
-            'hasNoWork',
-            'hasSalaryChange',
-            'hasAddressChange',
-            'hasLateEarly',
-            'hasLeave'
-        ];
-
-        sections.forEach(section => {
-            document.querySelector(`input[name="${section}"][value="no"]`).checked = true;
-            const detailId = section.replace('has', '') + 'Detail';
-            const detail = document.getElementById(detailId);
-            if (detail) {
-                detail.style.display = 'none';
-                const container = detail.querySelector('[id$="Container"]');
-                if (container) {
-                    container.innerHTML = '';
-                }
-            }
-        });
-
-        document.getElementById('otherComments').value = '';
-        validateForm();
-    }
+body { 
+    margin: 20px; 
+    font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "メイリオ", sans-serif;
+    background-color: #f5f5f5;
 }
 
-function setDefaultMonth() {
-    const today = new Date();
-    const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1);
-    const year = lastMonth.getFullYear();
-    const month = String(lastMonth.getMonth() + 1).padStart(2, '0');
-    document.getElementById('reportMonth').value = `${year}-${month}`;
+.form-container {
+    max-width: 900px;
+    margin: 0 auto;
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-function setupToggle(radioName, detailId, addInitialEntry) {
-    const radios = document.getElementsByName(radioName);
-    const detail = document.getElementById(detailId);
-    
-    if (!radios || !detail) {
-        console.error(`Setup failed for ${radioName}`);
-        return;
-    }
-
-    radios.forEach(radio => {
-        radio.addEventListener('change', function() {
-            console.log(`Radio changed: ${radioName} - ${this.value}`);
-            const container = detail.querySelector('[id$="Container"]');
-            
-            if (this.value === 'yes') {
-                detail.style.display = 'block';
-                if (container && container.children.length === 0) {
-                    addInitialEntry();
-                }
-            } else {
-                detail.style.display = 'none';
-                if (container) {
-                    container.innerHTML = '';
-                }
-            }
-            validateForm();
-        });
-    });
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
-function createNewEmployeeEntry() {
-    const div = document.createElement('div');
-    div.className = 'entry-row';
-    const uniqueId = Date.now();
-    div.innerHTML = `
-        <input type="text" placeholder="氏名" class="name-field required" 
-               maxlength="15"
-               onchange="validateEntryAndForm(this.closest('.entry-row'))"
-               onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
-        <div class="radio-group">
-            <input type="radio" name="empType_${uniqueId}" value="社員" required
-                   onchange="validateEntryAndForm(this.closest('.entry-row'))"> 社員
-            <input type="radio" name="empType_${uniqueId}" value="PA"
-                   onchange="validateEntryAndForm(this.closest('.entry-row'))"> PA
-        </div>
-        <div class="checkbox-group">
-            <input type="checkbox" id="docs_${uniqueId}">
-            <label for="docs_${uniqueId}">雇用書類提出済み</label>
-        </div>
-        <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
-    `;
-    return div;
+.header-container h2 {
+    margin: 0;
 }
 
-function createRetirementEntry() {
-    const div = document.createElement('div');
-    div.className = 'entry-row';
-    div.innerHTML = `
-        <input type="text" placeholder="氏名" class="name-field required"
-               maxlength="15"
-               onchange="validateEntryAndForm(this.closest('.entry-row'))"
-               onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
-        <textarea placeholder="有休消化等コメント" class="reason-field required"
-                  onchange="validateEntryAndForm(this.closest('.entry-row'))"
-                  onkeyup="validateEntryAndForm(this.closest('.entry-row'))"></textarea>
-        <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
-    `;
-    return div;
+.clear-button {
+    background-color: #ff4444;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-function createNoWorkEntry() {
-    const div = document.createElement('div');
-    div.className = 'entry-row';
-    div.innerHTML = `
-        <input type="text" placeholder="氏名" class="name-field required"
-               maxlength="15"
-               onchange="validateEntryAndForm(this.closest('.entry-row'))"
-               onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
-        <textarea placeholder="コメント" class="reason-field required"
-                  onchange="validateEntryAndForm(this.closest('.entry-row'))"
-                  onkeyup="validateEntryAndForm(this.closest('.entry-row'))"></textarea>
-        <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
-    `;
-    return div;
+.clear-button:hover {
+    background-color: #ff6666;
 }
 
-function createSalaryChangeEntry() {
-    const div = document.createElement('div');
-    div.className = 'entry-row';
-    div.innerHTML = `
-        <input type="text" placeholder="氏名" class="name-field required"
-               maxlength="15"
-               onchange="validateEntryAndForm(this.closest('.entry-row'))"
-               onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
-        <textarea placeholder="変更内容" class="reason-field required"
-                  onchange="validateEntryAndForm(this.closest('.entry-row'))"
-                  onkeyup="validateEntryAndForm(this.closest('.entry-row'))"></textarea>
-        <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
-    `;
-    return div;
+.form-group { 
+    margin-bottom: 20px; 
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 4px;
 }
 
-function createAddressChangeEntry() {
-    const div = document.createElement('div');
-    div.className = 'entry-row';
-    div.innerHTML = `
-        <input type="text" placeholder="氏名" class="name-field required"
-               maxlength="15"
-               onchange="validateEntryAndForm(this.closest('.entry-row'))"
-               onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
-        <textarea placeholder="変更内容" class="reason-field required"
-                  onchange="validateEntryAndForm(this.closest('.entry-row'))"
-                  onkeyup="validateEntryAndForm(this.closest('.entry-row'))"></textarea>
-        <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
-    `;
-    return div;
+.header-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
 }
 
-function createLateEarlyEntry() {
-    const div = document.createElement('div');
-    div.className = 'entry-row';
-    const uniqueId = Date.now();
-    div.innerHTML = `
-        <input type="text" placeholder="氏名" class="name-field required"
-               maxlength="15"
-               onchange="validateEntryAndForm(this.closest('.entry-row'))"
-               onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
-        <input type="date" class="date-field required"
-               onchange="validateEntryAndForm(this.closest('.entry-row'))">
-        <div class="radio-group">
-            <input type="radio" name="lateType_${uniqueId}" value="遅刻" required
-                   onchange="validateEntryAndForm(this.closest('.entry-row'))"> 遅刻
-            <input type="radio" name="lateType_${uniqueId}" value="早退"
-                   onchange="validateEntryAndForm(this.closest('.entry-row'))"> 早退
-            <input type="radio" name="lateType_${uniqueId}" value="残業"
-                   onchange="validateEntryAndForm(this.closest('.entry-row'))"> 残業
-        </div>
-        <textarea placeholder="理由" class="reason-field required"
-                  onchange="validateEntryAndForm(this.closest('.entry-row'))"
-                  onkeyup="validateEntryAndForm(this.closest('.entry-row'))"></textarea>
-        <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
-    `;
-    return div;
+.header-row label {
+    min-width: 100px;
+    font-weight: bold;
 }
 
-function createLeaveEntry() {
-    const div = document.createElement('div');
-    div.className = 'entry-row';
-    const uniqueId = Date.now();
-    div.innerHTML = `
-        <input type="text" placeholder="氏名" class="name-field required"
-               maxlength="15"
-               onchange="validateEntryAndForm(this.closest('.entry-row'))"
-               onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
-        <input type="date" class="date-field required"
-               onchange="validateEntryAndForm(this.closest('.entry-row'))">
-        <div class="radio-group">
-            <input type="radio" name="leaveType_${uniqueId}" value="有給" required
-                   onchange="validateEntryAndForm(this.closest('.entry-row'))"> 有給
-            <input type="radio" name="leaveType_${uniqueId}" value="欠勤"
-                   onchange="validateEntryAndForm(this.closest('.entry-row'))"> 欠勤
-        </div>
-        <textarea placeholder="理由" class="reason-field required"
-                  onchange="validateEntryAndForm(this.closest('.entry-row'))"
-                  onkeyup="validateEntryAndForm(this.closest('.entry-row'))"></textarea>
-        <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
-    `;
-    return div;
+#officeName {
+    width: 300px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
 }
 
-function addEntry(containerId, createFn) {
-    const container = document.getElementById(containerId);
-    const entry = createFn();
-    container.appendChild(entry);
-    validateEntry(entry);
-    validateForm();
+#reportMonth {
+    width: 150px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
 }
 
-function addNewEmployee() {
-    addEntry('newEmployeeContainer', createNewEmployeeEntry);
+.detail-section { 
+    margin-left: 20px; 
+    display: none;
+    padding: 10px;
+    border-left: 3px solid #4CAF50;
 }
 
-function addRetirement() {
-    addEntry('retirementContainer', createRetirementEntry);
+.section-note {
+    font-size: 0.9em;
+    color: #666;
+    margin: 8px 0;
+    padding-left: 20px;
 }
 
-function addNoWork() {
-    addEntry('noWorkContainer', createNoWorkEntry);
+.entry-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+    margin: 10px 0;
 }
 
-function addSalaryChange() {
-    addEntry('salaryChangeContainer', createSalaryChangeEntry);
+.name-field {
+    width: 150px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
 }
 
-function addAddressChange() {
-    addEntry('addressChangeContainer', createAddressChangeEntry);
+.date-field {
+    width: 140px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
 }
 
-function addLateEarly() {
-    addEntry('lateEarlyContainer', createLateEarlyEntry);
+.reason-field {
+    flex: 1;
+    min-width: 200px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: vertical;
 }
 
-function addLeave() {
-    addEntry('leaveContainer', createLeaveEntry);
+.name-field.invalid,
+.date-field.invalid,
+.reason-field.invalid,
+#csvFile.invalid {
+    background-color: #ffebee;
+    border-color: #ffcdd2;
 }
 
-function validateEntry(entryRow) {
-    if (!entryRow) return false;
-    let isValid = true;
-    
-    const requiredFields = entryRow.querySelectorAll('.required');
-    requiredFields.forEach(field => {
-        if (!field.value.trim()) {
-            field.classList.add('invalid');
-            isValid = false;
-        } else {
-            field.classList.remove('invalid');
-        }
-    });
-
-    const radioGroups = entryRow.querySelectorAll('.radio-group');
-    radioGroups.forEach(group => {
-        const radios = group.querySelectorAll('input[type="radio"]');
-        const radioChecked = Array.from(radios).some(radio => radio.checked);
-        if (radios.length > 0 && !radioChecked) {
-            group.classList.add('invalid');
-            isValid = false;
-        } else {
-            group.classList.remove('invalid');
-        }
-    });
-
-    const container = entryRow.closest('[id$="Container"]');
-    if (container) {
-        const addButton = container.nextElementSibling;
-        if (addButton && addButton.classList.contains('add-button')) {
-            addButton.style.display = isValid ? 'block' : 'none';
-        }
-    }
-
-    return isValid;
+.radio-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    white-space: nowrap;
 }
 
-function validateEntryAndForm(entryRow) {
-    validateEntry(entryRow);
-    validateForm();
+.radio-group.invalid {
+    background-color: #ffebee;
 }
 
-function validateForm() {
-    let isValid = true;
-
-    const officeName = document.getElementById('officeName');
-    const reportMonth = document.getElementById('reportMonth');
-    const csvFile = document.getElementById('csvFile');
-    
-    if (!officeName.value.trim()) {
-        officeName.classList.add('invalid');
-        isValid = false;
-    } else {
-        officeName.classList.remove('invalid');
-    }
-
-    if (!reportMonth.value) {
-        reportMonth.classList.add('invalid');
-        isValid = false;
-    } else {
-        reportMonth.classList.remove('invalid');
-    }
-
-    // CSVファイルの必須チェック - より厳密なチェックに修正
-    if (!csvFile || !csvFile.files || csvFile.files.length === 0) {
-        csvFile.classList.add('invalid');
-        isValid = false;
-    } else {
-        csvFile.classList.remove('invalid');
-    }
-
-    const sections = [
-        {name: 'hasNewEmployee', container: 'newEmployeeContainer'},
-        {name: 'hasRetirement', container: 'retirementContainer'},
-        {name: 'hasNoWork', container: 'noWorkContainer'},
-        {name: 'hasSalaryChange', container: 'salaryChangeContainer'},
-        {name: 'hasAddressChange', container: 'addressChangeContainer'},
-        {name: 'hasLateEarly', container: 'lateEarlyContainer'},
-        {name: 'hasLeave', container: 'leaveContainer'}
-    ];
-
-  sections.forEach(section => {
-        const radio = document.querySelector(`input[name="${section.name}"]:checked`);
-        if (radio && radio.value === 'yes') {
-            const container = document.getElementById(section.container);
-            if (container) {
-                const entries = container.querySelectorAll('.entry-row');
-                if (entries.length === 0) isValid = false;
-                entries.forEach(entry => {
-                    if (!validateEntry(entry)) isValid = false;
-                });
-            }
-        }
-    });
-
-    // 送信ボタンの制御
-    const submitButton = document.getElementById('submitButton');
-    if (submitButton) {
-        submitButton.disabled = !isValid;
-        submitButton.style.backgroundColor = isValid ? '#4CAF50' : '#cccccc';
-    }
-
-    return isValid;
+.checkbox-group {
+    white-space: nowrap;
 }
 
-function removeEntry(button) {
-    const entryRow = button.closest('.entry-row');
-    const container = entryRow.closest('[id$="Container"]');
-    entryRow.remove();
-    
-    if (container.lastElementChild) {
-        validateEntry(container.lastElementChild);
-    }
-    validateForm();
+.add-button {
+    display: block;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.3s ease;
 }
 
-async function handleSubmit(event) {
-    event.preventDefault();
-    const submitButton = document.getElementById('submitButton');
-    const csvFile = document.getElementById('csvFile');
-
-    // 送信中は二重送信を防止
-    if (submitButton.disabled) return false;
-
-    // CSVファイルの存在を確認
-    if (!csvFile || !csvFile.files || csvFile.files.length === 0) {
-        alert('CSVファイルを添付してください');
-        return false;
-    }
-
-    // 最終バリデーション
-    if (!validateForm()) {
-        alert('必須項目を入力してください');
-        return false;
-    }
-
-    try {
-        submitButton.disabled = true;
-        submitButton.textContent = '送信中...';
-
-        // フォームデータの収集
-        const formData = collectFormData();
-        
-        // Google Apps Scriptへの送信
-        const response = await fetch('https://script.google.com/macros/s/AKfycbzXd99vpht-E5ibgc0ptYaUOeTG9fzJT2tXeUlpsFAajkAHhEHKCeCz-9SqrMNvNx4/exec', {
-            method: 'POST',
-            mode: 'no-cors',
-            body: JSON.stringify(formData)
-        });
-
-        alert('送信が完了しました');
-        clearForm();
-    } catch (error) {
-        console.error('送信エラー:', error);
-        alert('送信に失敗しました。もう一度お試しください。');
-    } finally {
-        submitButton.disabled = false;
-        submitButton.textContent = 'メール送信';
-        validateForm();
-    }
-
-    return false;
+.add-button:hover {
+    background-color: #45a049;
 }
 
-function collectFormData() {
-    const data = {
-        officeName: document.getElementById('officeName').value,
-        reportMonth: document.getElementById('reportMonth').value,
-        otherComments: document.getElementById('otherComments').value
-    };
-
-    const sections = [
-        {name: 'hasNewEmployee', key: 'newEmployee', type: 'employee'},
-        {name: 'hasRetirement', key: 'retirement', type: 'comment'},
-        {name: 'hasNoWork', key: 'noWork', type: 'comment'},
-        {name: 'hasSalaryChange', key: 'salaryChange', type: 'comment'},
-        {name: 'hasAddressChange', key: 'addressChange', type: 'comment'},
-        {name: 'hasLateEarly', key: 'lateEarly', type: 'attendance'},
-        {name: 'hasLeave', key: 'leave', type: 'attendance'}
-    ];
-
-    sections.forEach(section => {
-        const radio = document.querySelector(`input[name="${section.name}"]:checked`);
-        if (radio && radio.value === 'yes') {
-            data[section.key] = collectSectionData(section.key, section.type);
-        }
-    });
-
-    return data;
+.remove-button {
+    background-color: #ff4444;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-function collectSectionData(containerId, type) {
-    const container = document.getElementById(`${containerId}Container`);
-    const entries = container.querySelectorAll('.entry-row');
-    
-    return Array.from(entries).map(entry => {
-        const baseData = {
-            name: entry.querySelector('.name-field').value
-        };
+.remove-button:hover {
+    background-color: #ff6666;
+}
 
-        switch (type) {
-            case 'employee':
-                return {
-                    ...baseData,
-                    type: entry.querySelector('input[type="radio"]:checked').value,
-                    docs: entry.querySelector('input[type="checkbox"]').checked
-                };
-            case 'attendance':
-                return {
-                    ...baseData,
-                    date: entry.querySelector('.date-field').value,
-                    type: entry.querySelector('input[type="radio"]:checked').value,
-                    reason: entry.querySelector('.reason-field').value
-                };
-            default:
-                return {
-                    ...baseData,
-                    comment: entry.querySelector('.reason-field').value
-                };
-        }
-    });
+.required::after {
+    content: "*";
+    color: #ff0000;
+    margin-left: 4px;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+textarea {
+    width: 100%;
+    min-height: 60px;
+    resize: vertical;
+}
+
+#csvFile {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-top: 5px;
+}
+
+#submitButton {
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 16px;
+    margin-top: 20px;
+    transition: all 0.3s ease;
+}
+
+#submitButton:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+#submitButton:not(:disabled):hover {
+    background-color: #45a049;
+}
+
+/* その他のスタイル */
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="month"],
+textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-top: 5px;
+}
+
+input[type="radio"] {
+    margin-right: 5px;
 }
