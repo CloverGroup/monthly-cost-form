@@ -83,7 +83,6 @@ function setDateConstraints() {
 
     return { min: firstDay, max: lastDay };
 }
-
 function setupToggle(radioName, detailId, addInitialEntry) {
     const radios = document.getElementsByName(radioName);
     const detail = document.getElementById(detailId);
@@ -189,7 +188,6 @@ function createSalaryChangeEntry() {
     `;
     return div;
 }
-
 function createAddressChangeEntry() {
     const div = document.createElement('div');
     div.className = 'entry-row';
@@ -271,6 +269,24 @@ function createLeaveEntry() {
     return div;
 }
 
+function handleAddressChangeSubmitted(checkbox) {
+    const entryRow = checkbox.closest('.entry-row');
+    const reasonField = entryRow.querySelector('.reason-field');
+    
+    if (checkbox.checked) {
+        reasonField.classList.remove('required');
+        reasonField.classList.remove('invalid');
+        reasonField.style.backgroundColor = 'white';
+    } else {
+        reasonField.classList.add('required');
+        if (!reasonField.value.trim()) {
+            reasonField.classList.add('invalid');
+            reasonField.style.backgroundColor = '#ffebee';
+        }
+    }
+    
+    validateEntryAndForm(entryRow);
+}
 function addEntry(containerId, createFn) {
     const container = document.getElementById(containerId);
     const entry = createFn();
@@ -307,20 +323,6 @@ function addLeave() {
     addEntry('leaveContainer', createLeaveEntry);
 }
 
-function handleAddressChangeSubmitted(checkbox) {
-    const entryRow = checkbox.closest('.entry-row');
-    const reasonField = entryRow.querySelector('.reason-field');
-    
-    if (checkbox.checked) {
-        reasonField.classList.remove('required');
-        reasonField.classList.remove('invalid');
-    } else {
-        reasonField.classList.add('required');
-    }
-    
-    validateEntryAndForm(entryRow);
-}
-
 function validateEntry(entryRow) {
     if (!entryRow) return false;
     let isValid = true;
@@ -349,7 +351,7 @@ function validateEntry(entryRow) {
         }
     });
 
-// 追加ボタンの表示制御
+    // 追加ボタンの表示制御
     const container = entryRow.closest('[id$="Container"]');
     if (container) {
         const addButton = container.parentElement.querySelector('.add-button');
@@ -413,7 +415,6 @@ function validateForm() {
     document.getElementById('submitButton').disabled = !isValid;
     return isValid;
 }
-
 function removeEntry(button) {
     const entryRow = button.closest('.entry-row');
     const container = entryRow.closest('[id$="Container"]');
