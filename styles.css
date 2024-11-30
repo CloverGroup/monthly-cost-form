@@ -97,15 +97,15 @@ body {
 }
 
 .name-field {
-    width: 200px;
-    min-width: 200px;
+    width: 160px;
+    min-width: 160px;
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
 }
 
 .date-field {
-    width: 300px;
+    min-width: 200px;
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
