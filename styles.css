@@ -78,7 +78,7 @@ body {
     border-left: 3px solid #4CAF50;
 }
 
-/* 通常の入力行スタイル（退職者まで） */
+/* 通常の入力行スタイル */
 .entry-row {
     display: flex;
     align-items: flex-start;
@@ -103,14 +103,14 @@ body {
 
 /* 名前フィールドの基本スタイル */
 .name-field {
-    width: 210px; /* 事業所名フィールドの70% */
+    width: 210px;
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
     background-color: white;
 }
 
-/* 退職者から交通費変更までの理由フィールド */
+/* 理由フィールドの基本スタイル */
 #retirementContainer .reason-field,
 #noWorkContainer .reason-field,
 #salaryChangeContainer .reason-field,
@@ -138,13 +138,15 @@ body {
     background-color: #ffebee;
 }
 
-/* アドレス変更のコメント欄のデフォルトスタイル */
-#addressChangeContainer .reason-field {
+/* アドレス変更とサラリー変更のコメント欄のデフォルトスタイル */
+#addressChangeContainer .reason-field,
+#salaryChangeContainer .reason-field {
     background-color: #ffebee;  /* デフォルトでピンク背景 */
 }
 
 /* チェックボックスがチェックされた時のスタイル */
-#addressChangeContainer .checkbox-checked .reason-field {
+#addressChangeContainer .checkbox-checked .reason-field,
+#salaryChangeContainer .checkbox-checked .reason-field {
     background-color: white;    /* チェック時は白背景 */
 }
 
