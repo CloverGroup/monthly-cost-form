@@ -1,141 +1,240 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>月次人件費確認フォーム</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div class="form-container">
-        <div class="header-container">
-            <h2>月次人件費確認フォーム</h2>
-            <button type="button" class="clear-button" onclick="clearForm()">フォームをクリア</button>
-        </div>
+body { 
+    margin: 20px; 
+    font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "メイリオ", sans-serif;
+    background-color: #f5f5f5;
+}
 
-        <form id="expenseForm" onsubmit="return handleSubmit(event)">
-            <div class="form-group">
-                <div class="header-row">
-                    <label for="officeName">事業所名</label>
-                    <input type="text" id="officeName" class="required" onchange="validateForm()" onkeyup="validateForm()">
-                </div>
-                <div class="header-row">
-                    <label for="reportMonth">報告対象月</label>
-                    <input type="month" id="reportMonth" class="required" onchange="validateForm()" readonly>
-                </div>
-            </div>
+.form-container {
+    max-width: 900px;
+    margin: 0 auto;
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
 
-            <div class="form-group">
-                <div class="section-title">
-                    新規配属者
-                    <div class="radio-group">
-                        <input type="radio" name="hasNewEmployee" value="no" checked> なし
-                        <input type="radio" name="hasNewEmployee" value="yes"> あり
-                    </div>
-                </div>
-                <div id="newEmployeeDetail" class="detail-section">
-                    <div id="newEmployeeContainer"></div>
-                    <button type="button" class="add-button" onclick="addNewEmployee()">新規配属者を追加</button>
-                    <div class="note">※他事業所のPAで、当事業所でも勤務開始する場合にも記載してください。</div>
-                </div>
-            </div>
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
 
-            <div class="form-group">
-                <div class="section-title">
-                    当月退職者
-                    <div class="radio-group">
-                        <input type="radio" name="hasRetirement" value="no" checked> なし
-                        <input type="radio" name="hasRetirement" value="yes"> あり
-                    </div>
-                </div>
-                <div id="retirementDetail" class="detail-section">
-                    <div id="retirementContainer"></div>
-                    <button type="button" class="add-button" onclick="addRetirement()">退職者を追加</button>
-                    <div class="note">
-                        ※他事業所で勤務が継続するが、当事業所の勤務が最終の場合も記載してください。<br>
-                        ※休職の場合はコメント欄にその旨を記載してください。
-                    </div>
-                </div>
-            </div>
+.header-container h2 {
+    margin: 0;
+}
 
-            <div class="form-group">
-                <div class="section-title">
-                    在籍しているが勤務がない人
-                    <div class="radio-group">
-                        <input type="radio" name="hasNoWork" value="no" checked> なし
-                        <input type="radio" name="hasNoWork" value="yes"> あり
-                    </div>
-                </div>
-                <div id="noWorkDetail" class="detail-section">
-                    <div id="noWorkContainer"></div>
-                    <button type="button" class="add-button" onclick="addNoWork()">追加</button>
-                </div>
-            </div>
+.clear-button {
+    background-color: #ff4444;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
 
-            <div class="form-group">
-                <div class="section-title">
-                    給与・勤務形態の変更した人
-                    <div class="radio-group">
-                        <input type="radio" name="hasSalaryChange" value="no" checked> なし
-                        <input type="radio" name="hasSalaryChange" value="yes"> あり
-                    </div>
-                </div>
-                <div id="salaryChangeDetail" class="detail-section">
-                    <div id="salaryChangeContainer"></div>
-                    <button type="button" class="add-button" onclick="addSalaryChange()">追加</button>
-                </div>
-            </div>
+.clear-button:hover {
+    background-color: #ff6666;
+}
 
-            <div class="form-group">
-                <div class="section-title">
-                    住所・交通費の変更した人
-                    <div class="radio-group">
-                        <input type="radio" name="hasAddressChange" value="no" checked> なし
-                        <input type="radio" name="hasAddressChange" value="yes"> あり
-                    </div>
-                </div>
-                <div id="addressChangeDetail" class="detail-section">
-                    <div id="addressChangeContainer"></div>
-                    <button type="button" class="add-button" onclick="addAddressChange()">追加</button>
-                </div>
-            </div>
+.form-group { 
+    margin-bottom: 20px; 
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+}
 
-            <div class="form-group">
-                <div class="section-title">
-                    遅刻・早退等
-                    <div class="radio-group">
-                        <input type="radio" name="hasLateEarly" value="no" checked> なし
-                        <input type="radio" name="hasLateEarly" value="yes"> あり
-                    </div>
-                </div>
-                <div id="lateEarlyDetail" class="detail-section">
-                    <div id="lateEarlyContainer"></div>
-                    <button type="button" class="add-button" onclick="addLateEarly()">遅刻・早退を追加</button>
-                </div>
-            </div>
+.header-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
 
-            <div class="form-group">
-                <div class="section-title">
-                    有給・欠勤等
-                    <div class="radio-group">
-                        <input type="radio" name="hasLeave" value="no" checked> なし
-                        <input type="radio" name="hasLeave" value="yes"> あり
-                    </div>
-                </div>
-                <div id="leaveDetail" class="detail-section">
-                    <div id="leaveContainer"></div>
-                    <button type="button" class="add-button" onclick="addLeave()">有給・欠勤を追加</button>
-                </div>
-            </div>
+.header-row label {
+    min-width: 100px;
+    font-weight: bold;
+}
 
-            <div class="form-group">
-                <label for="otherComments">その他コメント</label>
-                <textarea id="otherComments"></textarea>
-            </div>
+#officeName {
+    width: 300px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
 
-            <button type="submit" id="submitButton" disabled>メール送信</button>
-        </form>
-    </div>
-    <script src="script.js"></script>
-</body>
-</html>
+#reportMonth {
+    width: 150px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.detail-section { 
+    margin-left: 20px; 
+    display: none;
+    padding: 10px;
+    border-left: 3px solid #4CAF50;
+}
+
+/* 通常の入力行スタイル（退職者まで） */
+.entry-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+    margin: 10px 0;
+}
+
+/* 遅刻・早退と有給・欠勤用の特別なレイアウト */
+#lateEarlyContainer .entry-row,
+#leaveContainer .entry-row {
+    flex-wrap: wrap;
+}
+
+#lateEarlyContainer .reason-field,
+#leaveContainer .reason-field {
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* 名前フィールドの基本スタイル */
+.name-field {
+    width: 210px; /* 事業所名フィールドの70% */
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* 退職者から交通費変更までの理由フィールド */
+#retirementContainer .reason-field,
+#noWorkContainer .reason-field,
+#salaryChangeContainer .reason-field,
+#addressChangeContainer .reason-field {
+    flex: 1;
+    min-width: 200px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: vertical;
+}
+
+.date-field {
+    width: 140px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.name-field.invalid,
+.date-field.invalid,
+.reason-field.invalid {
+    background-color: #ffebee;
+    border-color: #ffcdd2;
+}
+
+.radio-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.radio-group.invalid {
+    background-color: #ffebee;
+}
+
+.checkbox-group {
+    white-space: nowrap;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+.checkbox-group.invalid {
+    background-color: #ffebee;
+}
+
+.add-button {
+    display: none;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+}
+
+.add-button:hover {
+    background-color: #45a049;
+}
+
+.remove-button {
+    background-color: #ff4444;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.remove-button:hover {
+    background-color: #ff6666;
+}
+
+.required::after {
+    content: "*";
+    color: #ff0000;
+    margin-left: 4px;
+}
+
+.note {
+    font-size: 0.9em;
+    color: #666;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+#submitButton {
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 16px;
+    margin-top: 20px;
+    transition: all 0.3s ease;
+}
+
+#submitButton:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+#submitButton:not(:disabled):hover {
+    background-color: #45a049;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+textarea {
+    width: 100%;
+    min-height: 60px;
+    resize: vertical;
+}
