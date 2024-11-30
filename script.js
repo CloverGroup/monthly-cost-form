@@ -200,11 +200,12 @@ function createAddressChangeEntry() {
                onchange="validateEntryAndForm(this.closest('.entry-row'))"
                onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
         <div class="checkbox-group">
-            <input type="checkbox" id="submitted_${uniqueId}" required
-                   onchange="validateEntryAndForm(this.closest('.entry-row'))">
+            <input type="checkbox" id="submitted_${uniqueId}" 
+                   onchange="handleAddressChangeSubmitted(this)">
             <label for="submitted_${uniqueId}">変更届を提出済み</label>
         </div>
-        <textarea placeholder="変更日・変更内容（別途変更届が必要なものは提出してください）" class="reason-field required"
+        <textarea placeholder="変更日・変更内容（別途変更届が必要なものは提出してください）" 
+                class="reason-field required"
                 onchange="validateEntryAndForm(this.closest('.entry-row'))"
                 onkeyup="validateEntryAndForm(this.closest('.entry-row'))"></textarea>
         <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
@@ -306,6 +307,20 @@ function addLeave() {
     addEntry('leaveContainer', createLeaveEntry);
 }
 
+function handleAddressChangeSubmitted(checkbox) {
+    const entryRow = checkbox.closest('.entry-row');
+    const reasonField = entryRow.querySelector('.reason-field');
+    
+    if (checkbox.checked) {
+        reasonField.classList.remove('required');
+        reasonField.classList.remove('invalid');
+    } else {
+        reasonField.classList.add('required');
+    }
+    
+    validateEntryAndForm(entryRow);
+}
+
 function validateEntry(entryRow) {
     if (!entryRow) return false;
     let isValid = true;
@@ -331,17 +346,6 @@ function validateEntry(entryRow) {
             isValid = false;
         } else {
             group.classList.remove('invalid');
-        }
-    });
-
-    // チェックボックスのバリデーション（required属性がある場合）
-    const requiredCheckboxes = entryRow.querySelectorAll('input[type="checkbox"][required]');
-    requiredCheckboxes.forEach(checkbox => {
-        if (!checkbox.checked) {
-            checkbox.closest('.checkbox-group').classList.add('invalid');
-            isValid = false;
-        } else {
-            checkbox.closest('.checkbox-group').classList.remove('invalid');
         }
     });
 
@@ -511,8 +515,9 @@ function collectSectionData(sectionKey, containerId) {
                 break;
 
             case 'addressChange':
-                entryData.submitted = entry.querySelector('input[type="checkbox"]').checked;
-                entryData.comment = entry.querySelector('.reason-field').value;
+                const submitted = entry.querySelector('input[type="checkbox"]').checked;
+                entryData.submitted = submitted;
+                entryData.comment = entry.querySelector('.reason-field').value || '変更届提出済み';
                 break;
 
             default:
