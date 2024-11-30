@@ -72,12 +72,6 @@ function setDefaultMonth() {
     reportMonthInput.setAttribute('min', minDate);
 }
 
-// DOMContentLoadedイベントで初期設定
-document.addEventListener('DOMContentLoaded', function() {
-    setDefaultMonth();
-    // ...その他の初期化処理...
-});
-
 function setupToggle(radioName, detailId, addInitialEntry) {
     const radios = document.getElementsByName(radioName);
     const detail = document.getElementById(detailId);
@@ -140,7 +134,7 @@ function createRetirementEntry() {
                maxlength="15"
                onchange="validateEntryAndForm(this.closest('.entry-row'))"
                onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
-        <textarea placeholder="有休消化等コメント" class="reason-field required"
+        <textarea placeholder="退職日等のコメント" class="reason-field required"
                 onchange="validateEntryAndForm(this.closest('.entry-row'))"
                 onkeyup="validateEntryAndForm(this.closest('.entry-row'))"></textarea>
         <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
@@ -288,6 +282,7 @@ function validateEntry(entryRow) {
     if (!entryRow) return false;
     let isValid = true;
     
+    // 必須フィールドのバリデーション
     const requiredFields = entryRow.querySelectorAll('.required');
     requiredFields.forEach(field => {
         if (!field.value.trim()) {
@@ -298,6 +293,7 @@ function validateEntry(entryRow) {
         }
     });
 
+    // ラジオボタングループのバリデーション
     const radioGroups = entryRow.querySelectorAll('.radio-group');
     radioGroups.forEach(group => {
         const radios = group.querySelectorAll('input[type="radio"]');
@@ -309,6 +305,18 @@ function validateEntry(entryRow) {
             group.classList.remove('invalid');
         }
     });
+
+    // 追加ボタンの表示制御
+    const container = entryRow.closest('[id$="Container"]');
+    if (container) {
+        const addButton = container.parentElement.querySelector('.add-button');
+        if (addButton) {
+            // すべてのエントリーが有効な場合のみ追加ボタンを表示
+            const allEntriesValid = Array.from(container.querySelectorAll('.entry-row'))
+                .every(entry => validateEntry(entry));
+            addButton.style.display = allEntriesValid ? 'block' : 'none';
+        }
+    }
 
     return isValid;
 }
