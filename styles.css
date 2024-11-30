@@ -111,10 +111,7 @@ body {
 }
 
 /* 理由フィールドの基本スタイル */
-#retirementContainer .reason-field,
-#noWorkContainer .reason-field,
-#salaryChangeContainer .reason-field,
-#addressChangeContainer .reason-field {
+.reason-field {
     flex: 1;
     min-width: 200px;
     padding: 8px;
@@ -133,7 +130,7 @@ body {
 /* バリデーション表示のスタイル */
 .name-field.invalid,
 .date-field.invalid,
-.reason-field.invalid:not(.checkbox-checked .reason-field),
+.reason-field.invalid,
 .radio-group.invalid {
     background-color: #ffebee;
 }
@@ -242,5 +239,14 @@ body {
 textarea {
     width: 100%;
     min-height: 60px;
+    resize: vertical;
+}
+
+#otherComments {
+    width: 100%;
+    min-height: 100px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
     resize: vertical;
 }
