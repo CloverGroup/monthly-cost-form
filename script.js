@@ -286,6 +286,29 @@ function handleAddressChangeSubmitted(checkbox) {
     }
     
     validateEntryAndForm(entryRow);
+}function handleAddressChangeSubmitted(checkbox) {
+    const entryRow = checkbox.closest('.entry-row');
+    const reasonField = entryRow.querySelector('.reason-field');
+    
+    if (checkbox.checked) {
+        // チェックが入っている場合
+        reasonField.classList.remove('required');
+        reasonField.classList.remove('invalid');
+        reasonField.style.backgroundColor = 'white';
+    } else {
+        // チェックが外れている場合
+        reasonField.classList.add('required');
+        // 値が空の場合は invalid クラスを追加し、背景色を設定
+        if (!reasonField.value.trim()) {
+            reasonField.classList.add('invalid');
+            reasonField.style.backgroundColor = '#ffebee';
+        } else {
+            reasonField.classList.remove('invalid');
+            reasonField.style.backgroundColor = 'white';
+        }
+    }
+    
+    validateEntryAndForm(entryRow);
 }
 function addEntry(containerId, createFn) {
     const container = document.getElementById(containerId);
