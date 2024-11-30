@@ -78,53 +78,60 @@ body {
     border-left: 3px solid #4CAF50;
 }
 
-.section-note {
-    font-size: 0.9em;
-    color: #666;
-    margin: 8px 0;
-    padding-left: 20px;
-}
-
+/* 通常の入力行スタイル（退職者まで） */
 .entry-row {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 15px;
     padding: 15px;
     background-color: #f9f9f9;
     border-radius: 4px;
     margin: 10px 0;
-    flex-wrap: wrap;    /* 画面が狭くなった時に折り返すように */
 }
 
+/* 遅刻・早退と有給・欠勤用の特別なレイアウト */
+#lateEarlyContainer .entry-row,
+#leaveContainer .entry-row {
+    flex-wrap: wrap;
+}
+
+#lateEarlyContainer .reason-field,
+#leaveContainer .reason-field {
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* 名前フィールドの基本スタイル */
 .name-field {
-    width: 200px;
+    width: 210px; /* 事業所名フィールドの70% */
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* 退職者から交通費変更までの理由フィールド */
+#retirementContainer .reason-field,
+#noWorkContainer .reason-field,
+#salaryChangeContainer .reason-field,
+#addressChangeContainer .reason-field {
+    flex: 1;
     min-width: 200px;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-
-.date-field {
-    flex: 1; 
-    width: 200px;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-
-.reason-field {
-    flex: 1; 
-    width: 200px;
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
     resize: vertical;
 }
 
+.date-field {
+    width: 140px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
 .name-field.invalid,
 .date-field.invalid,
-.reason-field.invalid,
-#csvFile.invalid {
+.reason-field.invalid {
     background-color: #ffebee;
     border-color: #ffcdd2;
 }
@@ -147,7 +154,7 @@ body {
 }
 
 .add-button {
-    display: block;
+    display: none;
     background-color: #4CAF50;
     color: white;
     border: none;
@@ -182,26 +189,11 @@ body {
     margin-left: 4px;
 }
 
-.section-title {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 10px;
-    font-weight: bold;
-}
-
-textarea {
-    width: 100%;
-    min-height: 60px;
-    resize: vertical;
-}
-
-#csvFile {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+.note {
+    font-size: 0.9em;
+    color: #666;
     margin-top: 5px;
+    font-style: italic;
 }
 
 #submitButton {
@@ -227,23 +219,16 @@ textarea {
     background-color: #45a049;
 }
 
-/* その他のスタイル */
-label {
-    display: block;
-    margin-bottom: 5px;
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
     font-weight: bold;
 }
 
-input[type="text"],
-input[type="month"],
 textarea {
     width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    margin-top: 5px;
-}
-
-input[type="radio"] {
-    margin-right: 5px;
+    min-height: 60px;
+    resize: vertical;
 }
