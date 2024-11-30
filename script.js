@@ -59,8 +59,24 @@ function setDefaultMonth() {
     const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1);
     const year = lastMonth.getFullYear();
     const month = String(lastMonth.getMonth() + 1).padStart(2, '0');
-    document.getElementById('reportMonth').value = `${year}-${month}`;
+    
+    const reportMonthInput = document.getElementById('reportMonth');
+    reportMonthInput.value = `${year}-${month}`;
+    
+    // 入力フィールドの属性を設定
+    const maxDate = `${year}-${month}`;
+    reportMonthInput.setAttribute('max', maxDate);
+    
+    // 過去3年分まで選択可能に
+    const minDate = `${year - 3}-${month}`;
+    reportMonthInput.setAttribute('min', minDate);
 }
+
+// DOMContentLoadedイベントで初期設定
+document.addEventListener('DOMContentLoaded', function() {
+    setDefaultMonth();
+    // ...その他の初期化処理...
+});
 
 function setupToggle(radioName, detailId, addInitialEntry) {
     const radios = document.getElementsByName(radioName);
