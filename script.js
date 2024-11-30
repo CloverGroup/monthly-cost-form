@@ -49,7 +49,6 @@ function clearForm() {
         });
 
         document.getElementById('otherComments').value = '';
-        document.getElementById('csvFile').value = '';
         validateForm();
     }
 }
@@ -85,6 +84,7 @@ function setupToggle(radioName, detailId, addInitialEntry) {
         radio.addEventListener('change', function() {
             console.log(`Radio changed: ${radioName} - ${this.value}`);
             const container = detail.querySelector('[id$="Container"]');
+            const addButton = detail.querySelector('.add-button');
             
             if (this.value === 'yes') {
                 detail.style.display = 'block';
@@ -247,7 +247,6 @@ function addEntry(containerId, createFn) {
     const entry = createFn();
     container.appendChild(entry);
     validateEntry(entry);
-    validateForm();
 }
 
 function addNewEmployee() {
@@ -306,12 +305,11 @@ function validateEntry(entryRow) {
         }
     });
 
-    // 追加ボタンの表示制御
+    // 追加ボタンの表示制御の修正
     const container = entryRow.closest('[id$="Container"]');
     if (container) {
         const addButton = container.parentElement.querySelector('.add-button');
         if (addButton) {
-            // 現在のエントリー行が有効であれば追加ボタンを表示
             addButton.style.display = isValid ? 'block' : 'none';
         }
     }
@@ -354,7 +352,7 @@ function validateForm() {
         {name: 'hasLeave', container: 'leaveContainer'}
     ];
 
-    sections.forEach(section => {
+sections.forEach(section => {
         const radio = document.querySelector(`input[name="${section.name}"]:checked`);
         if (radio && radio.value === 'yes') {
             const container = document.getElementById(section.container);
@@ -373,7 +371,6 @@ function validateForm() {
 
 function removeEntry(button) {
     const entryRow = button.closest('.entry-row');
-    const container = entryRow.closest('[id$="Container"]');
     entryRow.remove();
     validateForm();
 }
