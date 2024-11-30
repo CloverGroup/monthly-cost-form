@@ -105,6 +105,7 @@ body {
 }
 
 .date-field {
+    flex: 1; 
     width: 200px;
     padding: 8px;
     border: 1px solid #ddd;
@@ -112,6 +113,7 @@ body {
 }
 
 .reason-field {
+    flex: 1; 
     width: 200px;
     padding: 8px;
     border: 1px solid #ddd;
