@@ -93,10 +93,12 @@ body {
     background-color: #f9f9f9;
     border-radius: 4px;
     margin: 10px 0;
+    flex-wrap: wrap;    /* 画面が狭くなった時に折り返すように */
 }
 
 .name-field {
-    width: 200px;
+    width: 250px;
+    min-width: 200px;
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
@@ -111,7 +113,7 @@ body {
 
 .reason-field {
     flex: 1;
-    min-width: 500px;
+    min-width: 200px;
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
