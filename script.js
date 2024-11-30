@@ -91,6 +91,9 @@ function setupToggle(radioName, detailId, addInitialEntry) {
                 if (container && container.children.length === 0) {
                     addInitialEntry();
                 }
+                if (addButton) {
+                    addButton.style.display = 'none';  // 初期状態では非表示
+                }
             } else {
                 detail.style.display = 'none';
                 if (container) {
@@ -247,6 +250,7 @@ function addEntry(containerId, createFn) {
     const entry = createFn();
     container.appendChild(entry);
     validateEntry(entry);
+    validateForm();
 }
 
 function addNewEmployee() {
@@ -305,11 +309,11 @@ function validateEntry(entryRow) {
         }
     });
 
-    // 追加ボタンの表示制御の修正
+    // 追加ボタンの表示制御を変更
     const container = entryRow.closest('[id$="Container"]');
     if (container) {
         const addButton = container.parentElement.querySelector('.add-button');
-        if (addButton) {
+        if (addButton && container.lastElementChild === entryRow) {
             addButton.style.display = isValid ? 'block' : 'none';
         }
     }
