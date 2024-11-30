@@ -311,10 +311,8 @@ function validateEntry(entryRow) {
     if (container) {
         const addButton = container.parentElement.querySelector('.add-button');
         if (addButton) {
-            // すべてのエントリーが有効な場合のみ追加ボタンを表示
-            const allEntriesValid = Array.from(container.querySelectorAll('.entry-row'))
-                .every(entry => validateEntry(entry));
-            addButton.style.display = allEntriesValid ? 'block' : 'none';
+            // 現在のエントリー行が有効であれば追加ボタンを表示
+            addButton.style.display = isValid ? 'block' : 'none';
         }
     }
 
