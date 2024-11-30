@@ -1,3 +1,41 @@
+// エントリー追加の基本関数
+function addEntry(containerId, createFn) {
+    const container = document.getElementById(containerId);
+    const entry = createFn();
+    container.appendChild(entry);
+    validateEntry(entry);
+    validateForm();
+}
+
+// 各セクションのエントリー追加関数
+function addNewEmployee() {
+    addEntry('newEmployeeContainer', createNewEmployeeEntry);
+}
+
+function addRetirement() {
+    addEntry('retirementContainer', createRetirementEntry);
+}
+
+function addNoWork() {
+    addEntry('noWorkContainer', createNoWorkEntry);
+}
+
+function addSalaryChange() {
+    addEntry('salaryChangeContainer', createSalaryChangeEntry);
+}
+
+function addAddressChange() {
+    addEntry('addressChangeContainer', createAddressChangeEntry);
+}
+
+function addLateEarly() {
+    addEntry('lateEarlyContainer', createLateEarlyEntry);
+}
+
+function addLeave() {
+    addEntry('leaveContainer', createLeaveEntry);
+}
+
 // エントリー作成の基本関数
 function createNewEmployeeEntry() {
     const div = document.createElement('div');
@@ -139,44 +177,6 @@ function createLeaveEntry() {
     return div;
 }
 
-// エントリー追加の基本関数
-function addEntry(containerId, createFn) {
-    const container = document.getElementById(containerId);
-    const entry = createFn();
-    container.appendChild(entry);
-    validateEntry(entry);
-    validateForm();
-}
-
-// 各セクションのエントリー追加関数
-function addNewEmployee() {
-    addEntry('newEmployeeContainer', createNewEmployeeEntry);
-}
-
-function addRetirement() {
-    addEntry('retirementContainer', createRetirementEntry);
-}
-
-function addNoWork() {
-    addEntry('noWorkContainer', createNoWorkEntry);
-}
-
-function addSalaryChange() {
-    addEntry('salaryChangeContainer', createSalaryChangeEntry);
-}
-
-function addAddressChange() {
-    addEntry('addressChangeContainer', createAddressChangeEntry);
-}
-
-function addLateEarly() {
-    addEntry('lateEarlyContainer', createLateEarlyEntry);
-}
-
-function addLeave() {
-    addEntry('leaveContainer', createLeaveEntry);
-}
-
 // ユーティリティ関数
 function setDefaultMonth() {
     const today = new Date();
@@ -216,7 +216,6 @@ function setupToggle(radioName, detailId, addInitialEntry) {
     });
 }
 
-// バリデーション関数
 function validateEntry(entryRow) {
     if (!entryRow) return false;
     let isValid = true;
@@ -365,7 +364,6 @@ function clearForm() {
     }
 }
 
-// データ収集関数
 function collectFormData() {
     const data = {
         officeName: document.getElementById('officeName').value,
@@ -373,7 +371,7 @@ function collectFormData() {
         otherComments: document.getElementById('otherComments').value
     };
 
-    const sections = [
+const sections = [
         {name: 'hasNewEmployee', key: 'newEmployee', type: 'employee'},
         {name: 'hasRetirement', key: 'retirement', type: 'comment'},
         {name: 'hasNoWork', key: 'noWork', type: 'comment'},
@@ -425,33 +423,7 @@ function collectSectionData(containerId, type) {
     });
 }
 
-// DOMContentLoaded イベントリスナー
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Initializing form...');
-    
-    const sections = [
-        {radioName: 'hasNewEmployee', detailId: 'newEmployeeDetail', addFn: addNewEmployee},
-        {radioName: 'hasRetirement', detailId: 'retirementDetail', addFn: addRetirement},
-        {radioName: 'hasNoWork', detailId: 'noWorkDetail', addFn: addNoWork},
-        {radioName: 'hasSalaryChange', detailId: 'salaryChangeDetail', addFn: addSalaryChange},
-        {radioName: 'hasAddressChange', detailId: 'addressChangeDetail', addFn: addAddressChange},
-        {radioName: 'hasLateEarly', detailId: 'lateEarlyDetail', addFn: addLateEarly},
-        {radioName: 'hasLeave', detailId: 'leaveDetail', addFn: addLeave}
-    ];
-
-    sections.forEach(section => {
-        console.log(`Setting up section: ${section.radioName}`);
-        setupToggle(section.radioName, section.detailId, section.addFn);
-    });
-
-    // CSVファイル変更時のバリデーション
-    document.getElementById('csvFile').addEventListener('change', validateForm);
-
-    setDefaultMonth();
-    validateForm();
-});
-
-// フォーム送信処理
+// メール送信処理
 async function handleSubmit(event) {
     event.preventDefault();
     const submitButton = document.getElementById('submitButton');
@@ -499,3 +471,29 @@ async function handleSubmit(event) {
 
     return false;
 }
+
+// DOMContentLoadedイベントリスナーを最後に配置
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Initializing form...');
+    
+    const sections = [
+        {radioName: 'hasNewEmployee', detailId: 'newEmployeeDetail', addFn: addNewEmployee},
+        {radioName: 'hasRetirement', detailId: 'retirementDetail', addFn: addRetirement},
+        {radioName: 'hasNoWork', detailId: 'noWorkDetail', addFn: addNoWork},
+        {radioName: 'hasSalaryChange', detailId: 'salaryChangeDetail', addFn: addSalaryChange},
+        {radioName: 'hasAddressChange', detailId: 'addressChangeDetail', addFn: addAddressChange},
+        {radioName: 'hasLateEarly', detailId: 'lateEarlyDetail', addFn: addLateEarly},
+        {radioName: 'hasLeave', detailId: 'leaveDetail', addFn: addLeave}
+    ];
+
+    sections.forEach(section => {
+        console.log(`Setting up section: ${section.radioName}`);
+        setupToggle(section.radioName, section.detailId, section.addFn);
+    });
+
+    // CSVファイル変更時のバリデーション
+    document.getElementById('csvFile').addEventListener('change', validateForm);
+
+    setDefaultMonth();
+    validateForm();
+});
