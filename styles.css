@@ -121,7 +121,6 @@ body {
     border: 1px solid #ddd;
     border-radius: 4px;
     resize: vertical;
-    background-color: white;
 }
 
 .date-field {
@@ -129,16 +128,24 @@ body {
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
-    background-color: white;
 }
 
 /* バリデーション表示のスタイル */
 .name-field.invalid,
 .date-field.invalid,
-.reason-field.invalid,
-.radio-group.invalid,
-.checkbox-group.invalid {
-    background-color: #ffebee; !important; /* !important を追加 */
+.reason-field.invalid:not(.checkbox-checked .reason-field),
+.radio-group.invalid {
+    background-color: #ffebee;
+}
+
+/* アドレス変更のコメント欄のデフォルトスタイル */
+#addressChangeContainer .reason-field {
+    background-color: #ffebee;  /* デフォルトでピンク背景 */
+}
+
+/* チェックボックスがチェックされた時のスタイル */
+#addressChangeContainer .checkbox-checked .reason-field {
+    background-color: white;    /* チェック時は白背景 */
 }
 
 .radio-group {
@@ -234,5 +241,4 @@ textarea {
     width: 100%;
     min-height: 60px;
     resize: vertical;
-    background-color: white;
 }
