@@ -138,7 +138,7 @@ body {
 .reason-field.invalid,
 .radio-group.invalid,
 .checkbox-group.invalid {
-    background-color: #ffebee;
+    background-color: #ffebee; !important; /* !important を追加 */
 }
 
 .radio-group {
