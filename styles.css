@@ -107,6 +107,7 @@ body {
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
+    background-color: white;
 }
 
 /* 退職者から交通費変更までの理由フィールド */
@@ -120,6 +121,7 @@ body {
     border: 1px solid #ddd;
     border-radius: 4px;
     resize: vertical;
+    background-color: white;
 }
 
 .date-field {
@@ -127,13 +129,16 @@ body {
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
+    background-color: white;
 }
 
+/* バリデーション表示のスタイル */
 .name-field.invalid,
 .date-field.invalid,
-.reason-field.invalid {
+.reason-field.invalid,
+.radio-group.invalid,
+.checkbox-group.invalid {
     background-color: #ffebee;
-    border-color: #ffcdd2;
 }
 
 .radio-group {
@@ -145,12 +150,10 @@ body {
     white-space: nowrap;
 }
 
-.radio-group.invalid {
-    background-color: #ffebee;
-}
-
 .checkbox-group {
     white-space: nowrap;
+    padding: 5px 10px;
+    border-radius: 4px;
 }
 
 .add-button {
@@ -231,4 +234,5 @@ textarea {
     width: 100%;
     min-height: 60px;
     resize: vertical;
+    background-color: white;
 }
