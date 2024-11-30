@@ -123,53 +123,17 @@ function handleAddressChangeSubmitted(checkbox) {
     const reasonField = entryRow.querySelector('.reason-field');
     
     if (checkbox.checked) {
+        entryRow.classList.add('checkbox-checked');
         reasonField.classList.remove('required');
         reasonField.classList.remove('invalid');
-        reasonField.style.removeProperty('background-color');
     } else {
+        entryRow.classList.remove('checkbox-checked');
         reasonField.classList.add('required');
-        validateEntry(entryRow);
-    }
-}
-
-function validateEntry(entryRow) {
-    if (!entryRow) return false;
-    let isValid = true;
-    
-    const requiredFields = entryRow.querySelectorAll('.required');
-    requiredFields.forEach(field => {
-        if (!field.value.trim()) {
-            field.classList.add('invalid');
-            field.style.backgroundColor = '#ffebee';
-            isValid = false;
-        } else {
-            field.classList.remove('invalid');
-            field.style.backgroundColor = 'white';
-        }
-    });
-
-    const radioGroups = entryRow.querySelectorAll('.radio-group');
-    radioGroups.forEach(group => {
-        const radios = group.querySelectorAll('input[type="radio"]');
-        const radioChecked = Array.from(radios).some(radio => radio.checked);
-        if (radios.length > 0 && !radioChecked) {
-            group.classList.add('invalid');
-            isValid = false;
-        } else {
-            group.classList.remove('invalid');
-        }
-    });
-
-    // 追加ボタンの表示制御
-    const container = entryRow.closest('[id$="Container"]');
-    if (container) {
-        const addButton = container.parentElement.querySelector('.add-button');
-        if (addButton && container.lastElementChild === entryRow) {
-            addButton.style.display = isValid ? 'block' : 'none';
+        if (!reasonField.value.trim()) {
+            reasonField.classList.add('invalid');
         }
     }
-
-    return isValid;
+    validateEntryAndForm(entryRow);
 }
 function createNewEmployeeEntry() {
     const div = document.createElement('div');
@@ -360,6 +324,46 @@ function addLeave() {
     addEntry('leaveContainer', createLeaveEntry);
 }
 
+function validateEntry(entryRow) {
+    if (!entryRow) return false;
+    let isValid = true;
+    
+    // 必須フィールドのバリデーション
+    const requiredFields = entryRow.querySelectorAll('.required');
+    requiredFields.forEach(field => {
+        if (!field.value.trim()) {
+            field.classList.add('invalid');
+            isValid = false;
+        } else {
+            field.classList.remove('invalid');
+        }
+    });
+
+    // ラジオボタングループのバリデーション
+    const radioGroups = entryRow.querySelectorAll('.radio-group');
+    radioGroups.forEach(group => {
+        const radios = group.querySelectorAll('input[type="radio"]');
+        const radioChecked = Array.from(radios).some(radio => radio.checked);
+        if (radios.length > 0 && !radioChecked) {
+            group.classList.add('invalid');
+            isValid = false;
+        } else {
+            group.classList.remove('invalid');
+        }
+    });
+
+    // 追加ボタンの表示制御
+    const container = entryRow.closest('[id$="Container"]');
+    if (container) {
+        const addButton = container.parentElement.querySelector('.add-button');
+        if (addButton && container.lastElementChild === entryRow) {
+            addButton.style.display = isValid ? 'block' : 'none';
+        }
+    }
+
+    return isValid;
+}
+
 function validateEntryAndForm(entryRow) {
     validateEntry(entryRow);
     validateForm();
@@ -418,6 +422,7 @@ function removeEntry(button) {
     const container = entryRow.closest('[id$="Container"]');
     entryRow.remove();
     
+    // 最後のエントリーを削除した後の処理
     if (container && container.children.length > 0) {
         validateEntry(container.lastElementChild);
     }
