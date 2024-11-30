@@ -1,153 +1,141 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>月次人件費確認フォーム</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div class="form-container">
-    <div class="header-container">
-        <h2>月次人件費確認フォーム</h2>
-        <button type="button" class="clear-button" onclick="clearForm()">フォームをクリア</button>
+    <div class="form-container">
+        <div class="header-container">
+            <h2>月次人件費確認フォーム</h2>
+            <button type="button" class="clear-button" onclick="clearForm()">フォームをクリア</button>
+        </div>
+
+        <form id="expenseForm" onsubmit="return handleSubmit(event)">
+            <div class="form-group">
+                <div class="header-row">
+                    <label for="officeName">事業所名</label>
+                    <input type="text" id="officeName" class="required" onchange="validateForm()" onkeyup="validateForm()">
+                </div>
+                <div class="header-row">
+                    <label for="reportMonth">報告対象月</label>
+                    <input type="month" id="reportMonth" class="required" onchange="validateForm()">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="section-title">
+                    新規配属者
+                    <div class="radio-group">
+                        <input type="radio" name="hasNewEmployee" value="no" checked> なし
+                        <input type="radio" name="hasNewEmployee" value="yes"> あり
+                    </div>
+                </div>
+                <div id="newEmployeeDetail" class="detail-section">
+                    <div id="newEmployeeContainer"></div>
+                    <button type="button" class="add-button" onclick="addNewEmployee()">新規配属者を追加</button>
+                    <div class="note">※他事業所のPAで、当事業所でも勤務開始する場合にも記載してください。</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="section-title">
+                    当月退職者
+                    <div class="radio-group">
+                        <input type="radio" name="hasRetirement" value="no" checked> なし
+                        <input type="radio" name="hasRetirement" value="yes"> あり
+                    </div>
+                </div>
+                <div id="retirementDetail" class="detail-section">
+                    <div id="retirementContainer"></div>
+                    <button type="button" class="add-button" onclick="addRetirement()">退職者を追加</button>
+                    <div class="note">
+                        ※他事業所で勤務が継続するが、当事業所の勤務が最終の場合も記載してください。<br>
+                        ※休職の場合はコメント欄にその旨を記載してください。
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="section-title">
+                    在籍しているが勤務がない人
+                    <div class="radio-group">
+                        <input type="radio" name="hasNoWork" value="no" checked> なし
+                        <input type="radio" name="hasNoWork" value="yes"> あり
+                    </div>
+                </div>
+                <div id="noWorkDetail" class="detail-section">
+                    <div id="noWorkContainer"></div>
+                    <button type="button" class="add-button" onclick="addNoWork()">追加</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="section-title">
+                    給与・勤務形態の変更した人
+                    <div class="radio-group">
+                        <input type="radio" name="hasSalaryChange" value="no" checked> なし
+                        <input type="radio" name="hasSalaryChange" value="yes"> あり
+                    </div>
+                </div>
+                <div id="salaryChangeDetail" class="detail-section">
+                    <div id="salaryChangeContainer"></div>
+                    <button type="button" class="add-button" onclick="addSalaryChange()">追加</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="section-title">
+                    住所・交通費の変更した人
+                    <div class="radio-group">
+                        <input type="radio" name="hasAddressChange" value="no" checked> なし
+                        <input type="radio" name="hasAddressChange" value="yes"> あり
+                    </div>
+                </div>
+                <div id="addressChangeDetail" class="detail-section">
+                    <div id="addressChangeContainer"></div>
+                    <button type="button" class="add-button" onclick="addAddressChange()">追加</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="section-title">
+                    遅刻・早退等
+                    <div class="radio-group">
+                        <input type="radio" name="hasLateEarly" value="no" checked> なし
+                        <input type="radio" name="hasLateEarly" value="yes"> あり
+                    </div>
+                </div>
+                <div id="lateEarlyDetail" class="detail-section">
+                    <div id="lateEarlyContainer"></div>
+                    <button type="button" class="add-button" onclick="addLateEarly()">遅刻・早退を追加</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="section-title">
+                    有給・欠勤等
+                    <div class="radio-group">
+                        <input type="radio" name="hasLeave" value="no" checked> なし
+                        <input type="radio" name="hasLeave" value="yes"> あり
+                    </div>
+                </div>
+                <div id="leaveDetail" class="detail-section">
+                    <div id="leaveContainer"></div>
+                    <button type="button" class="add-button" onclick="addLeave()">有給・欠勤を追加</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="otherComments">その他コメント</label>
+                <textarea id="otherComments"></textarea>
+            </div>
+
+            <button type="submit" id="submitButton" disabled>メール送信</button>
+        </form>
     </div>
-
-    <form id="expenseForm" onsubmit="return handleSubmit(event)">
-        <div class="form-group">
-            <div class="header-row">
-                <label for="officeName">事業所名</label>
-                <input type="text" id="officeName" class="required" required>
-            </div>
-
-            <div class="header-row">
-                <label for="reportMonth">報告対象月</label>
-                <input type="month" id="reportMonth" class="required" required>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="section-title">
-                新規配属者
-                <div class="radio-group">
-                    <input type="radio" name="hasNewEmployee" value="no" checked> なし
-                    <input type="radio" name="hasNewEmployee" value="yes"> あり
-                </div>
-            </div>
-            <div class="section-note">※他事業所のPAで、当事業所でも勤務開始する場合にも記載してください。</div>
-
-            <div id="newEmployeeDetail" class="detail-section">
-                <div id="newEmployeeContainer"></div>
-                <button type="button" class="add-button" onclick="addNewEmployee()">新規配属者を追加</button>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="section-title">
-                当月退職者
-                <div class="radio-group">
-                    <input type="radio" name="hasRetirement" value="no" checked> なし
-                    <input type="radio" name="hasRetirement" value="yes"> あり
-                </div>
-            </div>
-            <div class="section-note">
-                ※他事業所で勤務が継続するが、当事業所の勤務が最終の場合も記載してください。<br>
-                ※休職の場合はコメント欄にその旨を記載してください。
-            </div>
-
-            <div id="retirementDetail" class="detail-section">
-                <div id="retirementContainer"></div>
-                <button type="button" class="add-button" onclick="addRetirement()">退職者を追加</button>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="section-title">
-                在籍しているが勤務がない人
-                <div class="radio-group">
-                    <input type="radio" name="hasNoWork" value="no" checked> なし
-                    <input type="radio" name="hasNoWork" value="yes"> あり
-                </div>
-            </div>
-
-            <div id="noWorkDetail" class="detail-section">
-                <div id="noWorkContainer"></div>
-                <button type="button" class="add-button" onclick="addNoWork()">追加</button>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="section-title">
-                給与・勤務形態の変更した人
-                <div class="radio-group">
-                    <input type="radio" name="hasSalaryChange" value="no" checked> なし
-                    <input type="radio" name="hasSalaryChange" value="yes"> あり
-                </div>
-            </div>
-
-            <div id="salaryChangeDetail" class="detail-section">
-                <div id="salaryChangeContainer"></div>
-                <button type="button" class="add-button" onclick="addSalaryChange()">追加</button>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="section-title">
-                住所・交通費の変更した人
-                <div class="radio-group">
-                    <input type="radio" name="hasAddressChange" value="no" checked> なし
-                    <input type="radio" name="hasAddressChange" value="yes"> あり
-                </div>
-            </div>
-
-            <div id="addressChangeDetail" class="detail-section">
-                <div id="addressChangeContainer"></div>
-                <button type="button" class="add-button" onclick="addAddressChange()">追加</button>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="section-title">
-                遅刻・早退等
-                <div class="radio-group">
-                    <input type="radio" name="hasLateEarly" value="no" checked> なし
-                    <input type="radio" name="hasLateEarly" value="yes"> あり
-                </div>
-            </div>
-
-            <div id="lateEarlyDetail" class="detail-section">
-                <div id="lateEarlyContainer"></div>
-                <button type="button" class="add-button" onclick="addLateEarly()">遅刻・早退を追加</button>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="section-title">
-                有給・欠勤等
-                <div class="radio-group">
-                    <input type="radio" name="hasLeave" value="no" checked> なし
-                    <input type="radio" name="hasLeave" value="yes"> あり
-                </div>
-            </div>
-
-            <div id="leaveDetail" class="detail-section">
-                <div id="leaveContainer"></div>
-                <button type="button" class="add-button" onclick="addLeave()">有給・欠勤を追加</button>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label for="otherComments">その他コメント</label>
-            <textarea id="otherComments"></textarea>
-        </div>
-
-        <div class="form-group">
-            <label for="csvFile">CSVファイル添付</label>
-            <input type="file" id="csvFile" accept=".csv" class="required" required>
-        </div>
-
-        <button type="submit" id="submitButton" disabled>メール送信</button>
-    </form>
-</div>
-<script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
