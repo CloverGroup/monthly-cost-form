@@ -20,6 +20,73 @@ document.addEventListener('DOMContentLoaded', function() {
     validateForm();
 });
 
+function setDefaultMonth() {
+    const today = new Date();
+    const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1);
+    const year = lastMonth.getFullYear();
+    const month = String(lastMonth.getMonth() + 1).padStart(2, '0');
+    
+    const reportMonthInput = document.getElementById('reportMonth');
+    reportMonthInput.value = `${year}-${month}`;
+    
+    const maxDate = `${year}-${month}`;
+    reportMonthInput.setAttribute('max', maxDate);
+    
+    const minDate = `${year - 3}-${month}`;
+    reportMonthInput.setAttribute('min', minDate);
+}
+
+function setDateConstraints() {
+    const today = new Date();
+    const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1);
+    const year = lastMonth.getFullYear();
+    const month = String(lastMonth.getMonth() + 1).padStart(2, '0');
+    
+    const firstDay = `${year}-${month}-01`;
+    const lastDay = `${year}-${month}-${new Date(year, lastMonth.getMonth() + 1, 0).getDate()}`;
+
+    return { min: firstDay, max: lastDay };
+}
+
+function setupToggle(radioName, detailId, addInitialEntry) {
+    const radios = document.getElementsByName(radioName);
+    const detail = document.getElementById(detailId);
+    
+    if (!radios || !detail) {
+        console.error(`Setup failed for ${radioName}`);
+        return;
+    }
+
+    radios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            console.log(`Radio changed: ${radioName} - ${this.value}`);
+            detail.style.display = this.value === 'yes' ? 'block' : 'none';
+            
+            const container = detail.querySelector('[id$="Container"]');
+            if (container) {
+                if (this.value === 'yes' && container.children.length === 0) {
+                    addInitialEntry();
+                } else if (this.value === 'no') {
+                    container.innerHTML = '';
+                }
+            }
+            validateForm();
+        });
+    });
+}
+
+function addEntry(containerId, createFn) {
+    const container = document.getElementById(containerId);
+    if (!container) {
+        console.error(`Container not found: ${containerId}`);
+        return;
+    }
+    const entry = createFn();
+    container.appendChild(entry);
+    validateEntry(entry);
+    validateForm();
+}
+
 function handleSubmissionStatusChange(checkbox, type) {
     const entryRow = checkbox.closest('.entry-row');
     const reasonField = entryRow.querySelector('.reason-field');
@@ -79,61 +146,6 @@ function clearForm() {
         document.getElementById('otherComments').value = '';
         validateForm();
     }
-}
-
-function setDefaultMonth() {
-    const today = new Date();
-    const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1);
-    const year = lastMonth.getFullYear();
-    const month = String(lastMonth.getMonth() + 1).padStart(2, '0');
-    
-    const reportMonthInput = document.getElementById('reportMonth');
-    reportMonthInput.value = `${year}-${month}`;
-    
-    const maxDate = `${year}-${month}`;
-    reportMonthInput.setAttribute('max', maxDate);
-    
-    const minDate = `${year - 3}-${month}`;
-    reportMonthInput.setAttribute('min', minDate);
-}
-
-function setDateConstraints() {
-    const today = new Date();
-    const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1);
-    const year = lastMonth.getFullYear();
-    const month = String(lastMonth.getMonth() + 1).padStart(2, '0');
-    
-    const firstDay = `${year}-${month}-01`;
-    const lastDay = `${year}-${month}-${new Date(year, lastMonth.getMonth() + 1, 0).getDate()}`;
-
-    return { min: firstDay, max: lastDay };
-}
-
-function setupToggle(radioName, detailId, addInitialEntry) {
-    const radios = document.getElementsByName(radioName);
-    const detail = document.getElementById(detailId);
-    
-    if (!radios || !detail) {
-        console.error(`Setup failed for ${radioName}`);
-        return;
-    }
-
-    radios.forEach(radio => {
-        radio.addEventListener('change', function() {
-            console.log(`Radio changed: ${radioName} - ${this.value}`);
-            detail.style.display = this.value === 'yes' ? 'block' : 'none';
-            
-            const container = detail.querySelector('[id$="Container"]');
-            if (container) {
-                if (this.value === 'yes' && container.children.length === 0) {
-                    addInitialEntry();
-                } else if (this.value === 'no') {
-                    container.innerHTML = '';
-                }
-            }
-            validateForm();
-        });
-    });
 }
 function createNewEmployeeEntry() {
     const div = document.createElement('div');
@@ -294,18 +306,6 @@ function createLeaveEntry() {
     return div;
 }
 
-function addEntry(containerId, createFn) {
-    const container = document.getElementById(containerId);
-    if (!container) {
-        console.error(`Container not found: ${containerId}`);
-        return;
-    }
-    const entry = createFn();
-    container.appendChild(entry);
-    validateEntry(entry);
-    validateForm();
-}
-
 function addNewEmployee() {
     addEntry('newEmployeeContainer', createNewEmployeeEntry);
 }
@@ -333,7 +333,6 @@ function addLateEarly() {
 function addLeave() {
     addEntry('leaveContainer', createLeaveEntry);
 }
-
 function validateEntry(entryRow) {
     if (!entryRow) return false;
     let isValid = true;
@@ -359,6 +358,14 @@ function validateEntry(entryRow) {
             group.classList.remove('invalid');
         }
     });
+
+    const container = entryRow.closest('[id$="Container"]');
+    if (container) {
+        const addButton = container.parentElement.querySelector('.add-button');
+        if (addButton && container.lastElementChild === entryRow) {
+            addButton.style.display = isValid ? 'block' : 'none';
+        }
+    }
 
     return isValid;
 }
@@ -424,10 +431,7 @@ function removeEntry(button) {
     if (container) {
         const entries = container.querySelectorAll('.entry-row');
         if (entries.length > 0) {
-            const addButton = container.parentElement.querySelector('.add-button');
-            if (addButton) {
-                addButton.style.display = validateEntry(entries[entries.length - 1]) ? 'block' : 'none';
-            }
+            validateEntry(entries[entries.length - 1]);
         }
     }
     validateForm();
@@ -480,41 +484,6 @@ function collectSectionData(sectionKey, containerId) {
     return data;
 }
 
-async function handleSubmit(event) {
-    event.preventDefault();
-    const submitButton = document.getElementById('submitButton');
-
-    if (submitButton.disabled) return false;
-
-    if (!validateForm()) {
-        alert('必須項目を入力してください');
-        return false;
-    }
-
-    try {
-        submitButton.disabled = true;
-        submitButton.textContent = '送信中...';
-
-        const formData = collectFormData();
-        const response = await fetch('https://script.google.com/macros/s/AKfycbzXd99vpht-E5ibgc0ptYaUOeTG9fzJT2tXeUlpsFAajkAHhEHKCeCz-9SqrMNvNx4/exec', {
-            method: 'POST',
-            mode: 'no-cors',
-            body: JSON.stringify(formData)
-        });
-        alert('送信が完了しました');
-        clearForm();
-    } catch (error) {
-        console.error('送信エラー:', error);
-        alert('送信に失敗しました。もう一度お試しください。');
-    } finally {
-        submitButton.disabled = false;
-        submitButton.textContent = 'メール送信';
-        validateForm();
-    }
-
-    return false;
-}
-
 function collectFormData() {
     const data = {
         officeName: document.getElementById('officeName').value,
@@ -540,4 +509,40 @@ function collectFormData() {
     });
 
     return data;
+}
+
+async function handleSubmit(event) {
+    event.preventDefault();
+    const submitButton = document.getElementById('submitButton');
+
+    if (submitButton.disabled) return false;
+
+    if (!validateForm()) {
+        alert('必須項目を入力してください');
+        return false;
+    }
+
+    try {
+        submitButton.disabled = true;
+        submitButton.textContent = '送信中...';
+
+        const formData = collectFormData();
+        const response = await fetch('https://script.google.com/macros/s/AKfycbzXd99vpht-E5ibgc0ptYaUOeTG9fzJT2tXeUlpsFAajkAHhEHKCeCz-9SqrMNvNx4/exec', {
+            method: 'POST',
+            mode: 'no-cors',
+            body: JSON.stringify(formData)
+        });
+
+        alert('送信が完了しました');
+        clearForm();
+    } catch (error) {
+        console.error('送信エラー:', error);
+        alert('送信に失敗しました。もう一度お試しください。');
+    } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = 'メール送信';
+        validateForm();
+    }
+
+    return false;
 }
