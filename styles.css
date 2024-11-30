@@ -96,7 +96,7 @@ body {
 }
 
 .name-field {
-    width: 150px;
+    width: 200px;
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
@@ -111,7 +111,7 @@ body {
 
 .reason-field {
     flex: 1;
-    min-width: 200px;
+    min-width: 500px;
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
