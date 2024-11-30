@@ -71,6 +71,19 @@ function setDefaultMonth() {
     reportMonthInput.setAttribute('min', minDate);
 }
 
+function setDateConstraints() {
+    const today = new Date();
+    const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1);
+    const year = lastMonth.getFullYear();
+    const month = String(lastMonth.getMonth() + 1).padStart(2, '0');
+    
+    // 月の最初と最後の日を取得
+    const firstDay = `${year}-${month}-01`;
+    const lastDay = `${year}-${month}-${new Date(year, lastMonth.getMonth() + 1, 0).getDate()}`;
+
+    return { min: firstDay, max: lastDay };
+}
+
 function setupToggle(radioName, detailId, addInitialEntry) {
     const radios = document.getElementsByName(radioName);
     const detail = document.getElementById(detailId);
@@ -180,12 +193,18 @@ function createSalaryChangeEntry() {
 function createAddressChangeEntry() {
     const div = document.createElement('div');
     div.className = 'entry-row';
+    const uniqueId = Date.now();
     div.innerHTML = `
         <input type="text" placeholder="氏名" class="name-field required"
                maxlength="15"
                onchange="validateEntryAndForm(this.closest('.entry-row'))"
                onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
-        <textarea placeholder="変更内容" class="reason-field required"
+        <div class="checkbox-group">
+            <input type="checkbox" id="submitted_${uniqueId}" required
+                   onchange="validateEntryAndForm(this.closest('.entry-row'))">
+            <label for="submitted_${uniqueId}">変更届を提出済み</label>
+        </div>
+        <textarea placeholder="変更日・変更内容（別途変更届が必要なものは提出してください）" class="reason-field required"
                 onchange="validateEntryAndForm(this.closest('.entry-row'))"
                 onkeyup="validateEntryAndForm(this.closest('.entry-row'))"></textarea>
         <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
@@ -197,12 +216,15 @@ function createLateEarlyEntry() {
     const div = document.createElement('div');
     div.className = 'entry-row';
     const uniqueId = Date.now();
+    const { min, max } = setDateConstraints();
+    
     div.innerHTML = `
         <input type="text" placeholder="氏名" class="name-field required"
                maxlength="15"
                onchange="validateEntryAndForm(this.closest('.entry-row'))"
                onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
         <input type="date" class="date-field required"
+               min="${min}" max="${max}"
                onchange="validateEntryAndForm(this.closest('.entry-row'))">
         <div class="radio-group">
             <input type="radio" name="lateType_${uniqueId}" value="遅刻" required
@@ -224,12 +246,15 @@ function createLeaveEntry() {
     const div = document.createElement('div');
     div.className = 'entry-row';
     const uniqueId = Date.now();
+    const { min, max } = setDateConstraints();
+    
     div.innerHTML = `
         <input type="text" placeholder="氏名" class="name-field required"
                maxlength="15"
                onchange="validateEntryAndForm(this.closest('.entry-row'))"
                onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
         <input type="date" class="date-field required"
+               min="${min}" max="${max}"
                onchange="validateEntryAndForm(this.closest('.entry-row'))">
         <div class="radio-group">
             <input type="radio" name="leaveType_${uniqueId}" value="有給" required
@@ -309,7 +334,18 @@ function validateEntry(entryRow) {
         }
     });
 
-    // 追加ボタンの表示制御を変更
+    // チェックボックスのバリデーション（required属性がある場合）
+    const requiredCheckboxes = entryRow.querySelectorAll('input[type="checkbox"][required]');
+    requiredCheckboxes.forEach(checkbox => {
+        if (!checkbox.checked) {
+            checkbox.closest('.checkbox-group').classList.add('invalid');
+            isValid = false;
+        } else {
+            checkbox.closest('.checkbox-group').classList.remove('invalid');
+        }
+    });
+
+// 追加ボタンの表示制御
     const container = entryRow.closest('[id$="Container"]');
     if (container) {
         const addButton = container.parentElement.querySelector('.add-button');
@@ -356,12 +392,13 @@ function validateForm() {
         {name: 'hasLeave', container: 'leaveContainer'}
     ];
 
-sections.forEach(section => {
+    sections.forEach(section => {
         const radio = document.querySelector(`input[name="${section.name}"]:checked`);
         if (radio && radio.value === 'yes') {
             const container = document.getElementById(section.container);
             if (container) {
                 const entries = container.querySelectorAll('.entry-row');
+                if (entries.length === 0) isValid = false;
                 entries.forEach(entry => {
                     if (!validateEntry(entry)) isValid = false;
                 });
@@ -375,7 +412,13 @@ sections.forEach(section => {
 
 function removeEntry(button) {
     const entryRow = button.closest('.entry-row');
+    const container = entryRow.closest('[id$="Container"]');
     entryRow.remove();
+    
+    // 最後のエントリーを削除した後の処理
+    if (container && container.children.length > 0) {
+        validateEntry(container.lastElementChild);
+    }
     validateForm();
 }
 
@@ -465,6 +508,11 @@ function collectSectionData(sectionKey, containerId) {
                 const typeRadio = entry.querySelector('input[type="radio"]:checked');
                 entryData.type = typeRadio ? typeRadio.value : '';
                 entryData.reason = entry.querySelector('.reason-field').value;
+                break;
+
+            case 'addressChange':
+                entryData.submitted = entry.querySelector('input[type="checkbox"]').checked;
+                entryData.comment = entry.querySelector('.reason-field').value;
                 break;
 
             default:
