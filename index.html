@@ -51,7 +51,123 @@
             </div>
         </div>
 
-        <!-- 他のセクションは同じ構造で追加... -->
+        <div class="form-group">
+            <div class="section-title">
+                当月退職者
+                <div class="radio-group">
+                    <input type="radio" name="hasRetirement" value="no" checked
+                           onchange="validateForm()"> なし
+                    <input type="radio" name="hasRetirement" value="yes"
+                           onchange="validateForm()"> あり
+                </div>
+            </div>
+
+            <div id="retirementDetail" class="detail-section">
+                <div id="retirementContainer"></div>
+                <button type="button" class="add-button" onclick="addRetirement()">
+                    退職者を追加
+                </button>
+                <div class="note">
+                    ※他事業所で勤務が継続するが、当事業所の勤務が最終の場合も記載してください。<br>
+                    ※休職の場合はコメント欄にその旨を記載してください。
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="section-title">
+                在籍しているが勤務がない人
+                <div class="radio-group">
+                    <input type="radio" name="hasNoWork" value="no" checked
+                           onchange="validateForm()"> なし
+                    <input type="radio" name="hasNoWork" value="yes"
+                           onchange="validateForm()"> あり
+                </div>
+            </div>
+
+            <div id="noWorkDetail" class="detail-section">
+                <div id="noWorkContainer"></div>
+                <button type="button" class="add-button" onclick="addNoWork()">
+                    追加
+                </button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="section-title">
+                給与・勤務形態の変更した人
+                <div class="radio-group">
+                    <input type="radio" name="hasSalaryChange" value="no" checked
+                           onchange="validateForm()"> なし
+                    <input type="radio" name="hasSalaryChange" value="yes"
+                           onchange="validateForm()"> あり
+                </div>
+            </div>
+
+            <div id="salaryChangeDetail" class="detail-section">
+                <div id="salaryChangeContainer"></div>
+                <button type="button" class="add-button" onclick="addSalaryChange()">
+                    追加
+                </button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="section-title">
+                住所・交通費の変更した人
+                <div class="radio-group">
+                    <input type="radio" name="hasAddressChange" value="no" checked
+                           onchange="validateForm()"> なし
+                    <input type="radio" name="hasAddressChange" value="yes"
+                           onchange="validateForm()"> あり
+                </div>
+            </div>
+
+            <div id="addressChangeDetail" class="detail-section">
+                <div id="addressChangeContainer"></div>
+                <button type="button" class="add-button" onclick="addAddressChange()">
+                    追加
+                </button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="section-title">
+                遅刻・早退等
+                <div class="radio-group">
+                    <input type="radio" name="hasLateEarly" value="no" checked
+                           onchange="validateForm()"> なし
+                    <input type="radio" name="hasLateEarly" value="yes"
+                           onchange="validateForm()"> あり
+                </div>
+            </div>
+
+            <div id="lateEarlyDetail" class="detail-section">
+                <div id="lateEarlyContainer"></div>
+                <button type="button" class="add-button" onclick="addLateEarly()">
+                    遅刻・早退を追加
+                </button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="section-title">
+                有給・欠勤等
+                <div class="radio-group">
+                    <input type="radio" name="hasLeave" value="no" checked
+                           onchange="validateForm()"> なし
+                    <input type="radio" name="hasLeave" value="yes"
+                           onchange="validateForm()"> あり
+                </div>
+            </div>
+
+            <div id="leaveDetail" class="detail-section">
+                <div id="leaveContainer"></div>
+                <button type="button" class="add-button" onclick="addLeave()">
+                    有給・欠勤を追加
+                </button>
+            </div>
+        </div>
 
         <div class="form-group">
             <label for="otherComments">その他コメント</label>
@@ -82,3 +198,4 @@
 <script src="script.js"></script>
 </body>
 </html>
+
