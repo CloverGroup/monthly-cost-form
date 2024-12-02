@@ -214,9 +214,9 @@ function createSalaryChangeEntry() {
                onchange="validateEntryAndForm(this.closest('.entry-row'))"
                onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
         <div class="checkbox-group">
-            <input type="checkbox" id="contract_${uniqueId}" 
+            <input type="checkbox" id="salary_contract_${uniqueId}" 
                    onchange="handleSalaryChangeSubmitted(this)">
-            <label for="contract_${uniqueId}">雇用契約書を送付済み</label>
+            <label for="salary_contract_${uniqueId}">雇用契約書を送付済み</label>
         </div>
         <textarea placeholder="変更内容" class="reason-field required"
                 onchange="validateEntryAndForm(this.closest('.entry-row'))"
