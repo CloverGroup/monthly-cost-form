@@ -78,7 +78,6 @@ body {
     border-left: 3px solid #4CAF50;
 }
 
-/* 通常の入力行スタイル */
 .entry-row {
     display: flex;
     align-items: flex-start;
@@ -89,7 +88,6 @@ body {
     margin: 10px 0;
 }
 
-/* 遅刻・早退と有給・欠勤用の特別なレイアウト */
 #lateEarlyContainer .entry-row,
 #leaveContainer .entry-row {
     flex-wrap: wrap;
@@ -101,7 +99,6 @@ body {
     margin-top: 10px;
 }
 
-/* 名前フィールドの基本スタイル */
 .name-field {
     width: 210px;
     padding: 8px;
@@ -110,8 +107,10 @@ body {
     background-color: white;
 }
 
-/* 理由フィールドの基本スタイル */
-.reason-field {
+#retirementContainer .reason-field,
+#noWorkContainer .reason-field,
+#salaryChangeContainer .reason-field,
+#addressChangeContainer .reason-field {
     flex: 1;
     min-width: 200px;
     padding: 8px;
@@ -127,24 +126,20 @@ body {
     border-radius: 4px;
 }
 
-/* バリデーション表示のスタイル */
 .name-field.invalid,
 .date-field.invalid,
-.reason-field.invalid,
-.radio-group.invalid {
+.reason-field.invalid:not(.checkbox-checked .reason-field),
+.radio-group.invalid,
+.file-input.invalid {
     background-color: #ffebee;
 }
 
-/* アドレス変更とサラリー変更のコメント欄のデフォルトスタイル */
-#addressChangeContainer .reason-field,
-#salaryChangeContainer .reason-field {
-    background-color: #ffebee;  /* デフォルトでピンク背景 */
+#addressChangeContainer .reason-field {
+    background-color: #ffebee;
 }
 
-/* チェックボックスがチェックされた時のスタイル */
-#addressChangeContainer .checkbox-checked .reason-field,
-#salaryChangeContainer .checkbox-checked .reason-field {
-    background-color: white;    /* チェック時は白背景 */
+#addressChangeContainer .checkbox-checked .reason-field {
+    background-color: white;
 }
 
 .radio-group {
@@ -242,11 +237,23 @@ textarea {
     resize: vertical;
 }
 
-#otherComments {
+.file-upload-container {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+}
+
+.file-upload-container label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.file-input {
     width: 100%;
-    min-height: 100px;
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
-    resize: vertical;
+    background-color: white;
 }
