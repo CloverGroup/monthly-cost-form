@@ -134,11 +134,13 @@ body {
     background-color: #ffebee;
 }
 
-#addressChangeContainer .reason-field {
+#addressChangeContainer .reason-field,
+#salaryChangeContainer .reason-field {
     background-color: #ffebee;
 }
 
-#addressChangeContainer .checkbox-checked .reason-field {
+#addressChangeContainer .checkbox-checked .reason-field,
+#salaryChangeContainer .checkbox-checked .reason-field {
     background-color: white;
 }
 
