@@ -86,7 +86,7 @@ function setDateConstraints() {
 function setupToggle(radioName, detailId, addInitialEntry) {
     const radios = document.getElementsByName(radioName);
     const detail = document.getElementById(detailId);
-    
+
     if (!radios || !detail) {
         console.error(`Setup failed for ${radioName}`);
         return;
@@ -94,24 +94,34 @@ function setupToggle(radioName, detailId, addInitialEntry) {
 
     radios.forEach(radio => {
         radio.addEventListener('change', function() {
-            console.log(`Radio changed: ${radioName} - ${this.value}`);
             const container = detail.querySelector('[id$="Container"]');
-            
             if (this.value === 'yes') {
                 detail.style.display = 'block';
                 if (container && container.children.length === 0) {
-                    addInitialEntry();
+                    const entry = addInitialEntry();
+                    container.appendChild(entry);
+                    const nameField = entry.querySelector('.name-field');
+                    if (nameField) nameField.focus(); // フォーカス移動
                 }
             } else {
                 detail.style.display = 'none';
-                if (container) {
-                    container.innerHTML = '';
-                }
+                if (container) container.innerHTML = '';
             }
             validateForm();
         });
     });
 }
+
+function addEntry(containerId, createFn) {
+    const container = document.getElementById(containerId);
+    const entry = createFn();
+    container.appendChild(entry);
+    const nameField = entry.querySelector('.name-field');
+    if (nameField) nameField.focus(); // フォーカス移動
+    validateEntry(entry);
+    validateForm();
+}
+
 function handleAddressChangeSubmitted(checkbox) {
     const entryRow = checkbox.closest('.entry-row');
     const reasonField = entryRow.querySelector('.reason-field');
@@ -459,7 +469,7 @@ function removeEntry(button) {
 }
 
 async function handleSubmit(event) {
-    event.preventDefault();
+    event.preventDefault(); // フォームのデフォルト動作をキャンセル
     const submitButton = document.getElementById('submitButton');
 
     if (submitButton.disabled) return false;
@@ -473,11 +483,20 @@ async function handleSubmit(event) {
         submitButton.disabled = true;
         submitButton.textContent = '送信中...';
 
-        const formData = collectFormData();
+        const formData = new FormData();
+        formData.append('officeName', document.getElementById('officeName').value);
+        formData.append('reportMonth', document.getElementById('reportMonth').value);
+        formData.append('otherComments', document.getElementById('otherComments').value);
+
+        const csvFile = document.getElementById('csvFile').files[0];
+        if (csvFile) formData.append('csvFile', csvFile);
+
+        const optionalFile = document.getElementById('optionalFile').files[0];
+        if (optionalFile) formData.append('optionalFile', optionalFile);
+
         const response = await fetch('https://script.google.com/macros/s/AKfycbzXd99vpht-E5ibgc0ptYaUOeTG9fzJT2tXeUlpsFAajkAHhEHKCeCz-9SqrMNvNx4/exec', {
             method: 'POST',
-            mode: 'no-cors',
-            body: JSON.stringify(formData)
+            body: formData
         });
 
         alert('送信が完了しました');
@@ -491,7 +510,7 @@ async function handleSubmit(event) {
         validateForm();
     }
 
-    return false;
+    return false; // フォーム送信後もデフォルト動作を無効化
 }
 
 function collectFormData() {
