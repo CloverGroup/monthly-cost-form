@@ -93,25 +93,29 @@ function setupToggle(radioName, detailId, addInitialEntry) {
     }
 
     radios.forEach(radio => {
-        radio.addEventListener('change', function() {
+        radio.addEventListener('change', function () {
             const container = detail.querySelector('[id$="Container"]');
-            
+
+            // 「あり」が選択された場合、セクションを表示してエントリーを初期化
             if (this.value === 'yes') {
-                detail.style.display = 'block'; // セクション表示
+                detail.style.display = 'block';
                 if (container && container.children.length === 0) {
                     const entry = addInitialEntry();
                     container.appendChild(entry);
 
-                    // フォーカスを適用
+                    // 氏名フィールドにフォーカスを設定
                     const nameField = entry.querySelector('.name-field');
                     if (nameField) {
-                        setTimeout(() => nameField.focus(), 0); // 非同期でフォーカス
+                        setTimeout(() => nameField.focus(), 0);
                     }
                 }
             } else {
-                detail.style.display = 'none'; // セクション非表示
-                if (container) container.innerHTML = ''; // エントリークリア
+                // 「なし」が選択された場合、セクションを非表示にしてエントリーをクリア
+                detail.style.display = 'none';
+                if (container) container.innerHTML = '';
             }
+
+            // フォーム全体のバリデーションを更新
             validateForm();
         });
     });
@@ -122,15 +126,38 @@ function addEntry(containerId, createFn) {
     const entry = createFn();
     container.appendChild(entry);
 
-    // フォーカスを適用
+    // 氏名フィールドにフォーカスを設定
     const nameField = entry.querySelector('.name-field');
     if (nameField) {
-        setTimeout(() => nameField.focus(), 0); // 非同期でフォーカス
+        setTimeout(() => nameField.focus(), 0);
     }
 
+    // エントリーおよびフォーム全体のバリデーションを更新
     validateEntry(entry);
     validateForm();
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+    console.log('Initializing form...');
+
+    // セクションの初期設定
+    const sections = [
+        { radioName: 'hasNewEmployee', detailId: 'newEmployeeDetail', addFn: addNewEmployee },
+        { radioName: 'hasRetirement', detailId: 'retirementDetail', addFn: addRetirement },
+        { radioName: 'hasNoWork', detailId: 'noWorkDetail', addFn: addNoWork },
+        { radioName: 'hasSalaryChange', detailId: 'salaryChangeDetail', addFn: addSalaryChange },
+        { radioName: 'hasAddressChange', detailId: 'addressChangeDetail', addFn: addAddressChange },
+        { radioName: 'hasLateEarly', detailId: 'lateEarlyDetail', addFn: addLateEarly },
+        { radioName: 'hasLeave', detailId: 'leaveDetail', addFn: addLeave }
+    ];
+
+    sections.forEach(section => {
+        setupToggle(section.radioName, section.detailId, section.addFn);
+    });
+
+    setDefaultMonth();
+    validateForm();
+});
     
 function handleAddressChangeSubmitted(checkbox) {
     const entryRow = checkbox.closest('.entry-row');
