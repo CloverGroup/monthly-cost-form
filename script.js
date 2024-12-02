@@ -20,6 +20,40 @@ document.addEventListener('DOMContentLoaded', function() {
     validateForm();
 });
 
+function clearForm() {
+    if (confirm('入力内容をクリアしてよろしいですか？')) {
+        document.getElementById('officeName').value = '';
+        setDefaultMonth();
+
+        const sections = [
+            'hasNewEmployee',
+            'hasRetirement',
+            'hasNoWork',
+            'hasSalaryChange',
+            'hasAddressChange',
+            'hasLateEarly',
+            'hasLeave'
+        ];
+
+        sections.forEach(section => {
+            document.querySelector(`input[name="${section}"][value="no"]`).checked = true;
+            const detailId = section.replace('has', '') + 'Detail';
+            const detail = document.getElementById(detailId);
+            if (detail) {
+                detail.style.display = 'none';
+                const container = detail.querySelector('[id$="Container"]');
+                if (container) {
+                    container.innerHTML = '';
+                }
+            }
+        });
+
+        document.getElementById('otherComments').value = '';
+        document.getElementById('csvFile').value = '';
+        validateForm();
+    }
+}
+
 function setDefaultMonth() {
     const today = new Date();
     const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1);
@@ -60,13 +94,16 @@ function setupToggle(radioName, detailId, addInitialEntry) {
     radios.forEach(radio => {
         radio.addEventListener('change', function() {
             console.log(`Radio changed: ${radioName} - ${this.value}`);
-            detail.style.display = this.value === 'yes' ? 'block' : 'none';
-            
             const container = detail.querySelector('[id$="Container"]');
-            if (container) {
-                if (this.value === 'yes' && container.children.length === 0) {
+            
+            if (this.value === 'yes') {
+                detail.style.display = 'block';
+                if (container && container.children.length === 0) {
                     addInitialEntry();
-                } else if (this.value === 'no') {
+                }
+            } else {
+                detail.style.display = 'none';
+                if (container) {
                     container.innerHTML = '';
                 }
             }
@@ -75,19 +112,7 @@ function setupToggle(radioName, detailId, addInitialEntry) {
     });
 }
 
-function addEntry(containerId, createFn) {
-    const container = document.getElementById(containerId);
-    if (!container) {
-        console.error(`Container not found: ${containerId}`);
-        return;
-    }
-    const entry = createFn();
-    container.appendChild(entry);
-    validateEntry(entry);
-    validateForm();
-}
-
-function handleSubmissionStatusChange(checkbox, type) {
+function handleAddressChangeSubmitted(checkbox) {
     const entryRow = checkbox.closest('.entry-row');
     const reasonField = entryRow.querySelector('.reason-field');
     
@@ -95,58 +120,16 @@ function handleSubmissionStatusChange(checkbox, type) {
         entryRow.classList.add('checkbox-checked');
         reasonField.classList.remove('required');
         reasonField.classList.remove('invalid');
-        if (type === 'address') {
-            reasonField.placeholder = '変更日・変更内容（任意）';
-        } else if (type === 'salary') {
-            reasonField.placeholder = '変更内容（任意）';
-        }
     } else {
         entryRow.classList.remove('checkbox-checked');
         reasonField.classList.add('required');
         if (!reasonField.value.trim()) {
             reasonField.classList.add('invalid');
         }
-        if (type === 'address') {
-            reasonField.placeholder = '変更日・変更内容（別途変更届が必要なものは提出してください）';
-        } else if (type === 'salary') {
-            reasonField.placeholder = '変更内容';
-        }
     }
     validateEntryAndForm(entryRow);
 }
 
-function clearForm() {
-    if (confirm('入力内容をクリアしてよろしいですか？')) {
-        document.getElementById('officeName').value = '';
-        setDefaultMonth();
-
-        const sections = [
-            'hasNewEmployee',
-            'hasRetirement',
-            'hasNoWork',
-            'hasSalaryChange',
-            'hasAddressChange',
-            'hasLateEarly',
-            'hasLeave'
-        ];
-
-        sections.forEach(section => {
-            document.querySelector(`input[name="${section}"][value="no"]`).checked = true;
-            const detailId = section.replace('has', '') + 'Detail';
-            const detail = document.getElementById(detailId);
-            if (detail) {
-                detail.style.display = 'none';
-                const container = detail.querySelector('[id$="Container"]');
-                if (container) {
-                    container.innerHTML = '';
-                }
-            }
-        });
-
-        document.getElementById('otherComments').value = '';
-        validateForm();
-    }
-}
 function createNewEmployeeEntry() {
     const div = document.createElement('div');
     div.className = 'entry-row';
@@ -186,7 +169,6 @@ function createRetirementEntry() {
     `;
     return div;
 }
-
 function createNoWorkEntry() {
     const div = document.createElement('div');
     div.className = 'entry-row';
@@ -206,17 +188,11 @@ function createNoWorkEntry() {
 function createSalaryChangeEntry() {
     const div = document.createElement('div');
     div.className = 'entry-row';
-    const uniqueId = Date.now();
     div.innerHTML = `
         <input type="text" placeholder="氏名" class="name-field required"
                maxlength="15"
                onchange="validateEntryAndForm(this.closest('.entry-row'))"
                onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
-        <div class="checkbox-group">
-            <input type="checkbox" id="submitted_${uniqueId}" 
-                   onchange="handleSubmissionStatusChange(this, 'salary')">
-            <label for="submitted_${uniqueId}">雇用契約書を提出済み</label>
-        </div>
         <textarea placeholder="変更内容" class="reason-field required"
                 onchange="validateEntryAndForm(this.closest('.entry-row'))"
                 onkeyup="validateEntryAndForm(this.closest('.entry-row'))"></textarea>
@@ -236,7 +212,7 @@ function createAddressChangeEntry() {
                onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
         <div class="checkbox-group">
             <input type="checkbox" id="submitted_${uniqueId}" 
-                   onchange="handleSubmissionStatusChange(this, 'address')">
+                   onchange="handleAddressChangeSubmitted(this)">
             <label for="submitted_${uniqueId}">変更届を提出済み</label>
         </div>
         <textarea placeholder="変更日・変更内容（別途変更届が必要なものは提出してください）" 
@@ -306,6 +282,14 @@ function createLeaveEntry() {
     return div;
 }
 
+function addEntry(containerId, createFn) {
+    const container = document.getElementById(containerId);
+    const entry = createFn();
+    container.appendChild(entry);
+    validateEntry(entry);
+    validateForm();
+}
+
 function addNewEmployee() {
     addEntry('newEmployeeContainer', createNewEmployeeEntry);
 }
@@ -333,10 +317,12 @@ function addLateEarly() {
 function addLeave() {
     addEntry('leaveContainer', createLeaveEntry);
 }
+
 function validateEntry(entryRow) {
     if (!entryRow) return false;
     let isValid = true;
-    
+
+    // 必須フィールドのバリデーション
     const requiredFields = entryRow.querySelectorAll('.required');
     requiredFields.forEach(field => {
         if (!field.value.trim()) {
@@ -347,6 +333,7 @@ function validateEntry(entryRow) {
         }
     });
 
+    // ラジオボタングループのバリデーション
     const radioGroups = entryRow.querySelectorAll('.radio-group');
     radioGroups.forEach(group => {
         const radios = group.querySelectorAll('input[type="radio"]');
@@ -359,11 +346,15 @@ function validateEntry(entryRow) {
         }
     });
 
+// 追加ボタンの表示制御
     const container = entryRow.closest('[id$="Container"]');
     if (container) {
-        const addButton = container.parentElement.querySelector('.add-button');
-        if (addButton && container.lastElementChild === entryRow) {
-            addButton.style.display = isValid ? 'block' : 'none';
+        const detail = container.closest('.detail-section');
+        const addButton = detail.querySelector('.add-button');
+        if (addButton) {
+            // 最後のエントリーで、かつ入力が有効な場合のみ追加ボタンを表示
+            const isLastEntry = container.lastElementChild === entryRow;
+            addButton.style.display = (isValid && isLastEntry) ? 'block' : 'none';
         }
     }
 
@@ -380,6 +371,7 @@ function validateForm() {
 
     const officeName = document.getElementById('officeName');
     const reportMonth = document.getElementById('reportMonth');
+    const csvFile = document.getElementById('csvFile');
     
     if (!officeName.value.trim()) {
         officeName.classList.add('invalid');
@@ -393,6 +385,13 @@ function validateForm() {
         isValid = false;
     } else {
         reportMonth.classList.remove('invalid');
+    }
+
+    if (!csvFile.files.length) {
+        csvFile.classList.add('invalid');
+        isValid = false;
+    } else {
+        csvFile.classList.remove('invalid');
     }
 
     const sections = [
@@ -428,87 +427,11 @@ function removeEntry(button) {
     const container = entryRow.closest('[id$="Container"]');
     entryRow.remove();
     
-    if (container) {
-        const entries = container.querySelectorAll('.entry-row');
-        if (entries.length > 0) {
-            validateEntry(entries[entries.length - 1]);
-        }
+    // 最後のエントリーを削除した後の処理
+    if (container && container.children.length > 0) {
+        validateEntry(container.lastElementChild);
     }
     validateForm();
-}
-
-function collectSectionData(sectionKey, containerId) {
-    const container = document.getElementById(containerId);
-    const entries = container.querySelectorAll('.entry-row');
-    const data = [];
-
-    entries.forEach(entry => {
-        const entryData = {
-            name: entry.querySelector('.name-field').value
-        };
-
-        switch(sectionKey) {
-            case 'newEmployee':
-                const empTypeRadio = entry.querySelector('input[type="radio"]:checked');
-                entryData.type = empTypeRadio ? empTypeRadio.value : '';
-                entryData.docs = entry.querySelector('input[type="checkbox"]').checked;
-                break;
-
-            case 'lateEarly':
-            case 'leave':
-                entryData.date = entry.querySelector('.date-field').value;
-                const typeRadio = entry.querySelector('input[type="radio"]:checked');
-                entryData.type = typeRadio ? typeRadio.value : '';
-                entryData.reason = entry.querySelector('.reason-field').value;
-                break;
-
-            case 'salaryChange':
-                const salarySubmitted = entry.querySelector('input[type="checkbox"]').checked;
-                entryData.submitted = salarySubmitted;
-                entryData.comment = entry.querySelector('.reason-field').value || '雇用契約書提出済み';
-                break;
-
-            case 'addressChange':
-                const submitted = entry.querySelector('input[type="checkbox"]').checked;
-                entryData.submitted = submitted;
-                entryData.comment = entry.querySelector('.reason-field').value || '変更届提出済み';
-                break;
-
-            default:
-                entryData.comment = entry.querySelector('.reason-field').value;
-        }
-
-        data.push(entryData);
-    });
-
-    return data;
-}
-
-function collectFormData() {
-    const data = {
-        officeName: document.getElementById('officeName').value,
-        reportMonth: document.getElementById('reportMonth').value,
-        otherComments: document.getElementById('otherComments').value
-    };
-
-    const sections = [
-        {name: 'hasNewEmployee', key: 'newEmployee', container: 'newEmployeeContainer'},
-        {name: 'hasRetirement', key: 'retirement', container: 'retirementContainer'},
-        {name: 'hasNoWork', key: 'noWork', container: 'noWorkContainer'},
-        {name: 'hasSalaryChange', key: 'salaryChange', container: 'salaryChangeContainer'},
-        {name: 'hasAddressChange', key: 'addressChange', container: 'addressChangeContainer'},
-        {name: 'hasLateEarly', key: 'lateEarly', container: 'lateEarlyContainer'},
-        {name: 'hasLeave', key: 'leave', container: 'leaveContainer'}
-    ];
-
-    sections.forEach(section => {
-        const radio = document.querySelector(`input[name="${section.name}"]:checked`);
-        if (radio && radio.value === 'yes') {
-            data[section.key] = collectSectionData(section.key, section.container);
-        }
-    });
-
-    return data;
 }
 
 async function handleSubmit(event) {
@@ -545,4 +468,73 @@ async function handleSubmit(event) {
     }
 
     return false;
+}
+
+function collectFormData() {
+    const data = {
+        officeName: document.getElementById('officeName').value,
+        reportMonth: document.getElementById('reportMonth').value,
+        otherComments: document.getElementById('otherComments').value,
+        csvFile: document.getElementById('csvFile').files[0]?.name || ''
+    };
+
+    const sections = [
+        {name: 'hasNewEmployee', key: 'newEmployee', container: 'newEmployeeContainer'},
+        {name: 'hasRetirement', key: 'retirement', container: 'retirementContainer'},
+        {name: 'hasNoWork', key: 'noWork', container: 'noWorkContainer'},
+        {name: 'hasSalaryChange', key: 'salaryChange', container: 'salaryChangeContainer'},
+        {name: 'hasAddressChange', key: 'addressChange', container: 'addressChangeContainer'},
+        {name: 'hasLateEarly', key: 'lateEarly', container: 'lateEarlyContainer'},
+        {name: 'hasLeave', key: 'leave', container: 'leaveContainer'}
+    ];
+
+    sections.forEach(section => {
+        const radio = document.querySelector(`input[name="${section.name}"]:checked`);
+        if (radio && radio.value === 'yes') {
+            data[section.key] = collectSectionData(section.key, section.container);
+        }
+    });
+
+    return data;
+}
+
+function collectSectionData(sectionKey, containerId) {
+    const container = document.getElementById(containerId);
+    const entries = container.querySelectorAll('.entry-row');
+    const data = [];
+
+    entries.forEach(entry => {
+        const entryData = {
+            name: entry.querySelector('.name-field').value
+        };
+
+        switch(sectionKey) {
+            case 'newEmployee':
+                const empTypeRadio = entry.querySelector('input[type="radio"]:checked');
+                entryData.type = empTypeRadio ? empTypeRadio.value : '';
+                entryData.docs = entry.querySelector('input[type="checkbox"]').checked;
+                break;
+
+            case 'lateEarly':
+            case 'leave':
+                entryData.date = entry.querySelector('.date-field').value;
+                const typeRadio = entry.querySelector('input[type="radio"]:checked');
+                entryData.type = typeRadio ? typeRadio.value : '';
+                entryData.reason = entry.querySelector('.reason-field').value;
+                break;
+
+            case 'addressChange':
+                const submitted = entry.querySelector('input[type="checkbox"]').checked;
+                entryData.submitted = submitted;
+                entryData.comment = entry.querySelector('.reason-field').value || '変更届提出済み';
+                break;
+
+            default:
+                entryData.comment = entry.querySelector('.reason-field').value;
+        }
+
+        data.push(entryData);
+    });
+
+    return data;
 }
