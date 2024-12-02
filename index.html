@@ -174,11 +174,20 @@
         </div>
 
         <div class="file-upload-container">
-            <label for="csvFile" class="required">CSVファイル添付</label>
+            <label for="csvFile" class="required">勤務データファイル添付</label>
             <input type="file" 
                    id="csvFile" 
                    class="file-input required" 
-                   accept=".csv"
+                   accept=".csv,.xlsx,.xls"
+                   onchange="validateForm()">
+            <div class="note">※CSVファイルまたはExcelファイル</div>
+        </div>
+
+        <div class="file-upload-container">
+            <label for="optionalFile">追加資料</label>
+            <input type="file" 
+                   id="optionalFile" 
+                   class="file-input"
                    onchange="validateForm()">
         </div>
 
