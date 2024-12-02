@@ -160,10 +160,15 @@ body {
     border-radius: 4px;
     display: flex;
     align-items: center;
+    flex-shrink: 0;
 }
 
 .checkbox-group input[type="checkbox"] {
     margin-right: 5px;
+}
+
+.checkbox-group label {
+    user-select: none;
 }
 
 .add-button {
@@ -191,6 +196,7 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
     white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .remove-button:hover {
@@ -270,8 +276,23 @@ textarea {
 
 input[type="checkbox"] {
     margin-right: 5px;
+    cursor: pointer;
 }
 
 input[type="radio"] {
     margin-right: 5px;
+    cursor: pointer;
+}
+
+#salaryChangeContainer .entry-row,
+#addressChangeContainer .entry-row {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+}
+
+#salaryChangeContainer .checkbox-group,
+#addressChangeContainer .checkbox-group {
+    margin: 0 10px;
+    flex-shrink: 0;
 }
