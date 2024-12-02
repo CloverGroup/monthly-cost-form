@@ -50,6 +50,7 @@ function clearForm() {
 
         document.getElementById('otherComments').value = '';
         document.getElementById('csvFile').value = '';
+        document.getElementById('optionalFile').value = '';
         validateForm();
     }
 }
@@ -111,8 +112,25 @@ function setupToggle(radioName, detailId, addInitialEntry) {
         });
     });
 }
-
 function handleAddressChangeSubmitted(checkbox) {
+    const entryRow = checkbox.closest('.entry-row');
+    const reasonField = entryRow.querySelector('.reason-field');
+    
+    if (checkbox.checked) {
+        entryRow.classList.add('checkbox-checked');
+        reasonField.classList.remove('required');
+        reasonField.classList.remove('invalid');
+    } else {
+        entryRow.classList.remove('checkbox-checked');
+        reasonField.classList.add('required');
+        if (!reasonField.value.trim()) {
+            reasonField.classList.add('invalid');
+        }
+    }
+    validateEntryAndForm(entryRow);
+}
+
+function handleSalaryChangeSubmitted(checkbox) {
     const entryRow = checkbox.closest('.entry-row');
     const reasonField = entryRow.querySelector('.reason-field');
     
@@ -169,6 +187,7 @@ function createRetirementEntry() {
     `;
     return div;
 }
+
 function createNoWorkEntry() {
     const div = document.createElement('div');
     div.className = 'entry-row';
@@ -188,11 +207,17 @@ function createNoWorkEntry() {
 function createSalaryChangeEntry() {
     const div = document.createElement('div');
     div.className = 'entry-row';
+    const uniqueId = Date.now();
     div.innerHTML = `
         <input type="text" placeholder="氏名" class="name-field required"
                maxlength="15"
                onchange="validateEntryAndForm(this.closest('.entry-row'))"
                onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
+        <div class="checkbox-group">
+            <input type="checkbox" id="contract_${uniqueId}" 
+                   onchange="handleSalaryChangeSubmitted(this)">
+            <label for="contract_${uniqueId}">雇用契約書を送付済み</label>
+        </div>
         <textarea placeholder="変更内容" class="reason-field required"
                 onchange="validateEntryAndForm(this.closest('.entry-row'))"
                 onkeyup="validateEntryAndForm(this.closest('.entry-row'))"></textarea>
@@ -281,7 +306,6 @@ function createLeaveEntry() {
     `;
     return div;
 }
-
 function addEntry(containerId, createFn) {
     const container = document.getElementById(containerId);
     const entry = createFn();
@@ -346,7 +370,7 @@ function validateEntry(entryRow) {
         }
     });
 
-// 追加ボタンの表示制御
+    // 追加ボタンの表示制御
     const container = entryRow.closest('[id$="Container"]');
     if (container) {
         const detail = container.closest('.detail-section');
@@ -475,7 +499,8 @@ function collectFormData() {
         officeName: document.getElementById('officeName').value,
         reportMonth: document.getElementById('reportMonth').value,
         otherComments: document.getElementById('otherComments').value,
-        csvFile: document.getElementById('csvFile').files[0]?.name || ''
+        csvFile: document.getElementById('csvFile').files[0]?.name || '',
+        optionalFile: document.getElementById('optionalFile').files[0]?.name || ''
     };
 
     const sections = [
@@ -524,9 +549,15 @@ function collectSectionData(sectionKey, containerId) {
                 break;
 
             case 'addressChange':
-                const submitted = entry.querySelector('input[type="checkbox"]').checked;
-                entryData.submitted = submitted;
+                const addressSubmitted = entry.querySelector('input[type="checkbox"]').checked;
+                entryData.submitted = addressSubmitted;
                 entryData.comment = entry.querySelector('.reason-field').value || '変更届提出済み';
+                break;
+
+            case 'salaryChange':
+                const contractSubmitted = entry.querySelector('input[type="checkbox"]').checked;
+                entryData.submitted = contractSubmitted;
+                entryData.comment = entry.querySelector('.reason-field').value || '雇用契約書送付済み';
                 break;
 
             default:
