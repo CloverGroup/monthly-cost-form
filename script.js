@@ -95,17 +95,22 @@ function setupToggle(radioName, detailId, addInitialEntry) {
     radios.forEach(radio => {
         radio.addEventListener('change', function() {
             const container = detail.querySelector('[id$="Container"]');
+            
             if (this.value === 'yes') {
-                detail.style.display = 'block';
+                detail.style.display = 'block'; // セクション表示
                 if (container && container.children.length === 0) {
                     const entry = addInitialEntry();
                     container.appendChild(entry);
+
+                    // フォーカスを適用
                     const nameField = entry.querySelector('.name-field');
-                    if (nameField) nameField.focus(); // フォーカス移動
+                    if (nameField) {
+                        setTimeout(() => nameField.focus(), 0); // 非同期でフォーカス
+                    }
                 }
             } else {
-                detail.style.display = 'none';
-                if (container) container.innerHTML = '';
+                detail.style.display = 'none'; // セクション非表示
+                if (container) container.innerHTML = ''; // エントリークリア
             }
             validateForm();
         });
@@ -116,12 +121,17 @@ function addEntry(containerId, createFn) {
     const container = document.getElementById(containerId);
     const entry = createFn();
     container.appendChild(entry);
+
+    // フォーカスを適用
     const nameField = entry.querySelector('.name-field');
-    if (nameField) nameField.focus(); // フォーカス移動
+    if (nameField) {
+        setTimeout(() => nameField.focus(), 0); // 非同期でフォーカス
+    }
+
     validateEntry(entry);
     validateForm();
 }
-
+    
 function handleAddressChangeSubmitted(checkbox) {
     const entryRow = checkbox.closest('.entry-row');
     const reasonField = entryRow.querySelector('.reason-field');
