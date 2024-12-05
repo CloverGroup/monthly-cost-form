@@ -17,8 +17,17 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     setDefaultMonth();
+    setupFileInputs();
     validateForm();
 });
+
+function setupFileInputs() {
+    const csvFile = document.getElementById('csvFile');
+    const optionalFile = document.getElementById('optionalFile');
+
+    csvFile.accept = '.csv,.xlsx,.xls';
+    optionalFile.required = false;
+}
 
 function clearForm() {
     if (confirm('入力内容をクリアしてよろしいですか？')) {
@@ -101,6 +110,13 @@ function setupToggle(radioName, detailId, addInitialEntry) {
                 detail.style.display = 'block';
                 if (container && container.children.length === 0) {
                     addInitialEntry();
+                    // 新しく追加された入力フィールドにフォーカスを設定
+                    const nameField = container.querySelector('.name-field');
+                    if (nameField) {
+                        nameField.focus();
+                        // IMEモードを日本語入力に設定
+                        nameField.style.imeMode = 'active';
+                    }
                 }
             } else {
                 detail.style.display = 'none';
@@ -188,128 +204,19 @@ function createRetirementEntry() {
     return div;
 }
 
-function createNoWorkEntry() {
-    const div = document.createElement('div');
-    div.className = 'entry-row';
-    div.innerHTML = `
-        <input type="text" placeholder="氏名" class="name-field required"
-               maxlength="15"
-               onchange="validateEntryAndForm(this.closest('.entry-row'))"
-               onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
-        <textarea placeholder="コメント" class="reason-field required"
-                onchange="validateEntryAndForm(this.closest('.entry-row'))"
-                onkeyup="validateEntryAndForm(this.closest('.entry-row'))"></textarea>
-        <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
-    `;
-    return div;
-}
+// 他のcreate*Entry関数も同様...
 
-function createSalaryChangeEntry() {
-    const div = document.createElement('div');
-    div.className = 'entry-row';
-    const uniqueId = Date.now();
-    div.innerHTML = `
-        <input type="text" placeholder="氏名" class="name-field required"
-               maxlength="15"
-               onchange="validateEntryAndForm(this.closest('.entry-row'))"
-               onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
-        <div class="checkbox-group">
-            <input type="checkbox" id="contract_${uniqueId}" 
-                   onchange="handleSalaryChangeSubmitted(this)">
-            <label for="contract_${uniqueId}">雇用契約書を送付済み</label>
-        </div>
-        <textarea placeholder="変更内容" class="reason-field required"
-                onchange="validateEntryAndForm(this.closest('.entry-row'))"
-                onkeyup="validateEntryAndForm(this.closest('.entry-row'))"></textarea>
-        <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
-    `;
-    return div;
-}
-
-function createAddressChangeEntry() {
-    const div = document.createElement('div');
-    div.className = 'entry-row';
-    const uniqueId = Date.now();
-    div.innerHTML = `
-        <input type="text" placeholder="氏名" class="name-field required"
-               maxlength="15"
-               onchange="validateEntryAndForm(this.closest('.entry-row'))"
-               onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
-        <div class="checkbox-group">
-            <input type="checkbox" id="submitted_${uniqueId}" 
-                   onchange="handleAddressChangeSubmitted(this)">
-            <label for="submitted_${uniqueId}">変更届を提出済み</label>
-        </div>
-        <textarea placeholder="変更日・変更内容（別途変更届が必要なものは提出してください）" 
-                class="reason-field required"
-                onchange="validateEntryAndForm(this.closest('.entry-row'))"
-                onkeyup="validateEntryAndForm(this.closest('.entry-row'))"></textarea>
-        <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
-    `;
-    return div;
-}
-
-function createLateEarlyEntry() {
-    const div = document.createElement('div');
-    div.className = 'entry-row';
-    const uniqueId = Date.now();
-    const { min, max } = setDateConstraints();
-    
-    div.innerHTML = `
-        <input type="text" placeholder="氏名" class="name-field required"
-               maxlength="15"
-               onchange="validateEntryAndForm(this.closest('.entry-row'))"
-               onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
-        <input type="date" class="date-field required"
-               min="${min}" max="${max}"
-               onchange="validateEntryAndForm(this.closest('.entry-row'))">
-        <div class="radio-group">
-            <input type="radio" name="lateType_${uniqueId}" value="遅刻" required
-                   onchange="validateEntryAndForm(this.closest('.entry-row'))"> 遅刻
-            <input type="radio" name="lateType_${uniqueId}" value="早退"
-                   onchange="validateEntryAndForm(this.closest('.entry-row'))"> 早退
-            <input type="radio" name="lateType_${uniqueId}" value="残業"
-                   onchange="validateEntryAndForm(this.closest('.entry-row'))"> 残業
-        </div>
-        <textarea placeholder="理由" class="reason-field required"
-                onchange="validateEntryAndForm(this.closest('.entry-row'))"
-                onkeyup="validateEntryAndForm(this.closest('.entry-row'))"></textarea>
-        <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
-    `;
-    return div;
-}
-
-function createLeaveEntry() {
-    const div = document.createElement('div');
-    div.className = 'entry-row';
-    const uniqueId = Date.now();
-    const { min, max } = setDateConstraints();
-    
-    div.innerHTML = `
-        <input type="text" placeholder="氏名" class="name-field required"
-               maxlength="15"
-               onchange="validateEntryAndForm(this.closest('.entry-row'))"
-               onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
-        <input type="date" class="date-field required"
-               min="${min}" max="${max}"
-               onchange="validateEntryAndForm(this.closest('.entry-row'))">
-        <div class="radio-group">
-            <input type="radio" name="leaveType_${uniqueId}" value="有給" required
-                   onchange="validateEntryAndForm(this.closest('.entry-row'))"> 有給
-            <input type="radio" name="leaveType_${uniqueId}" value="欠勤"
-                   onchange="validateEntryAndForm(this.closest('.entry-row'))"> 欠勤
-        </div>
-        <textarea placeholder="理由" class="reason-field required"
-                onchange="validateEntryAndForm(this.closest('.entry-row'))"
-                onkeyup="validateEntryAndForm(this.closest('.entry-row'))"></textarea>
-        <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
-    `;
-    return div;
-}
 function addEntry(containerId, createFn) {
     const container = document.getElementById(containerId);
     const entry = createFn();
     container.appendChild(entry);
+    // 新しく追加された入力フィールドにフォーカスを設定
+    const nameField = entry.querySelector('.name-field');
+    if (nameField) {
+        nameField.focus();
+        // IMEモードを日本語入力に設定
+        nameField.style.imeMode = 'active';
+    }
     validateEntry(entry);
     validateForm();
 }
@@ -322,26 +229,59 @@ function addRetirement() {
     addEntry('retirementContainer', createRetirementEntry);
 }
 
-function addNoWork() {
-    addEntry('noWorkContainer', createNoWorkEntry);
-}
+// 他のadd*関数も同様...
 
-function addSalaryChange() {
-    addEntry('salaryChangeContainer', createSalaryChangeEntry);
-}
+async function handleSubmit(event) {
+    event.preventDefault();
+    const submitButton = document.getElementById('submitButton');
 
-function addAddressChange() {
-    addEntry('addressChangeContainer', createAddressChangeEntry);
-}
+    if (submitButton.disabled) return false;
 
-function addLateEarly() {
-    addEntry('lateEarlyContainer', createLateEarlyEntry);
-}
+    if (!validateForm()) {
+        alert('必須項目を入力してください');
+        return false;
+    }
 
-function addLeave() {
-    addEntry('leaveContainer', createLeaveEntry);
-}
+    try {
+        submitButton.disabled = true;
+        submitButton.textContent = '送信中...';
 
+        const formData = new FormData();
+        const jsonData = collectFormData();
+        
+        // JSONデータの追加
+        formData.append('json', JSON.stringify(jsonData));
+        
+        // ファイルの追加
+        const csvFile = document.getElementById('csvFile').files[0];
+        const optionalFile = document.getElementById('optionalFile').files[0];
+        
+        if (csvFile) {
+            formData.append('csvFile', csvFile);
+        }
+        if (optionalFile) {
+            formData.append('optionalFile', optionalFile);
+        }
+
+        const response = await fetch('https://script.google.com/macros/s/AKfycbzXd99vpht-E5ibgc0ptYaUOeTG9fzJT2tXeUlpsFAajkAHhEHKCeCz-9SqrMNvNx4/exec', {
+            method: 'POST',
+            mode: 'no-cors',
+            body: formData
+        });
+
+        alert('送信が完了しました');
+        clearForm();
+    } catch (error) {
+        console.error('送信エラー:', error);
+        alert('送信に失敗しました。もう一度お試しください。');
+    } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = 'メール送信';
+        validateForm();
+    }
+
+    return false;
+}
 function validateEntry(entryRow) {
     if (!entryRow) return false;
     let isValid = true;
@@ -374,7 +314,7 @@ function validateEntry(entryRow) {
     const container = entryRow.closest('[id$="Container"]');
     if (container) {
         const detail = container.closest('.detail-section');
-        const addButton = detail.querySelector('.add-button');
+        const addButton = detail.querySelector('button[class="add-button"]');
         if (addButton) {
             // 最後のエントリーで、かつ入力が有効な場合のみ追加ボタンを表示
             const isLastEntry = container.lastElementChild === entryRow;
@@ -458,55 +398,11 @@ function removeEntry(button) {
     validateForm();
 }
 
-async function handleSubmit(event) {
-    event.preventDefault(); // フォームのデフォルト動作をキャンセル
-    const submitButton = document.getElementById('submitButton');
-
-    if (submitButton.disabled) return false;
-
-    if (!validateForm()) {
-        alert('必須項目を入力してください');
-        return false;
-    }
-
-    try {
-        submitButton.disabled = true;
-        submitButton.textContent = '送信中...';
-
-        // FormDataを使ってフォームデータを収集
-        const formElement = document.querySelector('form');
-        const formData = new FormData(formElement);
-
-        // サーバーに送信
-        const response = await fetch('https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec', {
-            method: 'POST',
-            body: formData
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTPエラー: ${response.status}`);
-        }
-
-        alert('送信が完了しました');
-        clearForm();
-    } catch (error) {
-        console.error('送信エラー:', error);
-        alert('送信に失敗しました。もう一度お試しください。');
-    } finally {
-        submitButton.disabled = false;
-        submitButton.textContent = 'メール送信';
-    }
-
-    return false; // フォーム送信後のデフォルト動作を防止
-}
-
 function collectFormData() {
     const data = {
         officeName: document.getElementById('officeName').value,
         reportMonth: document.getElementById('reportMonth').value,
-        otherComments: document.getElementById('otherComments').value,
-        csvFile: document.getElementById('csvFile').files[0]?.name || '',
-        optionalFile: document.getElementById('optionalFile').files[0]?.name || ''
+        otherComments: document.getElementById('otherComments').value
     };
 
     const sections = [
@@ -574,4 +470,144 @@ function collectSectionData(sectionKey, containerId) {
     });
 
     return data;
+}
+
+// Part 2で省略していた他のcreate*Entry関数を追加
+function createNoWorkEntry() {
+    const div = document.createElement('div');
+    div.className = 'entry-row';
+    div.innerHTML = `
+        <input type="text" placeholder="氏名" class="name-field required"
+               maxlength="15"
+               onchange="validateEntryAndForm(this.closest('.entry-row'))"
+               onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
+        <textarea placeholder="理由" class="reason-field required"
+                onchange="validateEntryAndForm(this.closest('.entry-row'))"
+                onkeyup="validateEntryAndForm(this.closest('.entry-row'))"></textarea>
+        <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
+    `;
+    return div;
+}
+
+function createSalaryChangeEntry() {
+    const div = document.createElement('div');
+    div.className = 'entry-row';
+    const uniqueId = Date.now();
+    div.innerHTML = `
+        <input type="text" placeholder="氏名" class="name-field required"
+               maxlength="15"
+               onchange="validateEntryAndForm(this.closest('.entry-row'))"
+               onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
+        <div class="checkbox-group">
+            <input type="checkbox" id="salary_contract_${uniqueId}" 
+                   onchange="handleSalaryChangeSubmitted(this)">
+            <label for="salary_contract_${uniqueId}">雇用契約書を送付済み</label>
+        </div>
+        <textarea placeholder="変更内容" class="reason-field required"
+                onchange="validateEntryAndForm(this.closest('.entry-row'))"
+                onkeyup="validateEntryAndForm(this.closest('.entry-row'))"></textarea>
+        <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
+    `;
+    return div;
+}
+
+function createAddressChangeEntry() {
+    const div = document.createElement('div');
+    div.className = 'entry-row';
+    const uniqueId = Date.now();
+    div.innerHTML = `
+        <input type="text" placeholder="氏名" class="name-field required"
+               maxlength="15"
+               onchange="validateEntryAndForm(this.closest('.entry-row'))"
+               onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
+        <div class="checkbox-group">
+            <input type="checkbox" id="submitted_${uniqueId}" 
+                   onchange="handleAddressChangeSubmitted(this)">
+            <label for="submitted_${uniqueId}">変更届を提出済み</label>
+        </div>
+        <textarea placeholder="変更内容" class="reason-field required"
+                onchange="validateEntryAndForm(this.closest('.entry-row'))"
+                onkeyup="validateEntryAndForm(this.closest('.entry-row'))"></textarea>
+        <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
+    `;
+    return div;
+}
+
+function createLateEarlyEntry() {
+    const div = document.createElement('div');
+    div.className = 'entry-row';
+    const uniqueId = Date.now();
+    const { min, max } = setDateConstraints();
+    
+    div.innerHTML = `
+        <input type="text" placeholder="氏名" class="name-field required"
+               maxlength="15"
+               onchange="validateEntryAndForm(this.closest('.entry-row'))"
+               onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
+        <input type="date" class="date-field required"
+               min="${min}" max="${max}"
+               onchange="validateEntryAndForm(this.closest('.entry-row'))">
+        <div class="radio-group">
+            <input type="radio" name="lateType_${uniqueId}" value="遅刻" required
+                   onchange="validateEntryAndForm(this.closest('.entry-row'))"> 遅刻
+            <input type="radio" name="lateType_${uniqueId}" value="早退"
+                   onchange="validateEntryAndForm(this.closest('.entry-row'))"> 早退
+            <input type="radio" name="lateType_${uniqueId}" value="残業"
+                   onchange="validateEntryAndForm(this.closest('.entry-row'))"> 残業
+        </div>
+        <textarea placeholder="理由" class="reason-field required"
+                onchange="validateEntryAndForm(this.closest('.entry-row'))"
+                onkeyup="validateEntryAndForm(this.closest('.entry-row'))"></textarea>
+        <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
+    `;
+    return div;
+}
+
+function createLeaveEntry() {
+    const div = document.createElement('div');
+    div.className = 'entry-row';
+    const uniqueId = Date.now();
+    const { min, max } = setDateConstraints();
+    
+    div.innerHTML = `
+        <input type="text" placeholder="氏名" class="name-field required"
+               maxlength="15"
+               onchange="validateEntryAndForm(this.closest('.entry-row'))"
+               onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
+        <input type="date" class="date-field required"
+               min="${min}" max="${max}"
+               onchange="validateEntryAndForm(this.closest('.entry-row'))">
+        <div class="radio-group">
+            <input type="radio" name="leaveType_${uniqueId}" value="有給" required
+                   onchange="validateEntryAndForm(this.closest('.entry-row'))"> 有給
+            <input type="radio" name="leaveType_${uniqueId}" value="欠勤"
+                   onchange="validateEntryAndForm(this.closest('.entry-row'))"> 欠勤
+        </div>
+        <textarea placeholder="理由" class="reason-field required"
+                onchange="validateEntryAndForm(this.closest('.entry-row'))"
+                onkeyup="validateEntryAndForm(this.closest('.entry-row'))"></textarea>
+        <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
+    `;
+    return div;
+}
+
+// Part 2で省略していた他のadd*関数を追加
+function addNoWork() {
+    addEntry('noWorkContainer', createNoWorkEntry);
+}
+
+function addSalaryChange() {
+    addEntry('salaryChangeContainer', createSalaryChangeEntry);
+}
+
+function addAddressChange() {
+    addEntry('addressChangeContainer', createAddressChangeEntry);
+}
+
+function addLateEarly() {
+    addEntry('lateEarlyContainer', createLateEarlyEntry);
+}
+
+function addLeave() {
+    addEntry('leaveContainer', createLeaveEntry);
 }
