@@ -28,17 +28,28 @@ function setupFileInputs() {
     csvFile.accept = '.csv,.xlsx,.xls';
     optionalFile.required = false;
 
-    // ファイル入力のイベントリスナーを修正
     csvFile.addEventListener('change', function() {
-        if (this.files.length > 0) {
-            this.classList.remove('invalid');
-            // 明示的にvalidateFormを呼び出す
-            validateForm();
-        } else {
-            this.classList.add('invalid');
-            validateForm();
-        }
+        handleFileValidation(this);
     });
+}
+
+function handleFileValidation(fileInput) {
+    if (fileInput.files && fileInput.files.length > 0) {
+        const fileName = fileInput.files[0].name.toLowerCase();
+        if (fileName.endsWith('.csv') || fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+            fileInput.classList.remove('invalid');
+            fileInput.classList.add('valid');
+        } else {
+            fileInput.classList.add('invalid');
+            fileInput.classList.remove('valid');
+            fileInput.value = '';
+            alert('CSVまたはExcelファイルを選択してください');
+        }
+    } else {
+        fileInput.classList.add('invalid');
+        fileInput.classList.remove('valid');
+    }
+    validateForm();
 }
 
 function clearForm() {
@@ -240,10 +251,9 @@ function validateForm() {
     }
 
     // CSVファイルのバリデーション
-    if (csvFile.files && csvFile.files.length > 0) {
-        csvFile.classList.remove('invalid');
-    } else {
+    if (!csvFile.files || !csvFile.files.length) {
         csvFile.classList.add('invalid');
+        csvFile.classList.remove('valid');
         isValid = false;
     }
 
@@ -273,9 +283,9 @@ function validateForm() {
 
     const submitButton = document.getElementById('submitButton');
     submitButton.disabled = !isValid;
-
     return isValid;
 }
+
 function addEntry(containerId, createFn) {
     const container = document.getElementById(containerId);
     const entry = createFn();
@@ -299,7 +309,6 @@ function removeEntry(button) {
     }
     validateForm();
 }
-
 async function handleSubmit(event) {
     event.preventDefault();
     const submitButton = document.getElementById('submitButton');
@@ -376,7 +385,53 @@ function collectFormData() {
     return data;
 }
 
-// Entry Creation Functions
+function collectSectionData(sectionKey, containerId) {
+    const container = document.getElementById(containerId);
+    const entries = container.querySelectorAll('.entry-row');
+    const data = [];
+
+    entries.forEach(entry => {
+        const entryData = {
+            name: entry.querySelector('.name-field').value
+        };
+
+        switch(sectionKey) {
+            case 'newEmployee':
+                const empTypeRadio = entry.querySelector('input[type="radio"]:checked');
+                entryData.type = empTypeRadio ? empTypeRadio.value : '';
+                entryData.docs = entry.querySelector('input[type="checkbox"]').checked;
+                break;
+
+            case 'lateEarly':
+            case 'leave':
+                entryData.date = entry.querySelector('.date-field').value;
+                const typeRadio = entry.querySelector('input[type="radio"]:checked');
+                entryData.type = typeRadio ? typeRadio.value : '';
+                entryData.reason = entry.querySelector('.reason-field').value;
+                break;
+
+            case 'addressChange':
+                const addressSubmitted = entry.querySelector('input[type="checkbox"]').checked;
+                entryData.submitted = addressSubmitted;
+                entryData.comment = entry.querySelector('.reason-field').value || '変更届提出済み';
+                break;
+
+            case 'salaryChange':
+                const contractSubmitted = entry.querySelector('input[type="checkbox"]').checked;
+                entryData.submitted = contractSubmitted;
+                entryData.comment = entry.querySelector('.reason-field').value || '雇用契約書送付済み';
+                break;
+
+            default:
+                entryData.comment = entry.querySelector('.reason-field').value;
+        }
+
+        data.push(entryData);
+    });
+
+    return data;
+}
+
 function createNewEmployeeEntry() {
     const div = document.createElement('div');
     div.className = 'entry-row';
@@ -535,7 +590,6 @@ function createLeaveEntry() {
     return div;
 }
 
-// Add Functions
 function addNewEmployee() {
     addEntry('newEmployeeContainer', createNewEmployeeEntry);
 }
@@ -562,51 +616,4 @@ function addLateEarly() {
 
 function addLeave() {
     addEntry('leaveContainer', createLeaveEntry);
-}
-
-function collectSectionData(sectionKey, containerId) {
-    const container = document.getElementById(containerId);
-    const entries = container.querySelectorAll('.entry-row');
-    const data = [];
-
-    entries.forEach(entry => {
-        const entryData = {
-            name: entry.querySelector('.name-field').value
-        };
-
-        switch(sectionKey) {
-            case 'newEmployee':
-                const empTypeRadio = entry.querySelector('input[type="radio"]:checked');
-                entryData.type = empTypeRadio ? empTypeRadio.value : '';
-                entryData.docs = entry.querySelector('input[type="checkbox"]').checked;
-                break;
-
-            case 'lateEarly':
-            case 'leave':
-                entryData.date = entry.querySelector('.date-field').value;
-                const typeRadio = entry.querySelector('input[type="radio"]:checked');
-                entryData.type = typeRadio ? typeRadio.value : '';
-                entryData.reason = entry.querySelector('.reason-field').value;
-                break;
-
-            case 'addressChange':
-                const addressSubmitted = entry.querySelector('input[type="checkbox"]').checked;
-                entryData.submitted = addressSubmitted;
-                entryData.comment = entry.querySelector('.reason-field').value || '変更届提出済み';
-                break;
-
-            case 'salaryChange':
-                const contractSubmitted = entry.querySelector('input[type="checkbox"]').checked;
-                entryData.submitted = contractSubmitted;
-                entryData.comment = entry.querySelector('.reason-field').value || '雇用契約書送付済み';
-                break;
-
-            default:
-                entryData.comment = entry.querySelector('.reason-field').value;
-        }
-
-        data.push(entryData);
-    });
-
-    return data;
 }
