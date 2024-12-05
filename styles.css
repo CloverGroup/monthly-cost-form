@@ -91,12 +91,21 @@ body {
 #lateEarlyContainer .entry-row,
 #leaveContainer .entry-row {
     flex-wrap: wrap;
+    position: relative; /* 削除ボタンの位置決めのため */
+    padding-right: 60px; /* 削除ボタンのスペース確保 */
 }
 
 #lateEarlyContainer .reason-field,
 #leaveContainer .reason-field {
-    width: 100%;
+    width: calc(100% - 15px); /* 削除ボタンのスペース分を引く */
     margin-top: 10px;
+}
+
+#lateEarlyContainer .remove-button,
+#leaveContainer .remove-button {
+    position: absolute;
+    right: 15px;
+    top: 15px;
 }
 
 .name-field {
@@ -271,6 +280,11 @@ textarea {
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
+    background-color: white;
+}
+
+/* ファイル入力フィールドのスタイル修正 */
+.file-input.required.valid {
     background-color: white;
 }
 
