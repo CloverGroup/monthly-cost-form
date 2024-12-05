@@ -137,24 +137,23 @@ body {
 }
 
 /* バリデーションスタイル */
-input.invalid,
+input.invalid:not(.file-input),
 textarea.invalid,
 .radio-group.invalid,
 .name-field.invalid,
 .date-field.invalid,
-.reason-field.invalid:not(.checkbox-checked .reason-field),
-.file-input.invalid {
+.reason-field.invalid:not(.checkbox-checked .reason-field) {
     background-color: #ffebee;
 }
 
-input:not(.invalid),
-textarea:not(.invalid),
-.radio-group:not(.invalid),
-.name-field:not(.invalid),
-.date-field:not(.invalid),
-.reason-field:not(.invalid),
-.file-input:not(.invalid) {
-    background-color: white;
+.file-input.invalid {
+    background-color: #ffebee !important;
+    border-color: #ff0000;
+}
+
+.file-input.valid {
+    background-color: white !important;
+    border-color: #ddd;
 }
 
 #addressChangeContainer .reason-field,
