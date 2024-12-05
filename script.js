@@ -27,6 +27,16 @@ function setupFileInputs() {
 
     csvFile.accept = '.csv,.xlsx,.xls';
     optionalFile.required = false;
+
+    // ファイル入力のイベントリスナーを追加
+    csvFile.addEventListener('change', function() {
+        if (this.files.length > 0) {
+            this.classList.remove('invalid');
+        } else {
+            this.classList.add('invalid');
+        }
+        validateForm();
+    });
 }
 
 function clearForm() {
@@ -110,11 +120,9 @@ function setupToggle(radioName, detailId, addInitialEntry) {
                 detail.style.display = 'block';
                 if (container && container.children.length === 0) {
                     addInitialEntry();
-                    // 新しく追加された入力フィールドにフォーカスを設定
                     const nameField = container.querySelector('.name-field');
                     if (nameField) {
                         nameField.focus();
-                        // IMEモードを日本語入力に設定
                         nameField.style.imeMode = 'active';
                     }
                 }
@@ -164,6 +172,208 @@ function handleSalaryChangeSubmitted(checkbox) {
     validateEntryAndForm(entryRow);
 }
 
+function validateEntry(entryRow) {
+    if (!entryRow) return false;
+    let isValid = true;
+
+    const requiredFields = entryRow.querySelectorAll('.required');
+    requiredFields.forEach(field => {
+        if (!field.value.trim()) {
+            field.classList.add('invalid');
+            isValid = false;
+        } else {
+            field.classList.remove('invalid');
+        }
+    });
+
+    const radioGroups = entryRow.querySelectorAll('.radio-group');
+    radioGroups.forEach(group => {
+        const radios = group.querySelectorAll('input[type="radio"]');
+        const radioChecked = Array.from(radios).some(radio => radio.checked);
+        if (radios.length > 0 && !radioChecked) {
+            group.classList.add('invalid');
+            isValid = false;
+        } else {
+            group.classList.remove('invalid');
+        }
+    });
+
+    const container = entryRow.closest('[id$="Container"]');
+    if (container) {
+        const detail = container.closest('.detail-section');
+        const addButton = detail.querySelector('button[class="add-button"]');
+        if (addButton) {
+            const isLastEntry = container.lastElementChild === entryRow;
+            addButton.style.display = (isValid && isLastEntry) ? 'block' : 'none';
+        }
+    }
+
+    return isValid;
+}
+
+function validateEntryAndForm(entryRow) {
+    validateEntry(entryRow);
+    validateForm();
+}
+
+function validateForm() {
+    let isValid = true;
+
+    const officeName = document.getElementById('officeName');
+    const reportMonth = document.getElementById('reportMonth');
+    const csvFile = document.getElementById('csvFile');
+    
+    if (!officeName.value.trim()) {
+        officeName.classList.add('invalid');
+        isValid = false;
+    } else {
+        officeName.classList.remove('invalid');
+    }
+
+    if (!reportMonth.value) {
+        reportMonth.classList.add('invalid');
+        isValid = false;
+    } else {
+        reportMonth.classList.remove('invalid');
+    }
+
+    // CSVファイルのバリデーション
+    if (!csvFile.files.length) {
+        csvFile.classList.add('invalid');
+        isValid = false;
+    } else {
+        csvFile.classList.remove('invalid');
+    }
+
+    const sections = [
+        {name: 'hasNewEmployee', container: 'newEmployeeContainer'},
+        {name: 'hasRetirement', container: 'retirementContainer'},
+        {name: 'hasNoWork', container: 'noWorkContainer'},
+        {name: 'hasSalaryChange', container: 'salaryChangeContainer'},
+        {name: 'hasAddressChange', container: 'addressChangeContainer'},
+        {name: 'hasLateEarly', container: 'lateEarlyContainer'},
+        {name: 'hasLeave', container: 'leaveContainer'}
+    ];
+
+    sections.forEach(section => {
+        const radio = document.querySelector(`input[name="${section.name}"]:checked`);
+        if (radio && radio.value === 'yes') {
+            const container = document.getElementById(section.container);
+            if (container) {
+                const entries = container.querySelectorAll('.entry-row');
+                if (entries.length === 0) isValid = false;
+                entries.forEach(entry => {
+                    if (!validateEntry(entry)) isValid = false;
+                });
+            }
+        }
+    });
+
+    const submitButton = document.getElementById('submitButton');
+    submitButton.disabled = !isValid;
+    return isValid;
+}
+function addEntry(containerId, createFn) {
+    const container = document.getElementById(containerId);
+    const entry = createFn();
+    container.appendChild(entry);
+    const nameField = entry.querySelector('.name-field');
+    if (nameField) {
+        nameField.focus();
+        nameField.style.imeMode = 'active';
+    }
+    validateEntry(entry);
+    validateForm();
+}
+
+function removeEntry(button) {
+    const entryRow = button.closest('.entry-row');
+    const container = entryRow.closest('[id$="Container"]');
+    entryRow.remove();
+    
+    if (container && container.children.length > 0) {
+        validateEntry(container.lastElementChild);
+    }
+    validateForm();
+}
+
+async function handleSubmit(event) {
+    event.preventDefault();
+    const submitButton = document.getElementById('submitButton');
+
+    if (submitButton.disabled) return false;
+
+    if (!validateForm()) {
+        alert('必須項目を入力してください');
+        return false;
+    }
+
+    try {
+        submitButton.disabled = true;
+        submitButton.textContent = '送信中...';
+
+        const formData = new FormData();
+        const jsonData = collectFormData();
+        formData.append('json', JSON.stringify(jsonData));
+        
+        const csvFile = document.getElementById('csvFile').files[0];
+        const optionalFile = document.getElementById('optionalFile').files[0];
+        
+        if (csvFile) {
+            formData.append('csvFile', csvFile);
+        }
+        if (optionalFile) {
+            formData.append('optionalFile', optionalFile);
+        }
+
+        const response = await fetch('https://script.google.com/macros/s/AKfycbzXd99vpht-E5ibgc0ptYaUOeTG9fzJT2tXeUlpsFAajkAHhEHKCeCz-9SqrMNvNx4/exec', {
+            method: 'POST',
+            mode: 'no-cors',
+            body: formData
+        });
+
+        alert('送信が完了しました');
+        clearForm();
+    } catch (error) {
+        console.error('送信エラー:', error);
+        alert('送信に失敗しました。もう一度お試しください。');
+    } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = 'メール送信';
+        validateForm();
+    }
+
+    return false;
+}
+
+function collectFormData() {
+    const data = {
+        officeName: document.getElementById('officeName').value,
+        reportMonth: document.getElementById('reportMonth').value,
+        otherComments: document.getElementById('otherComments').value
+    };
+
+    const sections = [
+        {name: 'hasNewEmployee', key: 'newEmployee', container: 'newEmployeeContainer'},
+        {name: 'hasRetirement', key: 'retirement', container: 'retirementContainer'},
+        {name: 'hasNoWork', key: 'noWork', container: 'noWorkContainer'},
+        {name: 'hasSalaryChange', key: 'salaryChange', container: 'salaryChangeContainer'},
+        {name: 'hasAddressChange', key: 'addressChange', container: 'addressChangeContainer'},
+        {name: 'hasLateEarly', key: 'lateEarly', container: 'lateEarlyContainer'},
+        {name: 'hasLeave', key: 'leave', container: 'leaveContainer'}
+    ];
+
+    sections.forEach(section => {
+        const radio = document.querySelector(`input[name="${section.name}"]:checked`);
+        if (radio && radio.value === 'yes') {
+            data[section.key] = collectSectionData(section.key, section.container);
+        }
+    });
+
+    return data;
+}
+
+// Entry Creation Functions
 function createNewEmployeeEntry() {
     const div = document.createElement('div');
     div.className = 'entry-row';
@@ -204,275 +414,6 @@ function createRetirementEntry() {
     return div;
 }
 
-// 他のcreate*Entry関数も同様...
-
-function addEntry(containerId, createFn) {
-    const container = document.getElementById(containerId);
-    const entry = createFn();
-    container.appendChild(entry);
-    // 新しく追加された入力フィールドにフォーカスを設定
-    const nameField = entry.querySelector('.name-field');
-    if (nameField) {
-        nameField.focus();
-        // IMEモードを日本語入力に設定
-        nameField.style.imeMode = 'active';
-    }
-    validateEntry(entry);
-    validateForm();
-}
-
-function addNewEmployee() {
-    addEntry('newEmployeeContainer', createNewEmployeeEntry);
-}
-
-function addRetirement() {
-    addEntry('retirementContainer', createRetirementEntry);
-}
-
-// 他のadd*関数も同様...
-
-async function handleSubmit(event) {
-    event.preventDefault();
-    const submitButton = document.getElementById('submitButton');
-
-    if (submitButton.disabled) return false;
-
-    if (!validateForm()) {
-        alert('必須項目を入力してください');
-        return false;
-    }
-
-    try {
-        submitButton.disabled = true;
-        submitButton.textContent = '送信中...';
-
-        const formData = new FormData();
-        const jsonData = collectFormData();
-        
-        // JSONデータの追加
-        formData.append('json', JSON.stringify(jsonData));
-        
-        // ファイルの追加
-        const csvFile = document.getElementById('csvFile').files[0];
-        const optionalFile = document.getElementById('optionalFile').files[0];
-        
-        if (csvFile) {
-            formData.append('csvFile', csvFile);
-        }
-        if (optionalFile) {
-            formData.append('optionalFile', optionalFile);
-        }
-
-        const response = await fetch('https://script.google.com/macros/s/AKfycbzXd99vpht-E5ibgc0ptYaUOeTG9fzJT2tXeUlpsFAajkAHhEHKCeCz-9SqrMNvNx4/exec', {
-            method: 'POST',
-            mode: 'no-cors',
-            body: formData
-        });
-
-        alert('送信が完了しました');
-        clearForm();
-    } catch (error) {
-        console.error('送信エラー:', error);
-        alert('送信に失敗しました。もう一度お試しください。');
-    } finally {
-        submitButton.disabled = false;
-        submitButton.textContent = 'メール送信';
-        validateForm();
-    }
-
-    return false;
-}
-function validateEntry(entryRow) {
-    if (!entryRow) return false;
-    let isValid = true;
-
-    // 必須フィールドのバリデーション
-    const requiredFields = entryRow.querySelectorAll('.required');
-    requiredFields.forEach(field => {
-        if (!field.value.trim()) {
-            field.classList.add('invalid');
-            isValid = false;
-        } else {
-            field.classList.remove('invalid');
-        }
-    });
-
-    // ラジオボタングループのバリデーション
-    const radioGroups = entryRow.querySelectorAll('.radio-group');
-    radioGroups.forEach(group => {
-        const radios = group.querySelectorAll('input[type="radio"]');
-        const radioChecked = Array.from(radios).some(radio => radio.checked);
-        if (radios.length > 0 && !radioChecked) {
-            group.classList.add('invalid');
-            isValid = false;
-        } else {
-            group.classList.remove('invalid');
-        }
-    });
-
-    // 追加ボタンの表示制御
-    const container = entryRow.closest('[id$="Container"]');
-    if (container) {
-        const detail = container.closest('.detail-section');
-        const addButton = detail.querySelector('button[class="add-button"]');
-        if (addButton) {
-            // 最後のエントリーで、かつ入力が有効な場合のみ追加ボタンを表示
-            const isLastEntry = container.lastElementChild === entryRow;
-            addButton.style.display = (isValid && isLastEntry) ? 'block' : 'none';
-        }
-    }
-
-    return isValid;
-}
-
-function validateEntryAndForm(entryRow) {
-    validateEntry(entryRow);
-    validateForm();
-}
-
-function validateForm() {
-    let isValid = true;
-
-    const officeName = document.getElementById('officeName');
-    const reportMonth = document.getElementById('reportMonth');
-    const csvFile = document.getElementById('csvFile');
-    
-    if (!officeName.value.trim()) {
-        officeName.classList.add('invalid');
-        isValid = false;
-    } else {
-        officeName.classList.remove('invalid');
-    }
-
-    if (!reportMonth.value) {
-        reportMonth.classList.add('invalid');
-        isValid = false;
-    } else {
-        reportMonth.classList.remove('invalid');
-    }
-
-    if (!csvFile.files.length) {
-        csvFile.classList.add('invalid');
-        isValid = false;
-    } else {
-        csvFile.classList.remove('invalid');
-    }
-
-    const sections = [
-        {name: 'hasNewEmployee', container: 'newEmployeeContainer'},
-        {name: 'hasRetirement', container: 'retirementContainer'},
-        {name: 'hasNoWork', container: 'noWorkContainer'},
-        {name: 'hasSalaryChange', container: 'salaryChangeContainer'},
-        {name: 'hasAddressChange', container: 'addressChangeContainer'},
-        {name: 'hasLateEarly', container: 'lateEarlyContainer'},
-        {name: 'hasLeave', container: 'leaveContainer'}
-    ];
-
-    sections.forEach(section => {
-        const radio = document.querySelector(`input[name="${section.name}"]:checked`);
-        if (radio && radio.value === 'yes') {
-            const container = document.getElementById(section.container);
-            if (container) {
-                const entries = container.querySelectorAll('.entry-row');
-                if (entries.length === 0) isValid = false;
-                entries.forEach(entry => {
-                    if (!validateEntry(entry)) isValid = false;
-                });
-            }
-        }
-    });
-
-    document.getElementById('submitButton').disabled = !isValid;
-    return isValid;
-}
-
-function removeEntry(button) {
-    const entryRow = button.closest('.entry-row');
-    const container = entryRow.closest('[id$="Container"]');
-    entryRow.remove();
-    
-    // 最後のエントリーを削除した後の処理
-    if (container && container.children.length > 0) {
-        validateEntry(container.lastElementChild);
-    }
-    validateForm();
-}
-
-function collectFormData() {
-    const data = {
-        officeName: document.getElementById('officeName').value,
-        reportMonth: document.getElementById('reportMonth').value,
-        otherComments: document.getElementById('otherComments').value
-    };
-
-    const sections = [
-        {name: 'hasNewEmployee', key: 'newEmployee', container: 'newEmployeeContainer'},
-        {name: 'hasRetirement', key: 'retirement', container: 'retirementContainer'},
-        {name: 'hasNoWork', key: 'noWork', container: 'noWorkContainer'},
-        {name: 'hasSalaryChange', key: 'salaryChange', container: 'salaryChangeContainer'},
-        {name: 'hasAddressChange', key: 'addressChange', container: 'addressChangeContainer'},
-        {name: 'hasLateEarly', key: 'lateEarly', container: 'lateEarlyContainer'},
-        {name: 'hasLeave', key: 'leave', container: 'leaveContainer'}
-    ];
-
-    sections.forEach(section => {
-        const radio = document.querySelector(`input[name="${section.name}"]:checked`);
-        if (radio && radio.value === 'yes') {
-            data[section.key] = collectSectionData(section.key, section.container);
-        }
-    });
-
-    return data;
-}
-
-function collectSectionData(sectionKey, containerId) {
-    const container = document.getElementById(containerId);
-    const entries = container.querySelectorAll('.entry-row');
-    const data = [];
-
-    entries.forEach(entry => {
-        const entryData = {
-            name: entry.querySelector('.name-field').value
-        };
-
-        switch(sectionKey) {
-            case 'newEmployee':
-                const empTypeRadio = entry.querySelector('input[type="radio"]:checked');
-                entryData.type = empTypeRadio ? empTypeRadio.value : '';
-                entryData.docs = entry.querySelector('input[type="checkbox"]').checked;
-                break;
-
-            case 'lateEarly':
-            case 'leave':
-                entryData.date = entry.querySelector('.date-field').value;
-                const typeRadio = entry.querySelector('input[type="radio"]:checked');
-                entryData.type = typeRadio ? typeRadio.value : '';
-                entryData.reason = entry.querySelector('.reason-field').value;
-                break;
-
-            case 'addressChange':
-                const addressSubmitted = entry.querySelector('input[type="checkbox"]').checked;
-                entryData.submitted = addressSubmitted;
-                entryData.comment = entry.querySelector('.reason-field').value || '変更届提出済み';
-                break;
-
-            case 'salaryChange':
-                const contractSubmitted = entry.querySelector('input[type="checkbox"]').checked;
-                entryData.submitted = contractSubmitted;
-                entryData.comment = entry.querySelector('.reason-field').value || '雇用契約書送付済み';
-                break;
-
-            default:
-                entryData.comment = entry.querySelector('.reason-field').value;
-        }
-
-        data.push(entryData);
-    });
-
-    return data;
-}
-
-// Part 2で省略していた他のcreate*Entry関数を追加
 function createNoWorkEntry() {
     const div = document.createElement('div');
     div.className = 'entry-row';
@@ -591,7 +532,15 @@ function createLeaveEntry() {
     return div;
 }
 
-// Part 2で省略していた他のadd*関数を追加
+// Add Functions
+function addNewEmployee() {
+    addEntry('newEmployeeContainer', createNewEmployeeEntry);
+}
+
+function addRetirement() {
+    addEntry('retirementContainer', createRetirementEntry);
+}
+
 function addNoWork() {
     addEntry('noWorkContainer', createNoWorkEntry);
 }
@@ -610,4 +559,51 @@ function addLateEarly() {
 
 function addLeave() {
     addEntry('leaveContainer', createLeaveEntry);
+}
+
+function collectSectionData(sectionKey, containerId) {
+    const container = document.getElementById(containerId);
+    const entries = container.querySelectorAll('.entry-row');
+    const data = [];
+
+    entries.forEach(entry => {
+        const entryData = {
+            name: entry.querySelector('.name-field').value
+        };
+
+        switch(sectionKey) {
+            case 'newEmployee':
+                const empTypeRadio = entry.querySelector('input[type="radio"]:checked');
+                entryData.type = empTypeRadio ? empTypeRadio.value : '';
+                entryData.docs = entry.querySelector('input[type="checkbox"]').checked;
+                break;
+
+            case 'lateEarly':
+            case 'leave':
+                entryData.date = entry.querySelector('.date-field').value;
+                const typeRadio = entry.querySelector('input[type="radio"]:checked');
+                entryData.type = typeRadio ? typeRadio.value : '';
+                entryData.reason = entry.querySelector('.reason-field').value;
+                break;
+
+            case 'addressChange':
+                const addressSubmitted = entry.querySelector('input[type="checkbox"]').checked;
+                entryData.submitted = addressSubmitted;
+                entryData.comment = entry.querySelector('.reason-field').value || '変更届提出済み';
+                break;
+
+            case 'salaryChange':
+                const contractSubmitted = entry.querySelector('input[type="checkbox"]').checked;
+                entryData.submitted = contractSubmitted;
+                entryData.comment = entry.querySelector('.reason-field').value || '雇用契約書送付済み';
+                break;
+
+            default:
+                entryData.comment = entry.querySelector('.reason-field').value;
+        }
+
+        data.push(entryData);
+    });
+
+    return data;
 }
