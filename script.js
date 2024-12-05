@@ -28,14 +28,16 @@ function setupFileInputs() {
     csvFile.accept = '.csv,.xlsx,.xls';
     optionalFile.required = false;
 
-    // ファイル入力のイベントリスナーを追加
+    // ファイル入力のイベントリスナーを修正
     csvFile.addEventListener('change', function() {
         if (this.files.length > 0) {
             this.classList.remove('invalid');
+            // 明示的にvalidateFormを呼び出す
+            validateForm();
         } else {
             this.classList.add('invalid');
+            validateForm();
         }
-        validateForm();
     });
 }
 
@@ -238,11 +240,11 @@ function validateForm() {
     }
 
     // CSVファイルのバリデーション
-    if (!csvFile.files.length) {
+    if (csvFile.files && csvFile.files.length > 0) {
+        csvFile.classList.remove('invalid');
+    } else {
         csvFile.classList.add('invalid');
         isValid = false;
-    } else {
-        csvFile.classList.remove('invalid');
     }
 
     const sections = [
@@ -271,6 +273,7 @@ function validateForm() {
 
     const submitButton = document.getElementById('submitButton');
     submitButton.disabled = !isValid;
+
     return isValid;
 }
 function addEntry(containerId, createFn) {
