@@ -91,13 +91,13 @@ body {
 #lateEarlyContainer .entry-row,
 #leaveContainer .entry-row {
     flex-wrap: wrap;
-    position: relative; /* 削除ボタンの位置決めのため */
-    padding-right: 60px; /* 削除ボタンのスペース確保 */
+    position: relative;
+    padding-right: 60px;
 }
 
 #lateEarlyContainer .reason-field,
 #leaveContainer .reason-field {
-    width: calc(100% - 15px); /* 削除ボタンのスペース分を引く */
+    width: calc(100% - 15px);
     margin-top: 10px;
 }
 
@@ -136,12 +136,25 @@ body {
     border-radius: 4px;
 }
 
+/* バリデーションスタイル */
+input.invalid,
+textarea.invalid,
+.radio-group.invalid,
 .name-field.invalid,
 .date-field.invalid,
 .reason-field.invalid:not(.checkbox-checked .reason-field),
-.radio-group.invalid,
 .file-input.invalid {
     background-color: #ffebee;
+}
+
+input:not(.invalid),
+textarea:not(.invalid),
+.radio-group:not(.invalid),
+.name-field:not(.invalid),
+.date-field:not(.invalid),
+.reason-field:not(.invalid),
+.file-input:not(.invalid) {
+    background-color: white;
 }
 
 #addressChangeContainer .reason-field,
@@ -280,11 +293,6 @@ textarea {
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
-    background-color: white;
-}
-
-/* ファイル入力フィールドのスタイル修正 */
-.file-input.required.valid {
     background-color: white;
 }
 
