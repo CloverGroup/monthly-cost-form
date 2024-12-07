@@ -29,27 +29,72 @@ function setupFileInputs() {
     optionalFile.required = false;
 
     csvFile.addEventListener('change', function() {
-        handleFileValidation(this);
+        validateFileInput(this);
+    });
+
+    optionalFile.addEventListener('change', function() {
+        validateFileInput(this);
     });
 }
 
-function handleFileValidation(fileInput) {
+function validateFileInput(fileInput) {
     if (fileInput.files && fileInput.files.length > 0) {
         const fileName = fileInput.files[0].name.toLowerCase();
-        if (fileName.endsWith('.csv') || fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
-            fileInput.classList.remove('invalid');
-            fileInput.classList.add('valid');
-        } else {
+        const fileSize = fileInput.files[0].size;
+
+        // ファイル形式のチェック
+        if (!(fileName.endsWith('.csv') || fileName.endsWith('.xlsx') || fileName.endsWith('.xls'))) {
             fileInput.classList.add('invalid');
             fileInput.classList.remove('valid');
             fileInput.value = '';
             alert('CSVまたはExcelファイルを選択してください');
+            return false;
         }
-    } else {
+
+        // ファイルサイズの制限（50MB）
+        if (fileSize > 50 * 1024 * 1024) {
+            fileInput.classList.add('invalid');
+            fileInput.classList.remove('valid');
+            fileInput.value = '';
+            alert('ファイルサイズは50MB以下にしてください');
+            return false;
+        }
+
+        // 合計ファイルサイズのチェック
+        const totalSize = calculateTotalFileSize();
+        if (totalSize > 50 * 1024 * 1024) {
+            fileInput.classList.add('invalid');
+            fileInput.classList.remove('valid');
+            fileInput.value = '';
+            alert('添付ファイルの合計サイズは50MB以下にしてください');
+            return false;
+        }
+
+        fileInput.classList.remove('invalid');
+        fileInput.classList.add('valid');
+        return true;
+    }
+    
+    // 必須の勤務データファイルの場合
+    if (fileInput.id === 'csvFile') {
         fileInput.classList.add('invalid');
         fileInput.classList.remove('valid');
+        return false;
     }
-    validateForm();
+    
+    return true;
+}
+
+// 全添付ファイルの合計サイズを計算
+function calculateTotalFileSize() {
+    const csvFile = document.getElementById('csvFile').files[0];
+    const optionalFile = document.getElementById('optionalFile').files[0];
+    
+    let totalSize = 0;
+    if (csvFile) totalSize += csvFile.size;
+    if (optionalFile) totalSize += optionalFile.size;
+    
+    return totalSize;
 }
 
 function clearForm() {
@@ -309,7 +354,7 @@ function removeEntry(button) {
     }
     validateForm();
 }
-async function handleSubmit(event) {
+async async function handleSubmit(event) {
     event.preventDefault();
     const submitButton = document.getElementById('submitButton');
 
@@ -326,35 +371,86 @@ async function handleSubmit(event) {
 
         const formData = new FormData();
         const jsonData = collectFormData();
-        formData.append('json', JSON.stringify(jsonData));
         
+        // JSON データを文字列化してセット
+        formData.append('jsonData', JSON.stringify(jsonData));
+        
+        // 勤務データファイルの処理
         const csvFile = document.getElementById('csvFile').files[0];
-        const optionalFile = document.getElementById('optionalFile').files[0];
-        
         if (csvFile) {
-            formData.append('csvFile', csvFile);
+            // ファイル形式の検証
+            const fileName = csvFile.name.toLowerCase();
+            if (!fileName.endsWith('.csv') && !fileName.endsWith('.xlsx') && !fileName.endsWith('.xls')) {
+                throw new Error('勤務データファイルはCSVまたはExcelファイルを選択してください。');
+            }
+            formData.append('workData', csvFile);
+        } else {
+            throw new Error('勤務データファイルが選択されていません。');
         }
+        
+        // 追加資料（オプション）の処理
+        const optionalFile = document.getElementById('optionalFile').files[0];
         if (optionalFile) {
             formData.append('optionalFile', optionalFile);
         }
 
-        const response = await fetch('https://script.google.com/macros/s/AKfycbzXd99vpht-E5ibgc0ptYaUOeTG9fzJT2tXeUlpsFAajkAHhEHKCeCz-9SqrMNvNx4/exec', {
+        const response = await fetch('あなたのGASのデプロイURL', {
             method: 'POST',
-            mode: 'no-cors',
             body: formData
         });
 
-        alert('送信が完了しました');
-        clearForm();
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            alert('送信が完了しました');
+            clearForm();
+        } else {
+            throw new Error(result.message || '送信に失敗しました');
+        }
     } catch (error) {
         console.error('送信エラー:', error);
-        alert('送信に失敗しました。もう一度お試しください。');
+        alert(error.message || '送信に失敗しました。もう一度お試しください。');
     } finally {
         submitButton.disabled = false;
         submitButton.textContent = 'メール送信';
         validateForm();
     }
 
+    return false;
+}
+
+// ファイル入力のセットアップ
+function setupFileInputs() {
+    const csvFile = document.getElementById('csvFile');
+    const optionalFile = document.getElementById('optionalFile');
+
+    // 受け入れるファイル形式を制限
+    csvFile.accept = '.csv,.xlsx,.xls';
+    optionalFile.required = false;
+
+    csvFile.addEventListener('change', function() {
+        validateFileInput(this);
+    });
+}
+
+// ファイル入力の検証
+function validateFileInput(fileInput) {
+    if (fileInput.files && fileInput.files.length > 0) {
+        const fileName = fileInput.files[0].name.toLowerCase();
+        if (fileName.endsWith('.csv') || fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+            fileInput.classList.remove('invalid');
+            fileInput.classList.add('valid');
+            return true;
+        } else {
+            fileInput.classList.add('invalid');
+            fileInput.classList.remove('valid');
+            fileInput.value = '';
+            alert('CSVまたはExcelファイルを選択してください');
+            return false;
+        }
+    }
+    fileInput.classList.add('invalid');
+    fileInput.classList.remove('valid');
     return false;
 }
 
