@@ -1,4 +1,3 @@
-//初期化とセットアップ
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Initializing form...');
     
@@ -21,6 +20,74 @@ document.addEventListener('DOMContentLoaded', function() {
     setupFileInputs();
     validateForm();
 });
+
+function setupFileInputs() {
+    const csvFile = document.getElementById('csvFile');
+    const optionalFile = document.getElementById('optionalFile');
+
+    csvFile.accept = '.csv,.xlsx,.xls';
+    optionalFile.required = false;
+
+    csvFile.addEventListener('change', function() {
+        validateFileInput(this);
+    });
+    
+    optionalFile.addEventListener('change', function() {
+        validateFileInput(this);
+    });
+}
+
+function validateFileInput(fileInput) {
+    if (fileInput.files && fileInput.files.length > 0) {
+        const fileName = fileInput.files[0].name.toLowerCase();
+        const fileSize = fileInput.files[0].size;
+
+        if (!(fileName.endsWith('.csv') || fileName.endsWith('.xlsx') || fileName.endsWith('.xls'))) {
+            fileInput.classList.add('invalid');
+            fileInput.classList.remove('valid');
+            fileInput.value = '';
+            alert('CSVまたはExcelファイルを選択してください');
+            return false;
+        }
+
+        if (fileSize > 50 * 1024 * 1024) {
+            fileInput.classList.add('invalid');
+            fileInput.classList.remove('valid');
+            fileInput.value = '';
+            alert('ファイルサイズは50MB以下にしてください');
+            return false;
+        }
+
+        const totalSize = calculateTotalFileSize();
+        if (totalSize > 50 * 1024 * 1024) {
+            fileInput.classList.add('invalid');
+            fileInput.classList.remove('valid');
+            fileInput.value = '';
+            alert('添付ファイルの合計サイズは50MB以下にしてください');
+            return false;
+        }
+
+        fileInput.classList.remove('invalid');
+        fileInput.classList.add('valid');
+    } else {
+        if (fileInput.id === 'csvFile') {
+            fileInput.classList.add('invalid');
+            fileInput.classList.remove('valid');
+        }
+    }
+    validateForm();
+}
+
+function calculateTotalFileSize() {
+    const csvFile = document.getElementById('csvFile').files[0];
+    const optionalFile = document.getElementById('optionalFile').files[0];
+    
+    let totalSize = 0;
+    if (csvFile) totalSize += csvFile.size;
+    if (optionalFile) totalSize += optionalFile.size;
+    
+    return totalSize;
+}
 
 function setDefaultMonth() {
     const today = new Date();
@@ -85,76 +152,40 @@ function setupToggle(radioName, detailId, addInitialEntry) {
     });
 }
 
-// ファイル処理とバリデーション
-function setupFileInputs() {
-    const csvFile = document.getElementById('csvFile');
-    const optionalFile = document.getElementById('optionalFile');
-
-    csvFile.accept = '.csv,.xlsx,.xls';
-    optionalFile.required = false;
-
-    csvFile.addEventListener('change', function() {
-        validateFileInput(this);
-    });
-
-    optionalFile.addEventListener('change', function() {
-        validateFileInput(this);
-    });
+function handleAddressChangeSubmitted(checkbox) {
+    const entryRow = checkbox.closest('.entry-row');
+    const reasonField = entryRow.querySelector('.reason-field');
+    
+    if (checkbox.checked) {
+        entryRow.classList.add('checkbox-checked');
+        reasonField.classList.remove('required');
+        reasonField.classList.remove('invalid');
+    } else {
+        entryRow.classList.remove('checkbox-checked');
+        reasonField.classList.add('required');
+        if (!reasonField.value.trim()) {
+            reasonField.classList.add('invalid');
+        }
+    }
+    validateEntryAndForm(entryRow);
 }
 
-function validateFileInput(fileInput) {
-    if (fileInput.files && fileInput.files.length > 0) {
-        const fileName = fileInput.files[0].name.toLowerCase();
-        const fileSize = fileInput.files[0].size;
-
-        if (!(fileName.endsWith('.csv') || fileName.endsWith('.xlsx') || fileName.endsWith('.xls'))) {
-            fileInput.classList.add('invalid');
-            fileInput.classList.remove('valid');
-            fileInput.value = '';
-            alert('CSVまたはExcelファイルを選択してください');
-            return false;
+function handleSalaryChangeSubmitted(checkbox) {
+    const entryRow = checkbox.closest('.entry-row');
+    const reasonField = entryRow.querySelector('.reason-field');
+    
+    if (checkbox.checked) {
+        entryRow.classList.add('checkbox-checked');
+        reasonField.classList.remove('required');
+        reasonField.classList.remove('invalid');
+    } else {
+        entryRow.classList.remove('checkbox-checked');
+        reasonField.classList.add('required');
+        if (!reasonField.value.trim()) {
+            reasonField.classList.add('invalid');
         }
-
-        if (fileSize > 50 * 1024 * 1024) {
-            fileInput.classList.add('invalid');
-            fileInput.classList.remove('valid');
-            fileInput.value = '';
-            alert('ファイルサイズは50MB以下にしてください');
-            return false;
-        }
-
-        const totalSize = calculateTotalFileSize();
-        if (totalSize > 50 * 1024 * 1024) {
-            fileInput.classList.add('invalid');
-            fileInput.classList.remove('valid');
-            fileInput.value = '';
-            alert('添付ファイルの合計サイズは50MB以下にしてください');
-            return false;
-        }
-
-        fileInput.classList.remove('invalid');
-        fileInput.classList.add('valid');
-        return true;
     }
-    
-    if (fileInput.id === 'csvFile') {
-        fileInput.classList.add('invalid');
-        fileInput.classList.remove('valid');
-        return false;
-    }
-    
-    return true;
-}
-
-function calculateTotalFileSize() {
-    const csvFile = document.getElementById('csvFile').files[0];
-    const optionalFile = document.getElementById('optionalFile').files[0];
-    
-    let totalSize = 0;
-    if (csvFile) totalSize += csvFile.size;
-    if (optionalFile) totalSize += optionalFile.size;
-    
-    return totalSize;
+    validateEntryAndForm(entryRow);
 }
 
 function validateEntry(entryRow) {
@@ -257,7 +288,30 @@ function validateForm() {
     return isValid;
 }
 
-// フォーム処理と送信
+function addEntry(containerId, createFn) {
+    const container = document.getElementById(containerId);
+    const entry = createFn();
+    container.appendChild(entry);
+    const nameField = entry.querySelector('.name-field');
+    if (nameField) {
+        nameField.focus();
+        nameField.style.imeMode = 'active';
+    }
+    validateEntry(entry);
+    validateForm();
+}
+
+function removeEntry(button) {
+    const entryRow = button.closest('.entry-row');
+    const container = entryRow.closest('[id$="Container"]');
+    entryRow.remove();
+    
+    if (container && container.children.length > 0) {
+        validateEntry(container.lastElementChild);
+    }
+    validateForm();
+}
+
 function clearForm() {
     if (confirm('入力内容をクリアしてよろしいですか？')) {
         document.getElementById('officeName').value = '';
@@ -293,43 +347,7 @@ function clearForm() {
     }
 }
 
-function handleAddressChangeSubmitted(checkbox) {
-    const entryRow = checkbox.closest('.entry-row');
-    const reasonField = entryRow.querySelector('.reason-field');
-    
-    if (checkbox.checked) {
-        entryRow.classList.add('checkbox-checked');
-        reasonField.classList.remove('required');
-        reasonField.classList.remove('invalid');
-    } else {
-        entryRow.classList.remove('checkbox-checked');
-        reasonField.classList.add('required');
-        if (!reasonField.value.trim()) {
-            reasonField.classList.add('invalid');
-        }
-    }
-    validateEntryAndForm(entryRow);
-}
-
-function handleSalaryChangeSubmitted(checkbox) {
-    const entryRow = checkbox.closest('.entry-row');
-    const reasonField = entryRow.querySelector('.reason-field');
-    
-    if (checkbox.checked) {
-        entryRow.classList.add('checkbox-checked');
-        reasonField.classList.remove('required');
-        reasonField.classList.remove('invalid');
-    } else {
-        entryRow.classList.remove('checkbox-checked');
-        reasonField.classList.add('required');
-        if (!reasonField.value.trim()) {
-            reasonField.classList.add('invalid');
-        }
-    }
-    validateEntryAndForm(entryRow);
-}
-
-async function handleSubmit(event) {
+function handleSubmit(event) {
     event.preventDefault();
     const submitButton = document.getElementById('submitButton');
 
@@ -340,66 +358,42 @@ async function handleSubmit(event) {
         return false;
     }
 
-    try {
-        submitButton.disabled = true;
-        submitButton.textContent = '送信中...';
+    submitButton.disabled = true;
+    submitButton.textContent = '送信中...';
 
-        const formData = new FormData();
-        const jsonData = collectFormData();
-        formData.append('jsonData', JSON.stringify(jsonData));
-        
-        const csvFile = document.getElementById('csvFile').files[0];
-        if (csvFile) {
-            formData.append('csvFile', csvFile);
-        }
-        
-        const optionalFile = document.getElementById('optionalFile').files[0];
-        if (optionalFile) {
-            formData.append('optionalFile', optionalFile);
-        }
+    const formData = new FormData();
+    const jsonData = collectFormData();
+    formData.append('jsonData', JSON.stringify(jsonData));
+    
+    const csvFile = document.getElementById('csvFile').files[0];
+    if (csvFile) {
+        formData.append('csvFile', csvFile);
+    }
+    
+    const optionalFile = document.getElementById('optionalFile').files[0];
+    if (optionalFile) {
+        formData.append('optionalFile', optionalFile);
+    }
 
-        const response = await fetch('https://script.google.com/macros/s/AKfycbzXd99vpht-E5ibgc0ptYaUOeTG9fzJT2tXeUlpsFAajkAHhEHKCeCz-9SqrMNvNx4/exec', {
-            method: 'POST',
-            body: formData
-        });
-
+    fetch('https://script.google.com/macros/s/AKfycbzXd99vpht-E5ibgc0ptYaUOeTG9fzJT2tXeUlpsFAajkAHhEHKCeCz-9SqrMNvNx4/exec', {
+        method: 'POST',
+        body: formData
+    })
+    .then(function() {
         alert('送信が完了しました');
         clearForm();
-    } catch (error) {
+    })
+    .catch(function(error) {
         console.error('送信エラー:', error);
         alert('送信に失敗しました。もう一度お試しください。');
-    } finally {
+    })
+    .finally(function() {
         submitButton.disabled = false;
         submitButton.textContent = 'メール送信';
         validateForm();
-    }
+    });
 
     return false;
-}
-
-// Part 3の続き: エントリー作成関連の関数
-function addEntry(containerId, createFn) {
-    const container = document.getElementById(containerId);
-    const entry = createFn();
-    container.appendChild(entry);
-    const nameField = entry.querySelector('.name-field');
-    if (nameField) {
-        nameField.focus();
-        nameField.style.imeMode = 'active';
-    }
-    validateEntry(entry);
-    validateForm();
-}
-
-function removeEntry(button) {
-    const entryRow = button.closest('.entry-row');
-    const container = entryRow.closest('[id$="Container"]');
-    entryRow.remove();
-    
-    if (container && container.children.length > 0) {
-        validateEntry(container.lastElementChild);
-    }
-    validateForm();
 }
 
 function collectFormData() {
@@ -661,3 +655,4 @@ function addLateEarly() {
 function addLeave() {
     addEntry('leaveContainer', createLeaveEntry);
 }
+
