@@ -160,9 +160,15 @@ function handleAddressChangeSubmitted(checkbox) {
         entryRow.classList.add('checkbox-checked');
         reasonField.classList.remove('required');
         reasonField.classList.remove('invalid');
+        if (!reasonField.value.trim()) {
+            reasonField.value = '変更届提出済み';
+        }
     } else {
         entryRow.classList.remove('checkbox-checked');
         reasonField.classList.add('required');
+        if (reasonField.value === '変更届提出済み') {
+            reasonField.value = '';
+        }
         if (!reasonField.value.trim()) {
             reasonField.classList.add('invalid');
         }
@@ -178,9 +184,15 @@ function handleSalaryChangeSubmitted(checkbox) {
         entryRow.classList.add('checkbox-checked');
         reasonField.classList.remove('required');
         reasonField.classList.remove('invalid');
+        if (!reasonField.value.trim()) {
+            reasonField.value = '雇用契約書送付済み';
+        }
     } else {
         entryRow.classList.remove('checkbox-checked');
         reasonField.classList.add('required');
+        if (reasonField.value === '雇用契約書送付済み') {
+            reasonField.value = '';
+        }
         if (!reasonField.value.trim()) {
             reasonField.classList.add('invalid');
         }
@@ -192,16 +204,29 @@ function validateEntry(entryRow) {
     if (!entryRow) return false;
     let isValid = true;
 
-    const requiredFields = entryRow.querySelectorAll('.required');
-    requiredFields.forEach(field => {
-        if (!field.value.trim()) {
-            field.classList.add('invalid');
+    // 名前フィールドのチェック
+    const nameField = entryRow.querySelector('.name-field');
+    if (!nameField.value.trim()) {
+        nameField.classList.add('invalid');
+        isValid = false;
+    } else {
+        nameField.classList.remove('invalid');
+    }
+
+    // コメントフィールドのチェック
+    const reasonField = entryRow.querySelector('.reason-field');
+    if (reasonField) {
+        const isChecked = entryRow.querySelector('input[type="checkbox"]')?.checked;
+        // チェックボックスがない、またはチェックされていない場合のみコメント必須
+        if (!isChecked && !reasonField.value.trim()) {
+            reasonField.classList.add('invalid');
             isValid = false;
         } else {
-            field.classList.remove('invalid');
+            reasonField.classList.remove('invalid');
         }
-    });
+    }
 
+    // ラジオボタンのチェック
     const radioGroups = entryRow.querySelectorAll('.radio-group');
     radioGroups.forEach(group => {
         const radios = group.querySelectorAll('input[type="radio"]');
@@ -214,6 +239,7 @@ function validateEntry(entryRow) {
         }
     });
 
+    // 追加ボタンの表示制御
     const container = entryRow.closest('[id$="Container"]');
     if (container) {
         const detail = container.closest('.detail-section');
