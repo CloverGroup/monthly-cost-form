@@ -116,6 +116,10 @@ body {
     background-color: white;
 }
 
+.reason-field {
+    background-color: white;
+}
+
 #retirementContainer .reason-field,
 #noWorkContainer .reason-field,
 #salaryChangeContainer .reason-field,
@@ -136,14 +140,21 @@ body {
     border-radius: 4px;
 }
 
-/* バリデーションスタイル */
 input.invalid:not(.file-input),
 textarea.invalid,
 .radio-group.invalid,
 .name-field.invalid,
 .date-field.invalid,
-.reason-field.invalid:not(.checkbox-checked .reason-field) {
+.reason-field.invalid {
     background-color: #ffebee;
+}
+
+.reason-field.required {
+    background-color: #ffebee;
+}
+
+.reason-field.required:not(.invalid) {
+    background-color: white;
 }
 
 .file-input.invalid {
