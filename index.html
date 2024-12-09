@@ -10,18 +10,19 @@
     <div class="form-container">
         <div class="header-container">
             <h2>月次人件費確認フォーム</h2>
-            <button type="button" class="clear-button" onclick="clearForm()">フォームをクリア</button>
+            <button type="button" onclick="clearForm()">フォームをクリア</button>
         </div>
 
-        <form id="payrollForm" onsubmit="return handleSubmit(event)">
+        <form onsubmit="return handleSubmit(event)">
             <div class="form-group">
                 <div class="header-row">
-                    <label for="officeName">事業所名<span class="required"></span></label>
-                    <input type="text" id="officeName" required>
+                    <label for="officeName">事業所名</label>
+                    <input type="text" id="officeName" class="required">
                 </div>
+
                 <div class="header-row">
-                    <label for="reportMonth">報告対象月<span class="required"></span></label>
-                    <input type="month" id="reportMonth" required>
+                    <label for="reportMonth">報告対象月</label>
+                    <input type="month" id="reportMonth" class="required">
                 </div>
             </div>
 
@@ -133,18 +134,18 @@
             </div>
 
             <div class="form-group">
-                <label for="otherComments">その他コメント</label>
+                <label>その他コメント</label>
                 <textarea id="otherComments"></textarea>
             </div>
 
             <div class="file-upload-container">
-                <label for="csvFile">勤務データファイル添付<span class="required"></span></label>
-                <input type="file" id="csvFile" class="file-input required">
+                <label>勤務データファイル添付<span class="required"></span></label>
+                <input type="file" id="csvFile" class="file-input">
                 <div class="note">※CSVファイルまたはExcelファイル</div>
             </div>
 
             <div class="file-upload-container">
-                <label for="optionalFile">追加資料</label>
+                <label>追加資料</label>
                 <input type="file" id="optionalFile" class="file-input">
             </div>
 
