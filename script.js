@@ -200,8 +200,7 @@ function handleSalaryChangeSubmitted(checkbox) {
     validateEntryAndForm(entryRow);
 }
 
-はい、function validateEntry(entryRow) の完全な修正版を提供します：
-javascriptCopyfunction validateEntry(entryRow) {
+function validateEntry(entryRow) {
     if (!entryRow) return false;
     let isValid = true;
 
@@ -226,7 +225,6 @@ javascriptCopyfunction validateEntry(entryRow) {
                 isValid = false;
             } else {
                 reasonField.classList.remove('invalid');
-                reasonField.style.backgroundColor = 'white';
             }
         }
         // チェックボックスがない場合（その他の項目）
@@ -237,9 +235,19 @@ javascriptCopyfunction validateEntry(entryRow) {
                     isValid = false;
                 } else {
                     reasonField.classList.remove('invalid');
-                    reasonField.style.backgroundColor = 'white';
                 }
             }
+        }
+    }
+
+    // 日付フィールドのチェック
+    const dateField = entryRow.querySelector('.date-field');
+    if (dateField && dateField.classList.contains('required')) {
+        if (!dateField.value) {
+            dateField.classList.add('invalid');
+            isValid = false;
+        } else {
+            dateField.classList.remove('invalid');
         }
     }
 
@@ -256,17 +264,6 @@ javascriptCopyfunction validateEntry(entryRow) {
         }
     });
 
-    // 日付フィールドのチェック
-    const dateField = entryRow.querySelector('.date-field');
-    if (dateField && dateField.classList.contains('required')) {
-        if (!dateField.value) {
-            dateField.classList.add('invalid');
-            isValid = false;
-        } else {
-            dateField.classList.remove('invalid');
-        }
-    }
-
     // 追加ボタンの表示制御
     const container = entryRow.closest('[id$="Container"]');
     if (container) {
@@ -277,9 +274,6 @@ javascriptCopyfunction validateEntry(entryRow) {
             addButton.style.display = (isValid && isLastEntry) ? 'block' : 'none';
         }
     }
-
-    return isValid;
-}
 
     return isValid;
 }
@@ -712,4 +706,3 @@ function addLateEarly() {
 function addLeave() {
     addEntry('leaveContainer', createLeaveEntry);
 }
-
