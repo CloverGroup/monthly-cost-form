@@ -200,7 +200,8 @@ function handleSalaryChangeSubmitted(checkbox) {
     validateEntryAndForm(entryRow);
 }
 
-function validateEntry(entryRow) {
+はい、function validateEntry(entryRow) の完全な修正版を提供します：
+javascriptCopyfunction validateEntry(entryRow) {
     if (!entryRow) return false;
     let isValid = true;
 
@@ -216,13 +217,29 @@ function validateEntry(entryRow) {
     // コメントフィールドのチェック
     const reasonField = entryRow.querySelector('.reason-field');
     if (reasonField) {
-        const isChecked = entryRow.querySelector('input[type="checkbox"]')?.checked;
-        // チェックボックスがない、またはチェックされていない場合のみコメント必須
-        if (!isChecked && !reasonField.value.trim()) {
-            reasonField.classList.add('invalid');
-            isValid = false;
-        } else {
-            reasonField.classList.remove('invalid');
+        const checkbox = entryRow.querySelector('input[type="checkbox"]');
+        
+        // チェックボックスがある場合（給与変更・住所変更）
+        if (checkbox) {
+            if (!checkbox.checked && !reasonField.value.trim()) {
+                reasonField.classList.add('invalid');
+                isValid = false;
+            } else {
+                reasonField.classList.remove('invalid');
+                reasonField.style.backgroundColor = 'white';
+            }
+        }
+        // チェックボックスがない場合（その他の項目）
+        else {
+            if (reasonField.classList.contains('required')) {
+                if (!reasonField.value.trim()) {
+                    reasonField.classList.add('invalid');
+                    isValid = false;
+                } else {
+                    reasonField.classList.remove('invalid');
+                    reasonField.style.backgroundColor = 'white';
+                }
+            }
         }
     }
 
@@ -239,6 +256,17 @@ function validateEntry(entryRow) {
         }
     });
 
+    // 日付フィールドのチェック
+    const dateField = entryRow.querySelector('.date-field');
+    if (dateField && dateField.classList.contains('required')) {
+        if (!dateField.value) {
+            dateField.classList.add('invalid');
+            isValid = false;
+        } else {
+            dateField.classList.remove('invalid');
+        }
+    }
+
     // 追加ボタンの表示制御
     const container = entryRow.closest('[id$="Container"]');
     if (container) {
@@ -249,6 +277,9 @@ function validateEntry(entryRow) {
             addButton.style.display = (isValid && isLastEntry) ? 'block' : 'none';
         }
     }
+
+    return isValid;
+}
 
     return isValid;
 }
