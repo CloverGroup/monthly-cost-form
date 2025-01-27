@@ -46,13 +46,13 @@ button:hover {
 
 .header-row {
     display: flex;
-    align-items: center;
+    flex-wrap: wrap;
     gap: 15px;
     margin-bottom: 15px;
 }
 
 .header-row label {
-    min-width: 100px;
+    min-width: 120px;
     font-weight: bold;
 }
 
@@ -60,12 +60,12 @@ button:hover {
 #email,
 #reportMonth {
     width: 300px;
-    height: 40px;
-    padding: 10px;
-    border: 2px solid #ddd;
+    height: 35px; /* 高さを低く調整 */
+    padding: 8px;
+    border: 1px solid #ddd;
     border-radius: 4px;
     background-color: white;
-    font-size: 16px;
+    font-size: 14px;
 }
 
 #officeName:invalid,
@@ -195,8 +195,8 @@ textarea.invalid,
 
 .entry-row {
     display: flex;
-    align-items: flex-start;
-    gap: 15px;
+    flex-direction: column; /* 名前と理由欄を別行に配置 */
+    gap: 10px;
     padding: 15px;
     background-color: #f9f9f9;
     border-radius: 4px;
@@ -204,7 +204,7 @@ textarea.invalid,
 }
 
 .date-field {
-    width: 200px; /* 日付入力の幅を適切に設定 */
+    width: 240px; /* 日付入力の幅を広げる */
     height: 40px;
     padding: 8px;
     border: 1px solid #ddd;
@@ -221,7 +221,7 @@ textarea.invalid,
 }
 
 .reason-field {
-    width: 85%; /* コメントフィールドを縮小 */
+    width: 100%; /* 理由欄を別行に */
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
@@ -250,11 +250,11 @@ textarea.invalid,
     background-color: #ff4444;
     color: white;
     border: none;
-    padding: 8px 20px; /* 削除ボタンの幅を広げる */
+    padding: 8px 20px;
     border-radius: 4px;
     cursor: pointer;
-    text-align: center; /* テキストを中央揃え */
-    min-width: 80px; /* 最小幅を設定 */
+    text-align: center; /* 削除ボタン中央揃え */
+    min-width: 80px;
 }
 
 .remove-button:hover {
