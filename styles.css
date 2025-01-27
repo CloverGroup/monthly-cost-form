@@ -56,11 +56,21 @@ button:hover {
     font-weight: bold;
 }
 
-#officeName {
+#officeName,
+#email {
     width: 300px;
-    padding: 8px;
-    border: 1px solid #ddd;
+    height: 40px; /* 高さを修正 */
+    padding: 10px; /* 内側の余白を拡張 */
+    border: 2px solid #ddd; /* 枠線の太さを指定 */
     border-radius: 4px;
+    background-color: white;
+    font-size: 16px; /* フォントサイズを調整 */
+}
+
+#email:focus {
+    outline: none;
+    border-color: #4CAF50;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
 }
 
 #reportMonth {
@@ -68,6 +78,103 @@ button:hover {
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
+}
+
+textarea {
+    width: 100%;
+    min-height: 60px;
+    resize: vertical;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.file-upload-container {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+}
+
+.file-upload-container label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.file-input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: white;
+}
+
+.file-input.invalid {
+    background-color: #ffebee !important;
+    border-color: #ff0000;
+}
+
+.file-input.valid {
+    background-color: white !important;
+    border-color: #ddd;
+}
+
+.note {
+    font-size: 0.9em;
+    color: #666;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+#submitButton {
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 16px;
+    margin-top: 20px;
+    transition: all 0.3s ease;
+}
+
+#submitButton:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+#submitButton:not(:disabled):hover {
+    background-color: #45a049;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.radio-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+textarea.required:invalid {
+    background-color: #ffebee;
+}
+
+input.invalid:not(.file-input),
+textarea.invalid,
+.radio-group.invalid {
+    background-color: #ffebee;
 }
 
 .detail-section { 
@@ -139,70 +246,6 @@ button:hover {
     border-radius: 4px;
 }
 
-/* バリデーションスタイル */
-input.invalid:not(.file-input),
-textarea.invalid,
-.radio-group.invalid,
-.name-field.invalid,
-.date-field.invalid,
-.reason-field.invalid {
-    background-color: #ffebee;
-}
-
-.reason-field.required {
-    background-color: #ffebee;
-}
-
-.reason-field.required:not(.invalid) {
-    background-color: white;
-}
-
-.file-input.invalid {
-    background-color: #ffebee !important;
-    border-color: #ff0000;
-}
-
-.file-input.valid {
-    background-color: white !important;
-    border-color: #ddd;
-}
-
-#addressChangeContainer .reason-field,
-#salaryChangeContainer .reason-field {
-    background-color: #ffebee;
-}
-
-#addressChangeContainer .checkbox-checked .reason-field,
-#salaryChangeContainer .checkbox-checked .reason-field {
-    background-color: white;
-}
-
-.radio-group {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 5px 10px;
-    border-radius: 4px;
-    white-space: nowrap;
-}
-
-.checkbox-group {
-    white-space: nowrap;
-    padding: 5px 10px;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
-}
-
-.checkbox-group input[type="checkbox"] {
-    margin-right: 5px;
-}
-
-.checkbox-group label {
-    user-select: none;
-}
-
 .add-button {
     display: none;
     background-color: #4CAF50;
@@ -239,34 +282,21 @@ textarea.invalid,
     margin-left: 4px;
 }
 
-.note {
-    font-size: 0.9em;
-    color: #666;
-    margin-top: 5px;
-    font-style: italic;
-}
-
-#submitButton {
-    background-color: #4CAF50;
-    color: white;
-    padding: 12px 20px;
-    border: none;
+.checkbox-group {
+    white-space: nowrap;
+    padding: 5px 10px;
     border-radius: 4px;
-    cursor: pointer;
-    width: 100%;
-    font-size: 16px;
-    margin-top: 20px;
-    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
 }
 
-#submitButton:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-    opacity: 0.7;
+.checkbox-group input[type="checkbox"] {
+    margin-right: 5px;
 }
 
-#submitButton:not(:disabled):hover {
-    background-color: #45a049;
+.checkbox-group label {
+    user-select: none;
 }
 
 #salaryChangeContainer .entry-row,
