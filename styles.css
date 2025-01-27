@@ -13,6 +13,33 @@ body {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
+.file-upload-container {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+    padding: 15px;
+    border: 2px solid #ddd; /* 外枠を明確に指定 */
+    border-radius: 8px; /* 角を丸くする */
+    background-color: #ffffff; /* 背景色を白に設定 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 軽い影を追加して立体感 */
+}
+
+.file-upload-container label {
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #333; /* ラベルの色を目立たせる */
+}
+
+.file-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc; /* ファイル入力の枠線を指定 */
+    border-radius: 4px;
+    background-color: white;
+    font-size: 14px;
+    box
+
 .header-container {
     display: flex;
     justify-content: space-between;
