@@ -68,6 +68,13 @@ button:hover {
     font-size: 16px;
 }
 
+#officeName:invalid,
+#csvFile:invalid,
+.date-field:invalid {
+    background-color: #ffebee; /* 必須入力時にピンク背景 */
+    border-color: #ff0000; /* 赤い枠線 */
+}
+
 #email:focus,
 #reportMonth:focus,
 #officeName:focus {
@@ -196,28 +203,9 @@ textarea.invalid,
     margin: 10px 0;
 }
 
-#lateEarlyContainer .entry-row,
-#leaveContainer .entry-row {
-    flex-wrap: wrap;
-    position: relative;
-    padding-right: 60px;
-}
-
-#lateEarlyContainer .reason-field,
-#leaveContainer .reason-field {
-    width: calc(100% - 15px);
-    margin-top: 10px;
-}
-
-#lateEarlyContainer .remove-button,
-#leaveContainer .remove-button {
-    position: absolute;
-    right: 15px;
-    top: 15px;
-}
-
 .date-field {
-    width: 160px; /* 日付入力欄の幅を調整 */
+    width: 200px; /* 日付入力の幅を適切に設定 */
+    height: 40px;
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
@@ -265,9 +253,8 @@ textarea.invalid,
     padding: 8px 20px; /* 削除ボタンの幅を広げる */
     border-radius: 4px;
     cursor: pointer;
-    white-space: nowrap;
-    flex-shrink: 0;
-    text-align: center;
+    text-align: center; /* テキストを中央揃え */
+    min-width: 80px; /* 最小幅を設定 */
 }
 
 .remove-button:hover {
