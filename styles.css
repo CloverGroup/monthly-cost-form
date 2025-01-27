@@ -13,33 +13,6 @@ body {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.file-upload-container {
-    display: flex;
-    flex-direction: column;
-    margin-top: 20px;
-    padding: 15px;
-    border: 2px solid #ddd; /* 外枠を明確に指定 */
-    border-radius: 8px; /* 角を丸くする */
-    background-color: #ffffff; /* 背景色を白に設定 */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 軽い影を追加して立体感 */
-}
-
-.file-upload-container label {
-    font-weight: bold;
-    margin-bottom: 10px;
-    font-size: 14px;
-    color: #333; /* ラベルの色を目立たせる */
-}
-
-.file-input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc; /* ファイル入力の枠線を指定 */
-    border-radius: 4px;
-    background-color: white;
-    font-size: 14px;
-    box
-
 .header-container {
     display: flex;
     justify-content: space-between;
@@ -86,12 +59,12 @@ button:hover {
 #officeName,
 #email {
     width: 300px;
-    height: 40px; /* 高さを修正 */
-    padding: 10px; /* 内側の余白を拡張 */
-    border: 2px solid #ddd; /* 枠線の太さを指定 */
+    height: 40px;
+    padding: 10px;
+    border: 2px solid #ddd;
     border-radius: 4px;
     background-color: white;
-    font-size: 16px; /* フォントサイズを調整 */
+    font-size: 16px;
 }
 
 #email:focus {
@@ -117,41 +90,45 @@ textarea {
 }
 
 .file-upload-container {
+    display: flex;
+    flex-direction: column;
     margin-top: 20px;
     padding: 15px;
-    border: 1px solid #eee;
-    border-radius: 4px;
+    border: 2px solid #ddd; /* 外枠を明確に指定 */
+    border-radius: 8px; /* 角を丸くする */
+    background-color: #ffffff; /* 背景色を白に設定 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 軽い影を追加して立体感 */
 }
 
 .file-upload-container label {
-    display: block;
-    margin-bottom: 10px;
     font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #333; /* ラベルの色を目立たせる */
 }
 
 .file-input {
     width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
+    padding: 10px;
+    border: 1px solid #ccc;
     border-radius: 4px;
     background-color: white;
+    font-size: 14px;
+    box-sizing: border-box;
 }
 
-.file-input.invalid {
-    background-color: #ffebee !important;
-    border-color: #ff0000;
-}
-
-.file-input.valid {
-    background-color: white !important;
-    border-color: #ddd;
+.file-input:focus {
+    outline: none;
+    border-color: #4CAF50; /* フォーカス時の強調 */
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5); /* フォーカス時の影 */
 }
 
 .note {
-    font-size: 0.9em;
+    font-size: 12px;
     color: #666;
     margin-top: 5px;
     font-style: italic;
+    line-height: 1.5;
 }
 
 #submitButton {
