@@ -59,9 +59,9 @@ button:hover {
 #officeName,
 #email {
     width: 300px;
-    height: 40px;
-    padding: 10px;
-    border: 2px solid #ddd;
+    height: 40px; /* 高さを指定 */
+    padding: 10px; /* 内側余白 */
+    border: 2px solid #ddd; /* 枠線を太く */
     border-radius: 4px;
     background-color: white;
     font-size: 16px;
@@ -87,6 +87,8 @@ textarea {
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
+    font-size: 14px;
+    line-height: 1.5;
 }
 
 .file-upload-container {
@@ -94,23 +96,23 @@ textarea {
     flex-direction: column;
     margin-top: 20px;
     padding: 15px;
-    border: 2px solid #ddd; /* 外枠を明確に指定 */
-    border-radius: 8px; /* 角を丸くする */
-    background-color: #ffffff; /* 背景色を白に設定 */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 軽い影を追加して立体感 */
+    border: 2px solid #ddd; /* 外枠を復元 */
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 軽い影を追加 */
 }
 
 .file-upload-container label {
     font-weight: bold;
     margin-bottom: 10px;
     font-size: 14px;
-    color: #333; /* ラベルの色を目立たせる */
+    color: #333;
 }
 
 .file-input {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid #ccc; /* ファイル入力の枠線 */
     border-radius: 4px;
     background-color: white;
     font-size: 14px;
@@ -119,7 +121,7 @@ textarea {
 
 .file-input:focus {
     outline: none;
-    border-color: #4CAF50; /* フォーカス時の強調 */
+    border-color: #4CAF50;
     box-shadow: 0 0 5px rgba(76, 175, 80, 0.5); /* フォーカス時の影 */
 }
 
@@ -226,92 +228,4 @@ textarea.invalid,
     background-color: white;
 }
 
-.reason-field {
-    background-color: white;
-}
-
-#retirementContainer .reason-field,
-#noWorkContainer .reason-field,
-#salaryChangeContainer .reason-field,
-#addressChangeContainer .reason-field {
-    flex: 1;
-    min-width: 200px;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    resize: vertical;
-    min-height: 60px;
-}
-
-.date-field {
-    width: 140px;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-
-.add-button {
-    display: none;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-.add-button:hover {
-    background-color: #45a049;
-}
-
-.remove-button {
-    background-color: #ff4444;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 3px;
-    cursor: pointer;
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-
-.remove-button:hover {
-    background-color: #ff6666;
-}
-
-.required::after {
-    content: "*";
-    color: #ff0000;
-    margin-left: 4px;
-}
-
-.checkbox-group {
-    white-space: nowrap;
-    padding: 5px 10px;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
-}
-
-.checkbox-group input[type="checkbox"] {
-    margin-right: 5px;
-}
-
-.checkbox-group label {
-    user-select: none;
-}
-
-#salaryChangeContainer .entry-row,
-#addressChangeContainer .entry-row {
-    display: flex;
-    flex-wrap: nowrap;
-    align-items: flex-start;
-}
-
-#salaryChangeContainer .checkbox-group,
-#addressChangeContainer .checkbox-group {
-    margin: 0 10px;
-    flex-shrink: 0;
-}
+.reason-field
