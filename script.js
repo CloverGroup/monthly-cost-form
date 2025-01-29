@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     setDefaultMonth();
+    etupMonthButton(); // 「今月」ボタンをセットアップ
     setupFileInputs();
     validateForm();
 });
@@ -114,6 +115,31 @@ function setDefaultMonth() {
 
     const minDate = `${yearLast - 3}-${monthLast}`;
     reportMonthInput.setAttribute('min', minDate);
+}
+
+function setupMonthButton() {
+    const reportMonthInput = document.getElementById('reportMonth');
+
+    // すでにボタンがある場合は追加しない（重複防止）
+    if (document.getElementById('setCurrentMonthButton')) return;
+
+    // 「今月」ボタンを作成
+    const button = document.createElement('button');
+    button.textContent = '今月';
+    button.type = 'button';
+    button.id = 'setCurrentMonthButton';
+    button.style.marginLeft = '10px'; // 見た目を調整
+
+    // 「今月」ボタンを押したら、今月の値をセット
+    button.addEventListener('click', function() {
+        const today = new Date();
+        const yearCurrent = today.getFullYear();
+        const monthCurrent = String(today.getMonth() + 1).padStart(2, '0');
+        reportMonthInput.value = `${yearCurrent}-${monthCurrent}`;
+    });
+
+    // `reportMonthInput` の右側にボタンを追加
+    reportMonthInput.insertAdjacentElement('afterend', button);
 }
 
 function setDateConstraints() {
