@@ -331,8 +331,7 @@ input[type="radio"] {
 }
 
 #emailRecipient {
-    width: 100%;
-    max-width: 500px;
+    max-width: 200px;
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
@@ -430,18 +429,23 @@ input[type="email"]:focus {
 
 /* Safariでラジオボタンが右寄りにならないよう調整 */
 .radio-group {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 15px;
-    flex-wrap: wrap;
-    padding: 5px 10px;
-    border-radius: 4px;
+    gap: 10px;
+    flex-wrap: nowrap;
     white-space: nowrap;
 }
 
 .radio-group input[type="radio"] {
-    margin-right: 5px;
+    margin-right: 0px;
+    vertical-align: middle; /* Safariの位置ズレ防止 */
 }
+
+.radio-group label {
+    display: inline-block;
+    vertical-align: middle;
+}
+
 
 /* ボタンの共通スタイル */
 button {
