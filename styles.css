@@ -430,20 +430,29 @@ input[type="email"]:focus {
 .radio-group {
     display: flex;
     align-items: center;
-    flex-wrap: nowrap;
-    gap: 15px;
-}
-
-.radio-group label {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    white-space: nowrap;
+    gap: 10px; /* ラジオボタンとラベルの間隔 */
 }
 
 .radio-group input[type="radio"] {
+    margin: 0; /* Safari用に余計な余白を削除 */
+    appearance: none; /* Safariのデフォルトスタイルをリセット */
+    width: 16px;
+    height: 16px;
+    border: 1px solid #ccc;
+    border-radius: 50%;
     display: inline-block;
-    margin: 0;
+    vertical-align: middle;
+    position: relative;
+}
+
+.radio-group input[type="radio"]:checked {
+    background-color: #007bff; /* 選択時の背景色 */
+}
+
+.radio-group input[type="radio"] + label {
+    display: inline-block;
+    margin-left: 5px; /* ラベルとボタンの間隔 */
+    cursor: pointer;
 }
 
 
