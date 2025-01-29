@@ -92,16 +92,27 @@ function calculateTotalFileSize() {
 function setDefaultMonth() {
     const today = new Date();
     const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1);
-    const year = lastMonth.getFullYear();
-    const month = String(lastMonth.getMonth() + 1).padStart(2, '0');
-    
+    const currentMonth = new Date(today.getFullYear(), today.getMonth());
+
+    const yearLast = lastMonth.getFullYear();
+    const monthLast = String(lastMonth.getMonth() + 1).padStart(2, '0');
+    const yearCurrent = currentMonth.getFullYear();
+    const monthCurrent = String(currentMonth.getMonth() + 1).padStart(2, '0');
+
     const reportMonthInput = document.getElementById('reportMonth');
-    reportMonthInput.value = `${year}-${month}`;
     
-    const maxDate = `${year}-${month}`;
+    // デフォルトを先月に設定
+    reportMonthInput.value = `${yearLast}-${monthLast}`;
+
+    // 手動選択を可能にする
+    reportMonthInput.removeAttribute('readonly'); // もし readonly なら解除
+    reportMonthInput.removeAttribute('disabled'); // もし disabled なら解除
+
+    // 選択できる範囲を過去3年〜今月までに変更
+    const maxDate = `${yearCurrent}-${monthCurrent}`;
     reportMonthInput.setAttribute('max', maxDate);
-    
-    const minDate = `${year - 3}-${month}`;
+
+    const minDate = `${yearLast - 3}-${monthLast}`;
     reportMonthInput.setAttribute('min', minDate);
 }
 
