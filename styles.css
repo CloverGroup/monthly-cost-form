@@ -332,6 +332,7 @@ input[type="radio"] {
 
 #emailRecipient {
     width: 100%;
+    max-width: 500px;
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
