@@ -412,8 +412,7 @@ input:focus, textarea:focus, select:focus {
 /* 修正点: Chromeで確認メール送信先のフォントとサイズを統一 */
 input[type="email"] {
     font-size: 16px;
-    width: 100%;
-    max-width: 500px;
+    width: 300px;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
@@ -429,21 +428,22 @@ input[type="email"]:focus {
 
 /* Safariでラジオボタンが右寄りにならないよう調整 */
 .radio-group {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 10px;
     flex-wrap: nowrap;
+    gap: 15px;
+}
+
+.radio-group label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
     white-space: nowrap;
 }
 
 .radio-group input[type="radio"] {
-    margin-right: 0px;
-    vertical-align: middle; /* Safariの位置ズレ防止 */
-}
-
-.radio-group label {
     display: inline-block;
-    vertical-align: middle;
+    margin: 0;
 }
 
 
