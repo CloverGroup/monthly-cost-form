@@ -79,7 +79,7 @@ function clearForm() {
   }
 }
 
-// フォームバリデーション（簡易チェック）
+// 簡易バリデーション
 function validateForm() {
   let isValid = true;
   const officeName = document.getElementById('officeName');
@@ -99,7 +99,7 @@ function validateForm() {
   if (!csvFile.files || csvFile.files.length === 0) { csvFile.classList.add('invalid'); isValid = false; }
   else { csvFile.classList.remove('invalid'); }
   
-  // 各セクションのエントリ（ここでは各エントリ内の .name-field が空でないか）
+  // 各セクションのエントリチェック
   const sectionContainers = [
     { radioName: 'hasNewEmployee', containerId: 'newEmployeeContainer' },
     { radioName: 'hasRetirement', containerId: 'retirementContainer' },
@@ -133,7 +133,7 @@ function validateForm() {
   return isValid;
 }
 
-// ファイル入力設定・バリデーション
+// ファイル入力設定
 function setupFileInputs() {
   const csvFile = document.getElementById('csvFile');
   const optionalFile = document.getElementById('optionalFile');
@@ -143,6 +143,7 @@ function setupFileInputs() {
   optionalFile.addEventListener('change', function() { validateFileInput(this); });
 }
 
+// ファイル入力バリデーション
 function validateFileInput(fileInput) {
   if (fileInput.files && fileInput.files.length > 0) {
     const fileName = fileInput.files[0].name.toLowerCase();
@@ -161,7 +162,7 @@ function validateFileInput(fileInput) {
   validateForm();
 }
 
-// 先月をデフォルトの報告対象月に設定
+// 先月をデフォルトに設定
 function setDefaultMonth() {
   const reportMonthInput = document.getElementById('reportMonth');
   const today = new Date();
@@ -171,7 +172,7 @@ function setDefaultMonth() {
   reportMonthInput.value = `${yearLast}-${monthLast}`;
 }
 
-// ===== 各セクション用エントリ作成関数 =====
+// ===== 各セクション用エントリ作成 =====
 
 // 新規配属者エントリ
 function createNewEmployeeEntry() {
@@ -180,7 +181,7 @@ function createNewEmployeeEntry() {
   const uniqueId = Date.now();
   div.innerHTML = `
     <input type="text" name="newEmployeeName[]" placeholder="氏名" class="name-field required" maxlength="15" onchange="validateForm()" onkeyup="validateForm()">
-    <div class="radio-group">
+    <div class="employee-type-group">
       <label>
         <input type="radio" name="newEmployeeType_${uniqueId}" value="社員" required onchange="updateEmployeeType(${uniqueId}, this.value); validateForm()" checked> 社員
       </label>
@@ -189,10 +190,10 @@ function createNewEmployeeEntry() {
       </label>
     </div>
     <input type="hidden" name="newEmployeeType[]" id="hiddenEmployeeType_${uniqueId}" value="社員">
-    <div class="checkbox-group">
-      <input type="checkbox" id="docs_${uniqueId}" name="employmentDocumentSubmitted[]" value="1" onchange="validateForm()">
-      <label for="docs_${uniqueId}">雇用契約書類提出済み</label>
-    </div>
+    <label class="checkbox-label">
+      <input type="checkbox" name="employmentDocumentSubmitted[]" value="1" onchange="validateForm()">
+      雇用契約書類提出済み
+    </label>
     <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
   `;
   return div;
@@ -258,7 +259,6 @@ function addSalaryChange() {
 function createAddressChangeEntry() {
   const div = document.createElement('div');
   div.className = 'entry-row';
-  const uniqueId = Date.now();
   div.innerHTML = `
     <input type="text" name="changedAddressTransportName[]" placeholder="氏名" class="name-field required" maxlength="15" onchange="validateForm()" onkeyup="validateForm()">
     <textarea name="changedAddressTransportDetail[]" placeholder="変更内容" class="reason-field required" onchange="validateForm()" onkeyup="validateForm()"></textarea>
