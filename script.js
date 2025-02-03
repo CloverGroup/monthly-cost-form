@@ -558,29 +558,46 @@ function collectSectionData(sectionKey, containerId) {
     return data;
 }
 
+// 新規配属者エントリ作成用関数（動的追加用）
 function createNewEmployeeEntry() {
     const div = document.createElement('div');
     div.className = 'entry-row';
-    const uniqueId = Date.now();
+    const uniqueId = Date.now();  // グループ識別用にユニークな値を生成
+
     div.innerHTML = `
+        <!-- 氏名 -->
         <input type="text" placeholder="氏名" class="name-field required" 
                maxlength="15"
                onchange="validateEntryAndForm(this.closest('.entry-row'))"
                onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
+        <!-- 社員/PAのラジオボタン群 -->
         <div class="radio-group">
-            <input type="radio" name="empType_${uniqueId}" value="社員" required
-                   onchange="validateEntryAndForm(this.closest('.entry-row'))"> 社員
-            <input type="radio" name="empType_${uniqueId}" value="PA"
-                   onchange="validateEntryAndForm(this.closest('.entry-row'))"> PA
+            <label>
+                <input type="radio" name="empType_${uniqueId}" value="社員" required
+                       onchange="updateEmployeeType(${uniqueId}, this.value); validateEntryAndForm(this.closest('.entry-row'))" checked> 社員
+            </label>
+            <label>
+                <input type="radio" name="empType_${uniqueId}" value="PA"
+                       onchange="updateEmployeeType(${uniqueId}, this.value); validateEntryAndForm(this.closest('.entry-row'))"> PA
+            </label>
         </div>
+        <!-- 隠し入力：ラジオボタン選択結果を保持（配列形式で送信） -->
+        <input type="hidden" name="newEmployeeType[]" id="hiddenEmployeeType_${uniqueId}" value="社員">
+        <!-- 雇用契約書類提出済みのチェックボックス -->
         <div class="checkbox-group">
-            <input type="checkbox" id="docs_${uniqueId}">
+            <input type="checkbox" id="docs_${uniqueId}" name="employmentDocumentSubmitted[]" value="1">
             <label for="docs_${uniqueId}">雇用書類提出済み</label>
         </div>
         <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
     `;
     return div;
 }
+
+// 各新規配属者エントリのラジオボタン選択値を、隠し入力に反映する関数
+function updateEmployeeType(uniqueId, value) {
+    document.getElementById("hiddenEmployeeType_" + uniqueId).value = value;
+}
+
 
 function createRetirementEntry() {
     const div = document.createElement('div');
