@@ -13,7 +13,7 @@
       <button type="button" onclick="clearForm()">フォームをクリア</button>
     </div>
 
-    <!-- フォーム送信先（GASのURL） -->
+    <!-- GAS のURLを指定 -->
     <form id="mainForm" action="https://script.google.com/macros/s/AKfycbxgsQIH6AJRWnO5YcG3LPEay8YT_XDjSAR4qnthWhw87ALRIXG_1J8BODitxwJ90kWS/exec" method="post" enctype="multipart/form-data" onsubmit="return handleSubmit(event)">
       
       <!-- 基本情報 -->
@@ -44,7 +44,7 @@
         <div class="note">※他事業所のPAで、当事業所でも勤務開始する場合にも記載してください。</div>
         <div id="newEmployeeDetail" class="detail-section" style="display: none;">
           <div id="newEmployeeContainer">
-            <!-- 初期の新規配属者エントリ例 -->
+            <!-- 初期エントリ例 -->
             <div class="employee-entry">
               <input type="text" name="newEmployeeName[]" placeholder="氏名">
               <div class="employee-type-group">
@@ -56,7 +56,7 @@
                 </label>
               </div>
               <input type="hidden" name="newEmployeeType[]" id="hiddenEmployeeType_0" value="社員">
-              <label>
+              <label class="checkbox-label">
                 <input type="checkbox" name="employmentDocumentSubmitted[]" value="1">
                 雇用契約書類提出済み
               </label>
