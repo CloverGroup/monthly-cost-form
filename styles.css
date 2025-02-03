@@ -110,16 +110,38 @@ body {
   min-height: 40px;
 }
 
+/* 新規配属者専用：社員/PAラジオボタン群 */
+.employee-type-group {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 10px;
+}
+.employee-type-group label {
+  margin-right: 5px;
+}
+
+/* チェックボックスラベル */
+.checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 10px;
+}
+
+/* エントリ内のラジオグループ */
 .entry-row .radio-group {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   margin-right: 10px;
 }
 
+/* エントリ内のチェックボックスグループ */
 .entry-row .checkbox-group {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   margin-right: 10px;
 }
 
+/* 削除ボタン */
 .entry-row .remove-button {
   padding: 4px 8px;
   font-size: 12px;
