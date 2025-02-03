@@ -14,20 +14,23 @@
     </div>
 
     <!-- onsubmit 属性で handleSubmit() を呼び出し -->
-    <form action="https://script.google.com/macros/s/AKfycbxgsQIH6AJRWnO5YcG3LPEay8YT_XDjSAR4qnthWhw87ALRIXG_1J8BODitxwJ90kWS/exec" method="post" enctype="multipart/form-data" onsubmit="return handleSubmit(event)">
+    <form action="https://script.google.com/macros/s/XXXXXXXXXX/exec" method="post" enctype="multipart/form-data" onsubmit="return handleSubmit(event)">
       <!-- 基本情報 -->
       <div class="form-group">
         <div class="header-row">
           <label for="officeName">事業所名</label>
-          <input type="text" id="officeName" name="officeName" class="required">
+          <input type="text" id="officeName" name="officeName" class="required"
+                 onchange="validateForm()" onkeyup="validateForm()">
         </div>
         <div class="header-row">
           <label for="reportMonth">報告対象月</label>
-          <input type="month" id="reportMonth" name="reportMonth" class="required">
+          <input type="month" id="reportMonth" name="reportMonth" class="required"
+                 onchange="validateForm()">
         </div>
         <div class="header-row">
           <label for="email">確認メール送信先</label>
-          <input type="email" id="email" name="email" class="required" placeholder="xxx@day-clover.com">
+          <input type="email" id="email" name="email" class="required" placeholder="xxx@day-clover.com"
+                 onchange="validateForm()" onkeyup="validateForm()">
         </div>
       </div>
 
@@ -40,7 +43,9 @@
             <input type="radio" name="hasNewEmployee" value="yes"> あり
           </div>
         </div>
-        <div class="note">※他事業所のPAで、当事業所でも勤務開始する場合にも記載してください。</div>
+        <div class="note">
+          ※他事業所のPAで、当事業所でも勤務開始する場合にも記載してください。
+        </div>
         <div id="newEmployeeDetail" class="detail-section">
           <div id="newEmployeeContainer"></div>
           <button type="button" class="add-button" onclick="addNewEmployee()">新規配属者を追加</button>
@@ -57,8 +62,7 @@
           </div>
         </div>
         <div class="note">
-          ※他事業所で勤務が継続するが、当事業所の勤務が最終の場合も記載してください。<br>
-          ※休職の場合はコメント欄にその旨を記載してください。
+          ※他事業所で勤務が継続するが、当事業所の勤務が最終の場合は記載してください。
         </div>
         <div id="retirementDetail" class="detail-section">
           <div id="retirementContainer"></div>
@@ -144,22 +148,22 @@
       <!-- その他コメント -->
       <div class="form-group">
         <label>その他コメント</label>
-        <textarea id="otherComments" name="otherComments"></textarea>
+        <textarea id="otherComments" name="otherComments" onchange="validateForm()" onkeyup="validateForm()"></textarea>
       </div>
 
       <!-- ファイルアップロード -->
       <div class="file-upload-container">
         <label>勤務データファイル添付<span class="required"></span></label>
-        <input type="file" id="csvFile" name="csvFile" class="file-input">
+        <input type="file" id="csvFile" name="csvFile" class="file-input" onchange="validateFileInput(this)">
         <div class="note">※CSVファイルまたはExcelファイル</div>
       </div>
       <div class="file-upload-container">
         <label>追加資料</label>
-        <input type="file" id="optionalFile" name="optionalFile" class="file-input">
+        <input type="file" id="optionalFile" name="optionalFile" class="file-input" onchange="validateFileInput(this)">
       </div>
 
-      <!-- 送信ボタン -->
-      <button type="submit" id="submitButton">メール送信</button>
+      <!-- 送信ボタン（初期状態は無効＝グレー表示） -->
+      <button type="submit" id="submitButton" disabled>メール送信</button>
     </form>
   </div>
   <script src="script.js"></script>
