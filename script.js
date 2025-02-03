@@ -24,7 +24,10 @@ function setupFileInputs() {
   const csvFile = document.getElementById('csvFile');
   const optionalFile = document.getElementById('optionalFile');
   
+  // CSVファイルは拡張子を限定するが、追加資料は全形式許可する
   csvFile.accept = '.csv,.xlsx,.xls';
+  // optionalFile は特に accept 属性を設定しない（すなわち全形式許可）
+  // optionalFile.accept = ''; // この行を削除またはコメントアウトしてください
   optionalFile.required = false;
   
   csvFile.addEventListener('change', function() {
@@ -35,17 +38,23 @@ function setupFileInputs() {
   });
 }
 
+
 function validateFileInput(fileInput) {
   if (fileInput.files && fileInput.files.length > 0) {
     const fileName = fileInput.files[0].name.toLowerCase();
     const fileSize = fileInput.files[0].size;
-    if (!(fileName.endsWith('.csv') || fileName.endsWith('.xlsx') || fileName.endsWith('.xls'))) {
-      fileInput.classList.add('invalid');
-      fileInput.classList.remove('valid');
-      fileInput.value = '';
-      alert('CSVまたはExcelファイルを選択してください');
-      return false;
+    
+    // CSVファイルについてのみ拡張子チェックを行う
+    if (fileInput.id === 'csvFile') {
+      if (!(fileName.endsWith('.csv') || fileName.endsWith('.xlsx') || fileName.endsWith('.xls'))) {
+        fileInput.classList.add('invalid');
+        fileInput.classList.remove('valid');
+        fileInput.value = '';
+        alert('CSVまたはExcelファイルを選択してください');
+        return false;
+      }
     }
+    
     if (fileSize > 50 * 1024 * 1024) {
       fileInput.classList.add('invalid');
       fileInput.classList.remove('valid');
@@ -53,6 +62,7 @@ function validateFileInput(fileInput) {
       alert('ファイルサイズは50MB以下にしてください');
       return false;
     }
+    
     if (calculateTotalFileSize() > 50 * 1024 * 1024) {
       fileInput.classList.add('invalid');
       fileInput.classList.remove('valid');
@@ -60,6 +70,7 @@ function validateFileInput(fileInput) {
       alert('添付ファイルの合計サイズは50MB以下にしてください');
       return false;
     }
+    
     fileInput.classList.remove('invalid');
     fileInput.classList.add('valid');
   } else {
