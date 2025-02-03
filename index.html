@@ -13,7 +13,7 @@
       <button type="button" onclick="clearForm()">フォームをクリア</button>
     </div>
 
-    <!-- フォーム送信先に GAS の URL を指定してください -->
+    <!-- GAS のURLを指定。実際のURLに置き換えてください -->
     <form id="mainForm" action="https://script.google.com/macros/s/AKfycbxgsQIH6AJRWnO5YcG3LPEay8YT_XDjSAR4qnthWhw87ALRIXG_1J8BODitxwJ90kWS/exec" method="post" enctype="multipart/form-data">
       
       <!-- 基本情報 -->
@@ -37,14 +37,41 @@
         <div class="section-title">
           新規配属者
           <div class="radio-group">
-            <label><input type="radio" name="hasNewEmployee" value="no" checked> なし</label>
-            <label><input type="radio" name="hasNewEmployee" value="yes"> あり</label>
+            <label>
+              <input type="radio" name="hasNewEmployee" value="no" checked> なし
+            </label>
+            <label>
+              <input type="radio" name="hasNewEmployee" value="yes"> あり
+            </label>
           </div>
         </div>
         <div class="note">※他事業所のPAで、当事業所でも勤務開始する場合にも記載してください。</div>
         <!-- 初期状態は非表示。JSで「あり」選択時に表示 -->
         <div id="newEmployeeDetail" class="detail-section" style="display: none;">
-          <div id="newEmployeeContainer"></div>
+          <div id="newEmployeeContainer">
+            <!-- 初期の新規配属者エントリ例 -->
+            <div class="employee-entry">
+              <!-- 氏名 -->
+              <input type="text" name="newEmployeeName[]" placeholder="氏名">
+              <!-- 社員/PA（ラジオボタン群：グループ名はインデックス付き） -->
+              <div class="employee-type-group">
+                <label>
+                  <input type="radio" name="newEmployeeType_0" value="社員" onchange="updateEmployeeType(0, this.value)" checked> 社員
+                </label>
+                <label>
+                  <input type="radio" name="newEmployeeType_0" value="PA" onchange="updateEmployeeType(0, this.value)"> PA
+                </label>
+              </div>
+              <!-- 隠し入力：選択結果を保持 -->
+              <input type="hidden" name="newEmployeeType[]" id="hiddenEmployeeType_0" value="社員">
+              <!-- 雇用契約書類提出済み -->
+              <label>
+                <input type="checkbox" name="employmentDocumentSubmitted[]" value="1">
+                雇用契約書類提出済み
+              </label>
+              <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
+            </div>
+          </div>
           <button type="button" class="add-button" onclick="addNewEmployee()">新規配属者を追加</button>
         </div>
       </div>
