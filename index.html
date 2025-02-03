@@ -30,21 +30,49 @@
                 </div>
             </div>
 
-            <!-- 新規配属者 -->
-            <div class="form-group">
-                <div class="section-title">
-                    新規配属者
-                    <div class="radio-group">
-                        <input type="radio" name="hasNewEmployee" value="no" checked> なし
-                        <input type="radio" name="hasNewEmployee" value="yes"> あり
-                    </div>
+<!-- 新規配属者 -->
+<div class="form-group">
+    <div class="section-title">
+        新規配属者
+        <div class="radio-group">
+            <label>
+                <input type="radio" name="hasNewEmployee" value="no" checked> なし
+            </label>
+            <label>
+                <input type="radio" name="hasNewEmployee" value="yes"> あり
+            </label>
+        </div>
+    </div>
+    <div class="note">※他事業所のPAで、当事業所でも勤務開始する場合にも記載してください。</div>
+    <!-- 初期状態は非表示。JavaScriptで「あり」選択時に表示 -->
+    <div id="newEmployeeDetail" class="detail-section" style="display: none;">
+        <div id="newEmployeeContainer">
+            <!-- 初期の新規配属者エントリ例 -->
+            <div class="employee-entry">
+                <!-- 氏名 -->
+                <input type="text" name="newEmployeeName[]" placeholder="氏名">
+                <!-- 社員/PA（ラジオボタン群：グループ名はインデックス付き） -->
+                <div class="employee-type-group">
+                    <label>
+                        <input type="radio" name="newEmployeeType_0" value="社員" onchange="updateEmployeeType(0, this.value)" checked> 社員
+                    </label>
+                    <label>
+                        <input type="radio" name="newEmployeeType_0" value="PA" onchange="updateEmployeeType(0, this.value)"> PA
+                    </label>
                 </div>
-                <div class="note">※他事業所のPAで、当事業所でも勤務開始する場合にも記載してください。</div>
-                <div id="newEmployeeDetail" class="detail-section">
-                    <div id="newEmployeeContainer"></div>
-                    <button type="button" class="add-button" onclick="addNewEmployee()">新規配属者を追加</button>
-                </div>
+                <!-- 選択結果を保持する隠し入力 -->
+                <input type="hidden" name="newEmployeeType[]" id="hiddenEmployeeType_0" value="社員">
+                <!-- 雇用契約書類提出済み -->
+                <label>
+                    <input type="checkbox" name="employmentDocumentSubmitted[]" value="1">
+                    雇用契約書類提出済み
+                </label>
             </div>
+        </div>
+        <button type="button" class="add-button" onclick="addNewEmployee()">新規配属者を追加</button>
+    </div>
+</div>
+
 
             <!-- 当月退職者 -->
             <div class="form-group">
