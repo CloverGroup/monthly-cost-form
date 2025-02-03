@@ -1,480 +1,150 @@
-body { 
-    margin: 20px; 
-    font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "メイリオ", sans-serif;
-    background-color: #f5f5f5;
+/* 全体レイアウト */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f7f7f7;
+  margin: 0;
+  padding: 20px;
 }
 
 .form-container {
-    max-width: 900px;
-    margin: 0 auto;
-    background-color: white;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  max-width: 800px;
+  margin: 0 auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .header-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 .header-container h2 {
-    margin: 0;
+  margin: 0;
 }
 
-button {
-    background-color: #ff4444;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #ff6666;
-}
-
-.form-group { 
-    margin-bottom: 20px; 
-    padding: 15px;
-    border: 1px solid #eee;
-    border-radius: 4px;
+/* フォームグループ */
+.form-group {
+  margin-bottom: 20px;
 }
 
 .header-row {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
 .header-row label {
-    min-width: 100px;
-    font-weight: bold;
+  width: 150px;
+  font-weight: bold;
 }
 
-#officeName {
-    width: 300px;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+.header-row input[type="text"],
+.header-row input[type="month"],
+.header-row input[type="email"] {
+  flex: 1;
+  padding: 6px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
-#reportMonth {
-    width: 150px;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-
-.detail-section { 
-    margin-left: 20px; 
-    display: none;
-    padding: 10px;
-    border-left: 3px solid #4CAF50;
-}
-
-.entry-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 15px;
-    padding: 15px;
-    background-color: #f9f9f9;
-    border-radius: 4px;
-    margin: 10px 0;
-}
-
-#lateEarlyContainer .entry-row,
-#leaveContainer .entry-row {
-    flex-wrap: wrap;
-    position: relative;
-    padding-right: 60px;
-}
-
-#lateEarlyContainer .reason-field,
-#leaveContainer .reason-field {
-    width: calc(100% - 15px);
-    margin-top: 10px;
-}
-
-#lateEarlyContainer .remove-button,
-#leaveContainer .remove-button {
-    position: absolute;
-    right: 15px;
-    top: 15px;
-}
-
-.name-field {
-    width: 210px;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background-color: white;
-}
-
-.reason-field {
-    background-color: white;
-}
-
-#retirementContainer .reason-field,
-#noWorkContainer .reason-field,
-#salaryChangeContainer .reason-field,
-#addressChangeContainer .reason-field {
-    flex: 1;
-    min-width: 200px;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    resize: vertical;
-    min-height: 60px;
-}
-
-.date-field {
-    width: 140px;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-
-/* バリデーションスタイル */
-input.invalid:not(.file-input),
-textarea.invalid,
-.radio-group.invalid,
-.name-field.invalid,
-.date-field.invalid,
-.reason-field.invalid {
-    background-color: #ffebee;
-}
-
-.reason-field.required {
-    background-color: #ffebee;
-}
-
-.reason-field.required:not(.invalid) {
-    background-color: white;
-}
-
-.file-input.invalid {
-    background-color: #ffebee !important;
-    border-color: #ff0000;
-}
-
-.file-input.valid {
-    background-color: white !important;
-    border-color: #ddd;
-}
-
-#addressChangeContainer .reason-field,
-#salaryChangeContainer .reason-field {
-    background-color: #ffebee;
-}
-
-#addressChangeContainer .checkbox-checked .reason-field,
-#salaryChangeContainer .checkbox-checked .reason-field {
-    background-color: white;
-}
-
-.radio-group {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 5px 10px;
-    border-radius: 4px;
-    white-space: nowrap;
-}
-
-.checkbox-group {
-    white-space: nowrap;
-    padding: 5px 10px;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
-}
-
-.checkbox-group input[type="checkbox"] {
-    margin-right: 5px;
-}
-
-.checkbox-group label {
-    user-select: none;
-}
-
-.add-button {
-    display: none;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-.add-button:hover {
-    background-color: #45a049;
-}
-
-.remove-button {
-    background-color: #ff4444;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 3px;
-    cursor: pointer;
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-
-.remove-button:hover {
-    background-color: #ff6666;
-}
-
-.required::after {
-    content: "*";
-    color: #ff0000;
-    margin-left: 4px;
-}
-
-.note {
-    font-size: 0.9em;
-    color: #666;
-    margin-top: 5px;
-    font-style: italic;
-}
-
-#submitButton {
-    background-color: #4CAF50;
-    color: white;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    width: 100%;
-    font-size: 16px;
-    margin-top: 20px;
-    transition: all 0.3s ease;
-}
-
-#submitButton:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-    opacity: 0.7;
-}
-
-#submitButton:not(:disabled):hover {
-    background-color: #45a049;
-}
-
+/* セクションタイトル */
 .section-title {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 10px;
-    font-weight: bold;
+  font-weight: bold;
+  margin-bottom: 6px;
 }
 
-textarea {
-    width: 100%;
-    min-height: 60px;
-    resize: vertical;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-
-.file-upload-container {
-    margin-top: 20px;
-    padding: 15px;
-    border: 1px solid #eee;
-    border-radius: 4px;
-}
-
-.file-upload-container label {
-    display: block;
-    margin-bottom: 10px;
-    font-weight: bold;
-}
-
-.file-input {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background-color: white;
-}
-
-input[type="checkbox"] {
-    margin-right: 5px;
-    cursor: pointer;
-}
-
-input[type="radio"] {
-    margin-right: 5px;
-    cursor: pointer;
-}
-
-#salaryChangeContainer .entry-row,
-#addressChangeContainer .entry-row {
-    display: flex;
-    flex-wrap: nowrap;
-    align-items: flex-start;
-}
-
-#salaryChangeContainer .checkbox-group,
-#addressChangeContainer .checkbox-group {
-    margin: 0 10px;
-    flex-shrink: 0;
-}
-
-#emailRecipient {
-    max-width: 200px;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 14px;
-    margin-bottom: 20px;
-    background-color: white;
-    transition: border-color 0.3s ease;
-}
-
-#emailRecipient:focus {
-    border-color: #66afe9;
-    outline: none;
-    box-shadow: 0 0 5px rgba(102, 175, 233, 0.5);
-}
-
-#workStyleChangeContainer .entry-row,
-#transportationChangeContainer .entry-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    gap: 15px;
-    padding: 15px;
-    background-color: #f9f9f9;
-    border-radius: 4px;
-    margin: 10px 0;
-    position: relative;
-}
-
-#workStyleChangeContainer .reason-field,
-#transportationChangeContainer .reason-field {
-    width: calc(100% - 15px);
-    margin-top: 10px;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background-color: white;
-    resize: vertical;
-    min-height: 60px;
-}
-
-#workStyleChangeContainer .remove-button,
-#transportationChangeContainer .remove-button {
-    position: absolute;
-    right: 15px;
-    top: 15px;
-    background-color: #ff4444;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 3px;
-    cursor: pointer;
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-
-#workStyleChangeContainer .remove-button:hover,
-#transportationChangeContainer .remove-button:hover {
-    background-color: #ff6666;
-}
-
-/* 共通スタイル */
-input, textarea, select {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 14px;
-    background-color: white;
-    transition: border-color 0.3s ease;
-}
-
-input:focus, textarea:focus, select:focus {
-    border-color: #66afe9;
-    outline: none;
-    box-shadow: 0 0 5px rgba(102, 175, 233, 0.5);
-}
-
-/* 修正点: Chromeで確認メール送信先のフォントとサイズを統一 */
-input[type="email"] {
-    font-size: 16px;
-    width: 300px;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background-color: white;
-    transition: border-color 0.3s ease;
-}
-
-input[type="email"]:focus {
-    border-color: #66afe9;
-    outline: none;
-    box-shadow: 0 0 5px rgba(102, 175, 233, 0.5);
-}
-
-/* Safariでラジオボタンが右寄りにならないよう調整 */
 .radio-group {
-    display: flex; /* 横並びにする */
-    align-items: center; /* 垂直方向の中央揃え */
-    gap: 15px; /* ラジオボタンとラベルの間隔 */
-}
-
-.radio-group input[type="radio"] {
-    appearance: none; /* Safariのデフォルトスタイルをリセット */
-    width: 16px;
-    height: 16px;
-    border: 2px solid #666;
-    border-radius: 50%;
-    display: inline-block;
-    position: relative;
-    cursor: pointer;
-}
-
-.radio-group input[type="radio"]:checked {
-    background-color: #007bff; /* 選択時の背景色 */
+  display: inline-block;
+  margin-left: 10px;
 }
 
 .radio-group label {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    gap: 5px; /* ラジオボタンとラベルの間隔 */
+  margin-right: 10px;
 }
 
-
-/* ボタンの共通スタイル */
-button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+/* 詳細セクション */
+.detail-section {
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px dashed #ccc;
+  border-radius: 4px;
+  background-color: #fafafa;
 }
 
-button:hover {
-    background-color: #45a049;
+.detail-section .add-button {
+  margin-top: 10px;
+  padding: 6px 12px;
+  font-size: 14px;
+  cursor: pointer;
 }
 
-button.remove-button {
-    background-color: #ff4444;
+/* エントリ */
+.entry-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
 }
 
-button.remove-button:hover {
-    background-color: #ff6666;
+.entry-row input[type="text"],
+.entry-row input[type="date"],
+.entry-row textarea {
+  padding: 6px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-right: 10px;
+  margin-bottom: 5px;
+}
+
+.entry-row input[type="text"],
+.entry-row input[type="date"] {
+  width: 180px;
+}
+
+.entry-row textarea {
+  flex: 1;
+  min-height: 40px;
+}
+
+.entry-row .radio-group {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.entry-row .checkbox-group {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.entry-row .remove-button {
+  padding: 4px 8px;
+  font-size: 12px;
+  color: #fff;
+  background-color: #d9534f;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* ファイルアップロード */
+.file-upload-container {
+  margin-bottom: 20px;
+}
+
+.file-upload-container label {
+  font-weight: bold;
+}
+
+.file-upload-container .file-input {
+  display: block;
+  margin-top: 5px;
+}
+
+/* エラースタイル */
+.invalid {
+  border-color: red !important;
 }
