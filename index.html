@@ -162,6 +162,8 @@
         <input type="file" id="optionalFile" name="optionalFile" class="file-input" onchange="validateFileInput(this)">
       </div>
 
+      <!-- 送信ボタンの直前に hidden フィールドを追加 -->
+      <input type="hidden" id="jsonData" name="jsonData">
       <!-- 送信ボタン（初期状態は無効＝グレー表示） -->
       <button type="submit" id="submitButton" disabled>メール送信</button>
     </form>
