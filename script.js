@@ -381,34 +381,56 @@ function clearForm() {
 }
 
 function handleSubmit(event) {
+  // ブラウザのデフォルトの送信動作をキャンセル
   event.preventDefault();
+  
+  // 送信ボタンの状態確認
   const submitButton = document.getElementById('submitButton');
   if (submitButton.disabled) return false;
+  
+  // 入力チェック（必須項目が正しく入力されているか）
   if (!validateForm()) {
     alert('必須項目を入力してください');
     return false;
   }
+  
+  // 送信中はボタンを無効化し、表示を変更
   submitButton.disabled = true;
   submitButton.textContent = '送信中...';
   
-  const formData = new FormData();
+  // フォームの全入力値をオブジェクトに集約
   const jsonData = collectFormData();
+  
+  // FormData を作成し、jsonData を JSON 文字列として追加
+  const formData = new FormData();
   formData.append('jsonData', JSON.stringify(jsonData));
   
-  const csvFile = document.getElementById('csvFile').files[0];
-  if (csvFile) {
-    formData.append('csvFile', csvFile);
-  }
-  const optionalFile = document.getElementById('optionalFile').files[0];
-  if (optionalFile) {
-    formData.append('optionalFile', optionalFile);
+  // CSV ファイルが添付されている場合は FormData に追加
+  const csvFileInput = document.getElementById('csvFile');
+  if (csvFileInput && csvFileInput.files && csvFileInput.files[0]) {
+    formData.append('csvFile', csvFileInput.files[0]);
   }
   
+  // 追加資料（optionalFile）が添付されている場合は追加
+  const optionalFileInput = document.getElementById('optionalFile');
+  if (optionalFileInput && optionalFileInput.files && optionalFileInput.files[0]) {
+    formData.append('optionalFile', optionalFileInput.files[0]);
+  }
+  
+  // fetch を使って、GAS のエンドポイントに POST リクエストを送信
   fetch(document.querySelector('form').action, {
     method: 'POST',
     body: formData
   })
-  .then(function() {
+  .then(function(response) {
+    // レスポンスがエラーの場合は例外を投げる
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.text();
+  })
+  .then(function(responseText) {
+    // 送信完了時の処理（アラート表示やフォームのリセット）
     alert('送信が完了しました');
     clearForm();
   })
@@ -417,10 +439,12 @@ function handleSubmit(event) {
     alert('送信に失敗しました。もう一度お試しください。');
   })
   .finally(function() {
+    // 最終的に送信ボタンを再度有効化し、表示を元に戻す
     submitButton.disabled = false;
     submitButton.textContent = 'メール送信';
     validateForm();
   });
+  
   return false;
 }
 
