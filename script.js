@@ -418,7 +418,7 @@ function handleSubmit(event) {
   }
   
   // fetch を使って、GAS のエンドポイントに POST リクエストを送信
-  fetch(document.querySelector('form').action {
+  fetch(document.querySelector('form').action, {
     method: 'POST',
     body: formData
   })
