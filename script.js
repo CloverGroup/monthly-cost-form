@@ -452,7 +452,8 @@ function collectFormData() {
   const data = {
     officeName: document.getElementById('officeName').value,
     reportMonth: document.getElementById('reportMonth').value,
-    otherComments: document.getElementById('otherComments').value
+    otherComments: document.getElementById('otherComments').value,
+    email: document.getElementById('email').value
   };
   
   const sections = [
