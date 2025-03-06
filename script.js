@@ -415,7 +415,7 @@ function handleSubmit(event) {
       var csvFileData = e.target.result;
       formData.append("csvFileData", csvFileData);
       formData.append("csvFileName", csvFile.name);
-      formData.append("mimeType", csvFile.type);
+      formData.append("csvMimeType", csvFile.type);
       formData.append("csvFile", csvFile);
     };
   }
