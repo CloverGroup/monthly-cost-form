@@ -408,7 +408,16 @@ function handleSubmit(event) {
   // CSV ファイルが添付されている場合は FormData に追加
   const csvFileInput = document.getElementById('csvFile');
   if (csvFileInput && csvFileInput.files && csvFileInput.files[0]) {
-    formData.append('csvFile', csvFileInput.files[0]);
+    //20250306 reader追加
+    var reader = new FileReader();
+    reader.onload = function(e){
+      var csvFile = csvFileInput.files[0];
+      var csvFileData = e.target.result;
+      formData.append("csvFileData", csvFileData);
+      formData.append("csvFileName", csvFile.name);
+      formData.append("mimeType", csvFile.type);
+      formData.append("csvFile", csvFile);
+    };
   }
   
   // 追加資料（optionalFile）が添付されている場合は追加
