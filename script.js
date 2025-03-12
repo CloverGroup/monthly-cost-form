@@ -407,22 +407,8 @@ function handleSubmit(event) {
   
   // CSV ファイルが添付されている場合は FormData に追加
   const csvFileInput = document.getElementById('csvFile');
-  if (csvFileInput.files.length > 0) {
-    //20250306 reader追加
-    const csvFile = csvFileInput.files[0];
-    var reader = new FileReader();
-    reader.onload = function(e){
-      // var csvFile = csvFileInput.files[0];
-      var csvFileData = e.target.result.split(',')[1];
-      formData.append("csvFileData", csvFileData);
-      formData.append("csvFileName", csvFile.name);
-      formData.append("csvMimeType", csvFile.type);
-      // formData.append("csvFile", csvFile);
-      sendRequest(formData);
-    };
-     reader.readAsDataURL(csvFile);
-  }else {
-    sendRequest(formData);
+  if (csvFileInput && csvFileInput.files && csvFileInput.files[0]) {
+    formData.append('csvFile', csvFileInput.files[0]);
   }
   
   // 追加資料（optionalFile）が添付されている場合は追加
@@ -466,8 +452,7 @@ function collectFormData() {
   const data = {
     officeName: document.getElementById('officeName').value,
     reportMonth: document.getElementById('reportMonth').value,
-    otherComments: document.getElementById('otherComments').value,
-    email: document.getElementById('email').value
+    otherComments: document.getElementById('otherComments').value
   };
   
   const sections = [
@@ -714,28 +699,4 @@ function addLateEarly() {
 }
 function addLeave() {
   addEntry('leaveContainer', createLeaveEntry);
-}
-function sendRequest(formData) {
-  fetch(document.querySelector('form').action, {
-    method: 'POST',
-    body: formData
-  })
-  .then(response => {
-    if (!response.ok) throw new Error('Network response was not ok');
-    return response.text();
-  })
-  .then(responseText => {
-    alert('送信が完了しました');
-    clearForm();
-  })
-  .catch(error => {
-    console.error('送信エラー:', error);
-    alert('送信に失敗しました。もう一度お試しください。');
-  })
-  .finally(() => {
-    const submitButton = document.getElementById('submitButton');
-    submitButton.disabled = false;
-    submitButton.textContent = 'メール送信';
-    validateForm();
-  });
 }
