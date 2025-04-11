@@ -455,9 +455,9 @@ function collectFormData() {
     officeName: document.getElementById('officeName').value,
     reportMonth: document.getElementById('reportMonth').value,
     otherComments: document.getElementById('otherComments').value,
-    email: document.getElementById('email').value,
-    csvData: document.getElementById('csvData').value,
-    optionalData: document.getElementById('optionalData').value
+    email: document.getElementById('email').value
+    // csvData: document.getElementById('csvData').value,
+    // optionalData: document.getElementById('optionalData').value
   };
   
   const sections = [
