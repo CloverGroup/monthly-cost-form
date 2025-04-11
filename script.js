@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   
   setDefaultMonth();
-  setupFileInputs();
+//  setupFileInputs();
   validateForm();
 });
 
@@ -269,7 +269,7 @@ function validateForm() {
   // 基本情報チェック
   const officeName = document.getElementById('officeName');
   const reportMonth = document.getElementById('reportMonth');
-  const csvFile = document.getElementById('csvFile');
+//  const csvFile = document.getElementById('csvFile');
   
   if (!officeName.value.trim()) {
     officeName.classList.add('invalid');
@@ -285,13 +285,13 @@ function validateForm() {
     reportMonth.classList.remove('invalid');
   }
   
-  if (!csvFile.files || !csvFile.files.length) {
-    csvFile.classList.add('invalid');
-    csvFile.classList.remove('valid');
-    isValid = false;
-  } else {
-    csvFile.classList.remove('invalid');
-  }
+//  if (!csvFile.files || !csvFile.files.length) {
+//    csvFile.classList.add('invalid');
+//    csvFile.classList.remove('valid');
+//    isValid = false;
+//  } else {
+//    csvFile.classList.remove('invalid');
+//  }
   
   // 各セクションのチェック
   const sections = [
