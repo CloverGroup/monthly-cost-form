@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>弔事連絡フォーム - Day Clover</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 24px;
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .guidance {
+            background: #f8f9fa;
+            border-left: 4px solid #4CAF50;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .guidance h3 {
+            color: #4CAF50;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .guidance-section {
+            margin-bottom: 15px;
+        }
+
+        .guidance-section h4 {
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .guidance ul {
+            margin-left: 20px;
+            color: #666;
+        }
+
+        .guidance li {
+            margin-bottom: 5px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+
+        .section h3 {
+            color: #4CAF50;
+            margin-bottom: 20px;
+            font-size: 20px;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .required {
+            color: #e74c3c;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .radio-item input[type="radio"] {
+            width: auto;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+
+        .conditional-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+        }
+
+        .date-range {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .date-range input {
+            flex: 1;
+        }
+
+        .file-upload {
+            border: 2px dashed #ddd;
+            border-radius: 6px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .file-upload:hover {
+            border-color: #4CAF50;
+        }
+
+        .file-upload input {
+            display: none;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .note {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #856404;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+            
+            .date-range {
+                flex-direction: column;
+            }
+            
+            .radio-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">DC</div>
+            <h1>弔事連絡フォーム</h1>
+            <p>キャスト様のご家族の弔事に関するご連絡</p>
+        </div>
+
+        <div class="form-container">
+            <div class="guidance">
+                <h3>ご利用ガイド</h3>
+                
+                <div class="guidance-section">
+                    <h4>◆ 忌引休暇について</h4>
+                    <ul>
+                        <li>3親等親族まで取得可能です（配偶者・父母・祖父母・兄弟姉妹・おじおば・子・甥姪）</li>
+                        <li>勤務年数1年以上のキャストが対象です</li>
+                        <li>父母、配偶者および子ども：連続5日間</li>
+                        <li>祖父母、配偶者の父母、兄弟姉妹：連続2日間</li>
+                        <li>※忌引休暇は公休を含む連続での日数が、有給とは別に忌引休暇として付与されます</li>
+                    </ul>
+                </div>
+
+                <div class="guidance-section">
+                    <h4>◆ 供花について</h4>
+                    <ul>
+                        <li>葬儀日程・喪主等が決まり次第、総務・経理までご連絡をお願いします</li>
+                        <li>葬儀場の連絡先（電話・FAX・メール等）が必要です</li>
+                        <li>葬儀案内を写真やPDFで添付いただくことも可能です</li>
+                    </ul>
+                </div>
+            </div>
+
+            <form id="funeralForm">
+                <div class="section">
+                    <h3>基本情報</h3>
+                    
+                    <div class="form-group">
+                        <label for="office">事業所 <span class="required">*</span></label>
+                        <input type="text" id="office" name="office" required placeholder="事業所名を入力してください">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reporter">報告者名 <span class="required">*</span></label>
+                        <input type="text" id="reporter" name="reporter" required>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" id="reporterSelf" name="reporterType" value="本人" checked>
+                                <label for="reporterSelf">キャスト本人</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="reporterManager" name="reporterType" value="管理者">
+                                <label for="reporterManager">管理者</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>対象者情報</h3>
+                    
+                    <div class="form-group">
+                        <label for="targetCast">対象キャスト名</label>
+                        <input type="text" id="targetCast" name="targetCast" placeholder="報告者と同じ場合は入力不要">
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>故人・葬儀情報</h3>
+                    
+                    <div class="form-group">
+                        <label for="deceasedName">故人名 <span class="required">*</span></label>
+                        <input type="text" id="deceasedName" name="deceasedName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="relationship">故人との関係性 <span class="required">*</span></label>
+                        <select id="relationship" name="relationship" required>
+                            <option value="">選択してください</option>
+                            <option value="配偶者">配偶者</option>
+                            <option value="父母">父母</option>
+                            <option value="子">子</option>
+                            <option value="祖父母">祖父母</option>
+                            <option value="配偶者の父母">配偶者の父母</option>
+                            <option value="兄弟姉妹">兄弟姉妹</option>
+                            <option value="甥姪">甥姪</option>
+                            <option value="おじおば">おじおば</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="funeralSchedule">葬儀日程（通夜・告別式の日時） <span class="required">*</span></label>
+                        <textarea id="funeralSchedule" name="funeralSchedule" required placeholder="例：通夜：○月○日（○）18:00〜&#10;告別式：○月○日（○）10:00〜"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>供花希望の有無 <span class="required">*</span></label>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" id="flowerYes" name="flowerRequest" value="有り" checked>
+                                <label for="flowerYes">有り</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="flowerNo" name="flowerRequest" value="無し">
+                                <label for="flowerNo">無し</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="flowerSection" class="conditional-section">
+                        <div class="form-group">
+                            <label for="funeralHall">葬儀場名 <span class="required">*</span></label>
+                            <input type="text" id="funeralHall" name="funeralHall">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="hallPhone">葬儀場連絡先（電話番号）</label>
+                            <input type="tel" id="hallPhone" name="hallPhone" placeholder="例：03-1234-5678">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="hallFax">葬儀場連絡先（FAX番号）</label>
+                            <input type="tel" id="hallFax" name="hallFax" placeholder="例：03-1234-5679">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="hallEmail">葬儀場連絡先（メール等）</label>
+                            <input type="text" id="hallEmail" name="hallEmail" placeholder="メールアドレスまたはその他連絡方法">
+                        </div>
+
+                        <div class="note">
+                            ※ 電話・FAX・メールのいずれか1つ以上の連絡先が必要です
+                        </div>
+
+                        <div class="form-group">
+                            <label for="funeralNotice">添付ファイル（葬儀案内等）</label>
+                            <div class="file-upload" onclick="document.getElementById('funeralNotice').click()">
+                                <input type="file" id="funeralNotice" name="funeralNotice" accept="image/*,.pdf" multiple>
+                                <p>クリックしてファイルを選択<br>（写真・PDF対応、複数選択可）</p>
+                            </div>
+                            <div id="fileList"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>休暇関連</h3>
+                    
+                    <div class="form-group">
+                        <label>忌引休暇希望の有無 <span class="required">*</span></label>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" id="leaveYes" name="leaveRequest" value="有り" checked>
+                                <label for="leaveYes">有り</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="leaveNo" name="leaveRequest" value="無し">
+                                <label for="leaveNo">無し</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="leaveSection" class="conditional-section">
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="thirdDegree" name="thirdDegree" required>
+                                <label for="thirdDegree">3親等以内であることを確認しました <span class="required">*</span></label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="oneYear" name="oneYear" required>
+                                <label for="oneYear">勤務年数1年以上であることを確認しました <span class="required">*</span></label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="leavePeriod">忌引休暇希望期間 <span class="required">*</span></label>
+                            <div class="date-range">
+                                <input type="date" id="leaveStart" name="leaveStart" required>
+                                <span>〜</span>
+                                <input type="date" id="leaveEnd" name="leaveEnd" required>
+                            </div>
+                            <div class="note">
+                                <strong>忌引休暇期間の目安：</strong><br>
+                                • 父母、配偶者および子ども：連続5日間<br>
+                                • 祖父母、配偶者の父母、兄弟姉妹：連続2日間<br>
+                                ※公休を含む連続での日数が、有給とは別に忌引休暇として付与されます
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>その他</h3>
+                    
+                    <div class="form-group">
+                        <label for="notes">その他特記事項</label>
+                        <textarea id="notes" name="notes" placeholder="その他ご連絡事項がありましたらご記入ください"></textarea>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    送信する
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 供花セクションの表示/非表示制御
+        const flowerRadios = document.querySelectorAll('input[name="flowerRequest"]');
+        const flowerSection = document.getElementById('flowerSection');
+        const flowerInputs = flowerSection.querySelectorAll('input[required]');
+
+        flowerRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === '有り') {
+                    flowerSection.style.display = 'block';
+                    // 葬儀場名を必須に
+                    document.getElementById('funeralHall').required = true;
+                } else {
+                    flowerSection.style.display = 'none';
+                    // 必須を解除
+                    flowerSection.querySelectorAll('input').forEach(input => {
+                        input.required = false;
+                    });
+                }
+            });
+        });
+
+        // 忌引休暇セクションの表示/非表示制御
+        const leaveRadios = document.querySelectorAll('input[name="leaveRequest"]');
+        const leaveSection = document.getElementById('leaveSection');
+
+        leaveRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === '有り') {
+                    leaveSection.style.display = 'block';
+                    // 必須項目を有効化
+                    document.getElementById('thirdDegree').required = true;
+                    document.getElementById('oneYear').required = true;
+                    document.getElementById('leaveStart').required = true;
+                    document.getElementById('leaveEnd').required = true;
+                } else {
+                    leaveSection.style.display = 'none';
+                    // 必須を解除
+                    leaveSection.querySelectorAll('input[required]').forEach(input => {
+                        if (input.type !== 'radio') {
+                            input.required = false;
+                        }
+                    });
+                }
+            });
+        });
+
+        // ファイル選択時の表示
+        document.getElementById('funeralNotice').addEventListener('change', function() {
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = '';
+            
+            if (this.files.length > 0) {
+                const ul = document.createElement('ul');
+                ul.style.marginTop = '10px';
+                ul.style.fontSize = '14px';
+                ul.style.color = '#666';
+                
+                for (let i = 0; i < this.files.length; i++) {
+                    const li = document.createElement('li');
+                    li.textContent = this.files[i].name;
+                    ul.appendChild(li);
+                }
+                fileList.appendChild(ul);
+            }
+        });
+
+        // 供花セクションの連絡先バリデーション
+        function validateFlowerContact() {
+            const phone = document.getElementById('hallPhone').value.trim();
+            const fax = document.getElementById('hallFax').value.trim();
+            const email = document.getElementById('hallEmail').value.trim();
+            
+            return phone || fax || email;
+        }
+
+        // フォーム送信処理
+        document.getElementById('funeralForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // 供花希望ありの場合の追加バリデーション
+            const flowerRequest = document.querySelector('input[name="flowerRequest"]:checked').value;
+            if (flowerRequest === '有り') {
+                if (!validateFlowerContact()) {
+                    alert('供花を希望される場合は、葬儀場の連絡先（電話・FAX・メールのいずれか）を入力してください。');
+                    return;
+                }
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = '送信中...';
+
+            // フォームデータを収集
+            const formData = new FormData(this);
+            
+            // Google Apps Scriptに送信
+            fetch('YOUR_GAS_WEB_APP_URL', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('弔事連絡を送信しました。総務・経理より追ってご連絡いたします。');
+                    this.reset();
+                    // 条件付きセクションを非表示に
+                    flowerSection.style.display = 'block';
+                    leaveSection.style.display = 'block';
+                } else {
+                    throw new Error(data.error || '送信に失敗しました');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('送信に失敗しました。しばらく経ってから再度お試しください。');
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '送信する';
+            });
+        });
+
+        // 初期状態で条件付きセクションを表示
+        flowerSection.style.display = 'block';
+        leaveSection.style.display = 'block';
+    </script>
+</body>
+</html>
