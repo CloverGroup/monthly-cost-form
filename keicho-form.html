@@ -276,10 +276,12 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="logo">DC</div>
-            <h1>弔事連絡フォーム</h1>
-            <p>キャスト様のご家族の弔事に関するご連絡</p>
-        </div>
+            <div class="logo">
+                <img src="https://day-clover.com/common/img/about/clover/clover-green.png" alt="DC Logo">
+            </div>
+        <h1>弔事連絡フォーム</h1>
+        <p>キャスト様のご家族の弔事に関するご連絡</p>
+    </div>
 
         <div class="form-container">
             <div class="guidance">
@@ -580,7 +582,7 @@
             const formData = new FormData(this);
             
             // Google Apps Scriptに送信
-            fetch('YOUR_GAS_WEB_APP_URL', {
+            fetch('https://script.google.com/macros/s/AKfycbzzDTqBIblBrKwY7I5aEGx_BS-ThyUTtrLqbwzrmDDaTSrkaBGzXv7W6dk87AKjVw/exec', {
                 method: 'POST',
                 body: formData
             })
