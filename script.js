@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     { radioName: 'hasNoWork', detailId: 'noWorkDetail', addFn: addNoWork },
     { radioName: 'hasSalaryChange', detailId: 'salaryChangeDetail', addFn: addSalaryChange },
     { radioName: 'hasAddressChange', detailId: 'addressChangeDetail', addFn: addAddressChange },
-	{ radioName: 'hasOtherHelp', detailId: 'otherHelpDetail', addFn: addOtherHelp },
+	  { radioName: 'hasOtherHelp', detailId: 'otherHelpDetail', addFn: addOtherHelp },
     { radioName: 'hasLateEarly', detailId: 'lateEarlyDetail', addFn: addLateEarly },
     { radioName: 'hasLeave', detailId: 'leaveDetail', addFn: addLeave }
   ];
@@ -302,7 +302,7 @@ function validateForm() {
     { name: 'hasNoWork', container: 'noWorkContainer' },
     { name: 'hasSalaryChange', container: 'salaryChangeContainer' },
     { name: 'hasAddressChange', container: 'addressChangeContainer' },
-	{ name: 'hasOtherHelp', container: 'otherHelpContainer' },
+	  { name: 'hasOtherHelp', container: 'otherHelpContainer' },
     { name: 'hasLateEarly', container: 'lateEarlyContainer' },
     { name: 'hasLeave', container: 'leaveContainer' }
   ];
@@ -361,7 +361,7 @@ function clearForm() {
       'hasNoWork',
       'hasSalaryChange',
       'hasAddressChange',
-	  'hasOtherHelp',
+	    'hasOtherHelp',
       'hasLateEarly',
       'hasLeave'
     ];
@@ -470,7 +470,7 @@ function collectFormData() {
     { name: 'hasNoWork', key: 'noWork', container: 'noWorkContainer' },
     { name: 'hasSalaryChange', key: 'salaryChange', container: 'salaryChangeContainer' },
     { name: 'hasAddressChange', key: 'addressChange', container: 'addressChangeContainer' },
-	{ name: 'hasOtherHelp', key: 'otherHelp', container: 'otherHelpContainer' },
+	  { name: 'hasOtherHelp', key: 'otherHelp', container: 'otherHelpContainer' },
     { name: 'hasLateEarly', key: 'lateEarly', container: 'lateEarlyContainer' },
     { name: 'hasLeave', key: 'leave', container: 'leaveContainer' }
   ];
@@ -517,7 +517,6 @@ function collectSectionData(sectionKey, containerId) {
         entryData.comment = entry.querySelector('.reason-field').value;
         break;
 	  case 'otherHelp':
-        entryData.submitted = !!entry.querySelector('input[type="checkbox"]').checked;
         entryData.comment = entry.querySelector('.reason-field').value;
         break;
       case 'lateEarly':
