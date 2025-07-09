@@ -1,12 +1,13 @@
 document.addEventListener('DOMContentLoaded', function() {
   console.log('Initializing form...');
-  
+  /*2025/07/09 他事業所からのヘルプ追加*/
   const sections = [
     { radioName: 'hasNewEmployee', detailId: 'newEmployeeDetail', addFn: addNewEmployee },
     { radioName: 'hasRetirement', detailId: 'retirementDetail', addFn: addRetirement },
     { radioName: 'hasNoWork', detailId: 'noWorkDetail', addFn: addNoWork },
     { radioName: 'hasSalaryChange', detailId: 'salaryChangeDetail', addFn: addSalaryChange },
     { radioName: 'hasAddressChange', detailId: 'addressChangeDetail', addFn: addAddressChange },
+	{ radioName: 'hasOtherHelp', detailId: 'otherHelpDetail', addFn: addOtherHelp },
     { radioName: 'hasLateEarly', detailId: 'lateEarlyDetail', addFn: addLateEarly },
     { radioName: 'hasLeave', detailId: 'leaveDetail', addFn: addLeave }
   ];
@@ -294,12 +295,14 @@ function validateForm() {
 //  }
   
   // 各セクションのチェック
+  /*2025/07/09 他事業所からのヘルプ追加*/
   const sections = [
     { name: 'hasNewEmployee', container: 'newEmployeeContainer' },
     { name: 'hasRetirement', container: 'retirementContainer' },
     { name: 'hasNoWork', container: 'noWorkContainer' },
     { name: 'hasSalaryChange', container: 'salaryChangeContainer' },
     { name: 'hasAddressChange', container: 'addressChangeContainer' },
+	{ name: 'hasOtherHelp', container: 'otherHelpContainer' },
     { name: 'hasLateEarly', container: 'lateEarlyContainer' },
     { name: 'hasLeave', container: 'leaveContainer' }
   ];
@@ -347,7 +350,7 @@ function removeEntry(button) {
   }
   validateForm();
 }
-
+/*2025/07/09 他事業所からのヘルプ追加*/
 function clearForm() {
   if (confirm('入力内容をクリアしてよろしいですか？')) {
     document.getElementById('officeName').value = '';
@@ -358,6 +361,7 @@ function clearForm() {
       'hasNoWork',
       'hasSalaryChange',
       'hasAddressChange',
+	  'hasOtherHelp',
       'hasLateEarly',
       'hasLeave'
     ];
@@ -459,13 +463,14 @@ function collectFormData() {
     // csvData: document.getElementById('csvData').value,
     // optionalData: document.getElementById('optionalData').value
   };
-  
+  /*2025/07/09 他事業所からのヘルプ追加*/
   const sections = [
     { name: 'hasNewEmployee', key: 'newEmployee', container: 'newEmployeeContainer' },
     { name: 'hasRetirement', key: 'retirement', container: 'retirementContainer' },
     { name: 'hasNoWork', key: 'noWork', container: 'noWorkContainer' },
     { name: 'hasSalaryChange', key: 'salaryChange', container: 'salaryChangeContainer' },
     { name: 'hasAddressChange', key: 'addressChange', container: 'addressChangeContainer' },
+	{ name: 'hasOtherHelp', key: 'otherHelp', container: 'otherHelpContainer' },
     { name: 'hasLateEarly', key: 'lateEarly', container: 'lateEarlyContainer' },
     { name: 'hasLeave', key: 'leave', container: 'leaveContainer' }
   ];
@@ -481,7 +486,7 @@ function collectFormData() {
   
   return data;
 }
-
+/*2025/07/09 他事業所からのヘルプ追加*/
 function collectSectionData(sectionKey, containerId) {
   const container = document.getElementById(containerId);
   const entries = container.querySelectorAll('.entry-row');
@@ -508,6 +513,10 @@ function collectSectionData(sectionKey, containerId) {
         entryData.comment = entry.querySelector('.reason-field').value;
         break;
       case 'addressChange':
+        entryData.submitted = !!entry.querySelector('input[type="checkbox"]').checked;
+        entryData.comment = entry.querySelector('.reason-field').value;
+        break;
+	  case 'otherHelp':
         entryData.submitted = !!entry.querySelector('input[type="checkbox"]').checked;
         entryData.comment = entry.querySelector('.reason-field').value;
         break;
@@ -580,6 +589,21 @@ function createNoWorkEntry() {
            onchange="validateEntryAndForm(this.closest('.entry-row'))"
            onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
     <textarea name="noWorkComment" placeholder="理由" class="reason-field required"
+              onchange="validateEntryAndForm(this.closest('.entry-row'))"
+              onkeyup="validateEntryAndForm(this.closest('.entry-row'))"></textarea>
+    <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
+  `;
+  return div;
+}
+/*2025/07/09 他事業所からのヘルプ追加*/
+function createOtherHelpEntry() {
+  const div = document.createElement('div');
+  div.className = 'entry-row';
+  div.innerHTML = `
+    <input type="text" name="otherHelpName" placeholder="氏名" class="name-field required" maxlength="15"
+           onchange="validateEntryAndForm(this.closest('.entry-row'))"
+           onkeyup="validateEntryAndForm(this.closest('.entry-row'))">
+    <textarea name="otherHelpComment" placeholder="ヘルプ元事業所" class="reason-field required"
               onchange="validateEntryAndForm(this.closest('.entry-row'))"
               onkeyup="validateEntryAndForm(this.closest('.entry-row'))"></textarea>
     <button type="button" class="remove-button" onclick="removeEntry(this)">削除</button>
@@ -692,6 +716,10 @@ function addRetirement() {
 }
 function addNoWork() {
   addEntry('noWorkContainer', createNoWorkEntry);
+}
+/*2025/07/09 他事業所からのヘルプ追加*/
+function addOtherHelp() {
+  addEntry('otherHelpContainer', createOtherHelpEntry);
 }
 function addSalaryChange() {
   addEntry('salaryChangeContainer', createSalaryChangeEntry);

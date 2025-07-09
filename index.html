@@ -114,7 +114,23 @@
           <button type="button" class="add-button" onclick="addAddressChange()">追加</button>
         </div>
       </div>
-
+	  
+	  <!-- 2025/07/09 他事業所からのヘルプ追加 -->
+      <!-- 他事業所からのヘルプ -->
+      <div class="form-group">
+        <div class="section-title">
+          他事業所からのヘルプ
+          <div class="radio-group">
+            <input type="radio" name="hasOtherHelp" value="no" checked> なし
+            <input type="radio" name="hasOtherHelp" value="yes"> あり
+          </div>
+        </div>
+        <div id="otherHelpDetail" class="detail-section">
+          <div id="otherHelpContainer"></div>
+          <button type="button" class="add-button" onclick="addOtherHelp()">追加</button>
+        </div>
+      </div>
+	  
       <!-- 遅刻・早退等 -->
       <div class="form-group">
         <div class="section-title">
